@@ -1,0 +1,176 @@
+/* ---------- Wordmark ---------- */
+
+/*
+ * PRAAMIX, with its second A knocked over and resting against the M.
+ * Wherever it is used sets the size (font-size) and the cut (--wm-stretch).
+ */
+.wordmark {
+  display: inline-block;
+  font-family: 'Archivo Display', var(--display-fallback), sans-serif;
+  font-weight: 800;
+  font-stretch: var(--wm-stretch, 100%);
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.wordmark__glyphs {
+  display: inline-block;
+}
+
+.wordmark__a {
+  display: inline-block;
+  color: var(--accent);
+  transform: rotate(var(--wm-lean, 8deg));
+  transform-origin: 100% 92%;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .wordmark__a {
+    transition: transform 420ms cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+
+  a:hover > .wordmark .wordmark__a {
+    transform: rotate(calc(var(--wm-lean, 8deg) - 5deg));
+  }
+}
+
+/* ---------- Game titles ---------- */
+
+.title-fit {
+  container-type: inline-size;
+}
+
+/*
+ * Sized to fill the column. GameTitle supplies the width of the title in em:
+ * --fit-stacked for its widest word, --fit-line for the whole title on one
+ * line. Narrow screens: one word per line, as large as the widest word allows.
+ * The cap only matters for a very short title, which would otherwise be huge.
+ */
+.game-title {
+  --display-fallback: 'Archivo Display Fallback Condensed';
+  font-family: 'Archivo Display', var(--display-fallback), sans-serif;
+  font-size: min(calc(100cqi / var(--fit-stacked)), 16rem);
+  font-weight: 800;
+  font-stretch: 75%;
+  line-height: 0.84;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.game-title__word {
+  display: block;
+}
+
+.game-title__accent {
+  color: var(--accent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-stretch: normal;
+  letter-spacing: 0;
+}
+
+/* Wide screens, and phones held sideways: the whole title on one line. */
+@media (min-width: 64em), (max-height: 32em) and (orientation: landscape) {
+  .game-title {
+    --display-fallback: 'Archivo Display Fallback';
+    font-size: min(calc(100cqi / var(--fit-line)), 16rem);
+    font-stretch: 100%;
+  }
+
+  .game-title__word {
+    display: inline;
+  }
+
+  /*
+   * Two typefaces now share one line. This stops the serif from changing the
+   * height of that line, so nothing below moves when the fonts arrive.
+   */
+  .game-title__accent {
+    line-height: 0;
+  }
+}
+
+/* ---------- Small parts ---------- */
+
+.section-head {
+  margin-bottom: var(--space-block);
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--fg);
+}
+
+.status-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.status-flag::before {
+  content: '';
+  flex: none;
+  width: 0.6em;
+  height: 0.6em;
+  background: var(--accent);
+}
+
+.caption {
+  max-width: 26em;
+  margin-top: 0.75rem;
+  color: var(--fg-soft);
+  font-size: var(--step--1);
+  line-height: 1.45;
+}
+
+.arrow {
+  flex: none;
+  width: 1.75em;
+  height: auto;
+  transition: transform 260ms cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+.arrow--back {
+  scale: -1 1;
+}
+
+/* A solid button. Used for the few real actions on the site. */
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9em;
+  min-height: 3rem;
+  padding: 0.7rem 1.25rem;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: var(--step-0);
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 160ms ease;
+}
+
+.action:active {
+  background: var(--accent-text);
+}
+
+/* Shown on the homepage feature, where the whole composition is the link. */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75em;
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid var(--accent);
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .action:hover {
+    background: var(--accent-text);
+  }
+
+  .action:hover .arrow,
+  .feature__card:hover .link-arrow .arrow {
+    transform: translateX(0.3rem);
+  }
+}

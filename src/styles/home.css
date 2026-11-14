@@ -1,0 +1,189 @@
+/* ---------- Opening ---------- */
+
+.hero {
+  padding-block: clamp(1.25rem, 0.75rem + 2.5vw, 3rem) var(--space-section);
+}
+
+.hero__layout {
+  display: grid;
+  gap: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+}
+
+/*
+ * The masthead fills its column at every size, edge to edge.
+ * Phones get the condensed cut, so the letters stand tall in a narrow column.
+ * Tablets get the regular cut, wide screens the expanded one.
+ * --wm-ratio is the width of the word, in em, at that cut.
+ */
+.masthead {
+  --wm-stretch: 62%;
+  --wm-ratio: 3.27;
+  --display-fallback: 'Archivo Display Fallback Compressed';
+  container-type: inline-size;
+}
+
+.masthead__word {
+  display: flex;
+  font-size: calc(100cqi / var(--wm-ratio));
+}
+
+/* Once, on arrival: the A tips over and comes to rest. */
+@media (prefers-reduced-motion: no-preference) {
+  .masthead .wordmark__a {
+    animation: tip 1100ms 250ms both;
+  }
+
+  @keyframes tip {
+    0% {
+      transform: rotate(0deg);
+      animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5);
+    }
+    46% {
+      transform: rotate(calc(var(--wm-lean, 8deg) + 2.5deg));
+      animation-timing-function: ease-out;
+    }
+    68% {
+      transform: rotate(calc(var(--wm-lean, 8deg) - 1.2deg));
+      animation-timing-function: ease-in-out;
+    }
+    86% {
+      transform: rotate(calc(var(--wm-lean, 8deg) + 0.4deg));
+      animation-timing-function: ease-in-out;
+    }
+    100% {
+      transform: rotate(var(--wm-lean, 8deg));
+    }
+  }
+}
+
+.hero__deck {
+  display: grid;
+  gap: 1rem var(--col-gap);
+  justify-items: start;
+}
+
+.hero__descriptor {
+  color: var(--fg-soft);
+}
+
+.hero__statement {
+  /* Widths of display lines are in em, not ch, so they hold still when the fonts arrive. */
+  max-width: 6.9em;
+  font-family: var(--font-serif);
+  font-size: var(--step-3);
+  font-style: italic;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.hero__action {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 45em) {
+  .masthead {
+    --wm-stretch: 100%;
+    --wm-ratio: 4.83;
+    --display-fallback: 'Archivo Display Fallback';
+  }
+}
+
+/* Tablets and up, and phones held sideways: statement to the right, the way in to the left. */
+@media (min-width: 45em), (min-width: 40em) and (max-height: 32em) and (orientation: landscape) {
+  .hero__deck {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: auto 1fr;
+  }
+
+  .hero__descriptor {
+    grid-column: 1 / span 4;
+    justify-self: stretch;
+    padding-top: 0.75rem;
+    border-top: 2px solid var(--fg);
+  }
+
+  .hero__statement {
+    grid-column: 6 / -1;
+    grid-row: 1 / span 2;
+  }
+
+  .hero__action {
+    grid-column: 1 / span 5;
+    grid-row: 2;
+    align-self: end;
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 64em) {
+  .hero__statement {
+    grid-column: 7 / -1;
+    max-width: 7.4em;
+  }
+}
+
+/* Wide screens, and any short sideways screen, where tall letters would fill the view. */
+@media (min-width: 64em), (max-height: 32em) and (orientation: landscape) {
+  .masthead {
+    --wm-stretch: 125%;
+    --wm-ratio: 6.04;
+    --display-fallback: 'Archivo Display Fallback Expanded';
+  }
+}
+
+/* ---------- Studio ---------- */
+
+.studio {
+  padding-bottom: var(--space-section);
+}
+
+.studio__grid {
+  display: grid;
+  gap: 1.25rem var(--col-gap);
+  padding-top: 0.75rem;
+  border-top: 2px solid var(--fg);
+}
+
+.studio__lead {
+  max-width: 8em;
+  font-size: var(--step-4);
+  font-weight: 700;
+  font-stretch: 88%;
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+@media (min-width: 45em) {
+  .studio__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .studio__heading {
+    grid-column: 1 / -1;
+  }
+
+  .studio__lead {
+    grid-column: 1 / span 9;
+  }
+
+  .studio__body {
+    grid-column: 6 / -1;
+    margin-top: 1rem;
+  }
+}
+
+@media (min-width: 64em) {
+  .studio__heading {
+    grid-column: 1 / span 2;
+  }
+
+  .studio__lead {
+    grid-column: 3 / -1;
+  }
+
+  .studio__body {
+    grid-column: 8 / -1;
+  }
+}
