@@ -48,6 +48,7 @@ export function Gallery({ id, heading, lede, images }: Props) {
             <li key={item.file.base}>
               <button
                 className="shot"
+                data-tilt=""
                 type="button"
                 style={{ background: item.tone }}
                 onClick={(event) => open(itemIndex, event.currentTarget)}

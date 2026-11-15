@@ -26,7 +26,7 @@ export function PeopleProfiles() {
   return (
     <div className="profiles">
       {people.map((person) => (
-        <article className="profile" key={person.id} aria-labelledby={`${person.id}-name`}>
+        <article className="profile" data-tilt="" key={person.id} aria-labelledby={`${person.id}-name`}>
           {person.portrait && (
             <div className="profile__portrait">
               <Picture image={person.portrait} sizes="(min-width: 56em) 280px, 60vw" />

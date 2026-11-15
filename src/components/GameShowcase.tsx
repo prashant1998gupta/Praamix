@@ -1,11 +1,12 @@
 import { useId, useRef, useState } from 'react'
-import type { KeyboardEvent, ReactNode } from 'react'
+import type { CSSProperties, KeyboardEvent, ReactNode } from 'react'
 import { Link } from 'react-router'
 import { gamePath, sheriffTownVr } from '../content/game.ts'
 import type { GameMap, Mode } from '../content/game.ts'
 import { SIZES } from '../content/images.ts'
 import { useDrift } from '../hooks/useDrift.ts'
 import { Arrow } from './Arrow.tsx'
+import { Motes, StarBadge, TypedLine } from './Motion.tsx'
 import { Art, Picture } from './Picture.tsx'
 
 const game = sheriffTownVr
@@ -34,16 +35,24 @@ export function GameStage({ id, eyebrow, title, children }: StageProps) {
   return (
     <section className="showcase" aria-labelledby={id} ref={zone}>
       <div className="wrap">
-        <div className="showcase__frame on-ink">
+        <div className="showcase__frame on-ink" data-drift="">
           <div className="showcase__art">
-            <div className="showcase__picture" data-drift="">
+            <div className="showcase__picture">
               <Picture image={image} sizes={SIZES.stage} priority />
             </div>
+            <Motes />
+            <div className="showcase__glare" aria-hidden="true" />
+            <StarBadge text="Sheriff Town · Est. 1887" />
           </div>
           <div className="showcase__text">
             <p className="eyebrow">{eyebrow}</p>
             <h1 className="showcase__title" id={id}>
-              {title}
+              {title.split(' ').flatMap((word, index) => [
+                index > 0 ? ' ' : '',
+                <span className="word" key={`${word}-${index}`} style={{ '--w': index } as CSSProperties}>
+                  {word}
+                </span>,
+              ])}
             </h1>
             {children}
           </div>
@@ -73,7 +82,7 @@ export function Pillars({ heading, action }: { heading: string; action: string }
         <ul className="pillars">
           {game.pillars.map((pillar) => (
             <li key={pillar.id}>
-              <Link className="pillar" to={`${gamePath(game)}#${pillar.id}`}>
+              <Link className="pillar" to={`${gamePath(game)}#${pillar.id}`} data-tilt="">
                 <Art image={pillar.image} sizes={SIZES.card} variant="cover" caption={false} />
                 <h3 className="pillar__title">{pillar.title}</h3>
                 <p>{pillar.text}</p>
@@ -107,7 +116,9 @@ export function Overheard({ band = false }: { band?: boolean }) {
         <div className="overheard__stage">
           <figure className="bubble" aria-live="polite">
             <blockquote className="bubble__line" key={index}>
-              <p>“{line.line}”</p>
+              <p>
+                <TypedLine text={`“${line.line}”`} />
+              </p>
             </blockquote>
             <figcaption className="bubble__who">
               <strong>{line.who}</strong>, {line.where}
@@ -306,7 +317,7 @@ export function CaseFiles() {
         </div>
         <ul className="cases">
           {game.cases.map((item) => (
-            <li className="case" key={item.id}>
+            <li className="case" key={item.id} data-tilt="">
               <p className="case__tab">Case file · {item.where}</p>
               <h3 className="case__title">{item.title}</h3>
               <p className="case__hook">{item.hook}</p>

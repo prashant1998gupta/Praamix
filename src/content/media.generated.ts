@@ -261,6 +261,258 @@ export const media = {
     "height": 720,
     "fallback": 768
   },
+  "gun-spawn": {
+    "base": "/media/gun-spawn",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 670,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-physics": {
+    "base": "/media/gun-physics",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 485,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-gravity": {
+    "base": "/media/gun-gravity",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 501,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-portal": {
+    "base": "/media/gun-portal",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 616,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-ice": {
+    "base": "/media/gun-ice",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 638,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-bubble": {
+    "base": "/media/gun-bubble",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 605,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-size": {
+    "base": "/media/gun-size",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 502,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-copypaste": {
+    "base": "/media/gun-copypaste",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 695,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-food": {
+    "base": "/media/gun-food",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 663,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-scanner": {
+    "base": "/media/gun-scanner",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 700,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-joint": {
+    "base": "/media/gun-joint",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 565,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-harpoon": {
+    "base": "/media/gun-harpoon",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 569,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-connection": {
+    "base": "/media/gun-connection",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 621,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "gun-modification": {
+    "base": "/media/gun-modification",
+    "widths": [
+      320,
+      480,
+      640
+    ],
+    "width": 640,
+    "height": 557,
+    "fallback": 640,
+    "fallbackType": "png"
+  },
+  "tool-thruster": {
+    "base": "/media/tool-thruster",
+    "widths": [
+      320
+    ],
+    "width": 320,
+    "height": 572,
+    "fallback": 320,
+    "fallbackType": "png"
+  },
+  "tool-motor": {
+    "base": "/media/tool-motor",
+    "widths": [
+      320
+    ],
+    "width": 320,
+    "height": 565,
+    "fallback": 320,
+    "fallbackType": "png"
+  },
+  "tool-piston": {
+    "base": "/media/tool-piston",
+    "widths": [
+      320
+    ],
+    "width": 320,
+    "height": 606,
+    "fallback": 320,
+    "fallbackType": "png"
+  },
+  "tool-propeller": {
+    "base": "/media/tool-propeller",
+    "widths": [
+      320,
+      480
+    ],
+    "width": 480,
+    "height": 320,
+    "fallback": 480,
+    "fallbackType": "png"
+  },
+  "tool-stabilizer": {
+    "base": "/media/tool-stabilizer",
+    "widths": [
+      320,
+      480
+    ],
+    "width": 480,
+    "height": 466,
+    "fallback": 480,
+    "fallbackType": "png"
+  },
+  "tool-balloon": {
+    "base": "/media/tool-balloon",
+    "widths": [
+      320
+    ],
+    "width": 320,
+    "height": 415,
+    "fallback": 320,
+    "fallbackType": "png"
+  },
+  "tool-climbinggrip": {
+    "base": "/media/tool-climbinggrip",
+    "widths": [
+      320,
+      480
+    ],
+    "width": 480,
+    "height": 307,
+    "fallback": 480,
+    "fallbackType": "png"
+  },
+  "tool-lever": {
+    "base": "/media/tool-lever",
+    "widths": [
+      320,
+      480
+    ],
+    "width": 480,
+    "height": 449,
+    "fallback": 480,
+    "fallbackType": "png"
+  },
   "praamix-logo": {
     "base": "/media/praamix-logo",
     "widths": [

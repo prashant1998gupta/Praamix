@@ -5,6 +5,7 @@ import { FaqSection } from '../components/Faq.tsx'
 import { Gallery } from '../components/Gallery.tsx'
 import { CaseFiles, DispatchBoard, Extras, FeatureRow, GameStage } from '../components/GameShowcase.tsx'
 import { GameStatus, StoreLinks } from '../components/GameParts.tsx'
+import { Stats, Ticker, ToolRack } from '../components/Motion.tsx'
 import { gamePath, games } from '../content/game.ts'
 import { metaFor } from '../content/routes.ts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
@@ -47,6 +48,8 @@ function GamePage({ game }: { game: GameContent }) {
           </ExternalAction>
         )}
       </GameStage>
+      <Ticker words={game.ticker} />
+      <Stats items={game.stats} label={`${game.title} in numbers`} />
 
       <section className="section band" aria-labelledby="glance-title">
         <div className="wrap faq-layout">
@@ -68,6 +71,7 @@ function GamePage({ game }: { game: GameContent }) {
       <FeatureRow index={1} />
       <CaseFiles />
       <FeatureRow index={2} />
+      <ToolRack {...game.rack} />
       <FeatureRow index={3} />
       <DispatchBoard band />
       <Gallery id="gallery" heading={game.galleryHeading} lede={game.galleryLede} images={game.gallery} />

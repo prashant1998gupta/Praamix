@@ -3,6 +3,7 @@ import type { MouseEvent } from 'react'
 import { Route, Routes, useLocation, useNavigationType } from 'react-router'
 import { Footer } from './components/Footer.tsx'
 import { Header } from './components/Header.tsx'
+import { MotionEffects } from './components/Motion.tsx'
 import { Contact } from './pages/Contact.tsx'
 import { Game } from './pages/Game.tsx'
 import { Home } from './pages/Home.tsx'
@@ -62,6 +63,7 @@ export default function App() {
   return (
     <>
       <RouteEffects />
+      <MotionEffects />
       <a className="skip-link" href="#main" onClick={skipToContent}>
         Skip to content
       </a>

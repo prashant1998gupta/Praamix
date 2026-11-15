@@ -25,7 +25,7 @@ export function Picture({ image, sizes, priority = false }: PictureProps) {
       <source type="image/avif" srcSet={srcSet(file, 'avif')} sizes={sizes} />
       <source type="image/webp" srcSet={srcSet(file, 'webp')} sizes={sizes} />
       <img
-        src={`${file.base}-${file.fallback}.jpg`}
+        src={`${file.base}-${file.fallback}.${file.fallbackType ?? 'jpg'}`}
         width={file.width}
         height={file.height}
         alt={image.alt}

@@ -38,6 +38,12 @@ export const IMAGES = [
   { name: 'map-colour-bridge', source: 'game/map-colour-bridge.png', widths: MAP },
 ]
 
+/* Transparent cut-outs of the tool guns and physics tools, for the 3D rack. */
+const GUNS = ['spawn', 'physics', 'gravity', 'portal', 'ice', 'bubble', 'size', 'copypaste', 'food', 'scanner', 'joint', 'harpoon', 'connection', 'modification']
+const TOOLS = ['thruster', 'motor', 'piston', 'propeller', 'stabilizer', 'balloon', 'climbinggrip', 'lever']
+const cutout = (name) => ({ name, source: `game/cutouts/${name}.png`, widths: [320, 480, 640], alpha: true })
+IMAGES.push(...GUNS.map((gun) => cutout(`gun-${gun}`)), ...TOOLS.map((tool) => cutout(`tool-${tool}`)))
+
 export const LOGO = {
   name: 'praamix-logo',
   source: 'praamix-logo.png',

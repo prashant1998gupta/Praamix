@@ -10,6 +10,8 @@ export type ImageFile = {
   height: number
   /** Width of the plain JPEG or PNG that older browsers use. */
   fallback: number
+  /** 'png' for a transparent cut-out; otherwise the fallback is a JPEG. */
+  fallbackType?: 'png'
 }
 
 export type SiteImage = {

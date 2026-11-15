@@ -63,6 +63,7 @@ export function Header() {
                   className="site-nav__link"
                   to={item.to}
                   aria-current={pathname.startsWith(item.match) ? 'page' : undefined}
+                  viewTransition
                 >
                   {item.label}
                 </Link>

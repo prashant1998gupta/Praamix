@@ -113,6 +113,12 @@ async function lift(input, region) {
     seed(y * width)
     seed(y * width + width - 1)
   }
+  /*
+   * Holes inside a model, like a trigger guard, are not joined to the edge.
+   * The render background is perfectly flat, so a pixel of exactly that colour
+   * is background wherever it is; start from those too.
+   */
+  for (let i = 0; i < width * height; i += 1) if (distance[i] < 3) seed(i)
   while (head < tail) {
     const i = queue[head++]
     const x = i % width
@@ -213,23 +219,37 @@ async function plate(models, { width, height, rows, pad = 0.07, gap = 0.18 }) {
   return sharp(await backdrop(width, height)).composite(layers)
 }
 
+/** Saves a lifted model on its own, transparent, for the 3D rack on the site. */
+const cutouts = join(out, 'cutouts')
+await mkdir(cutouts, { recursive: true })
+const saveCutout = (model, name) =>
+  sharp(model)
+    .resize({ width: 800, height: 800, fit: 'inside', withoutEnlargement: true, kernel: 'lanczos3' })
+    .sharpen({ sigma: 0.6, m1: 0.4, m2: 1 })
+    .png({ compressionLevel: 9 })
+    .toFile(join(cutouts, `${name}.png`))
+
 /* The physics tools, in their current workshop finish, each shown switched on. */
 const WORKSHOP = from('PhysicsToolsArt', 'WarmWorkshop_2026-10-25')
 const tools = ['Thruster', 'Motor', 'Piston', 'Propeller', 'Stabilizer', 'Balloon', 'ClimbingGrip', 'Lever']
 const toolModels = []
-for (const name of tools) toolModels.push(await lift(join(WORKSHOP, `Unity_${name}_Active_LOD0.png`)))
+for (const name of tools) {
+  const model = await lift(join(WORKSHOP, `Unity_${name}_Active_LOD0.png`))
+  toolModels.push(model)
+  await saveCutout(model, `tool-${name.toLowerCase()}`)
+}
 await (await plate(toolModels, { width: 1600, height: 1000, rows: [4, 4] }))
   .png({ compressionLevel: 9 })
   .toFile(join(out, 'physics-tools.png'))
 
-/* The tool guns, cut from the 4 by 4 render sheet (the last row holds two). */
-const SHEET = from('ToolGunsArt', 'CleanColour_2026-10-20', 'Unity_Clean_All.png')
-const { width: sheetWidth } = await sharp(SHEET).metadata()
-const cell = sheetWidth / 4
+/* The tool guns, from the final "Surface" render of each. */
+const GUNS = from('ToolGunsArt', 'CleanColour_2026-10-20')
+const guns = ['Spawn', 'Physics', 'Gravity', 'Portal', 'Ice', 'Bubble', 'Size', 'CopyPaste', 'Food', 'Scanner', 'Joint', 'Harpoon', 'Connection', 'Modification']
 const gunModels = []
-for (let i = 0; i < 14; i += 1) {
-  const region = { left: Math.round((i % 4) * cell), top: Math.round(Math.floor(i / 4) * cell), width: Math.round(cell), height: Math.round(cell) }
-  gunModels.push(await lift(SHEET, region))
+for (const name of guns) {
+  const model = await lift(join(GUNS, `Unity_Surface_${name}.png`))
+  gunModels.push(model)
+  await saveCutout(model, `gun-${name.toLowerCase()}`)
 }
 await (await plate(gunModels, { width: 1600, height: 1100, rows: [5, 4, 5], gap: 0.14 }))
   .png({ compressionLevel: 9 })
@@ -241,4 +261,4 @@ await (await plate([fort], { width: 1600, height: 1100, rows: [1], pad: 0.1, gap
   .png({ compressionLevel: 9 })
   .toFile(join(out, 'frontier-fort.png'))
 
-console.log(`stage-game-art: wrote ${Object.keys(captures).length + Object.keys(maps).length + 3} pictures to media-source/game/`)
+console.log(`stage-game-art: wrote ${Object.keys(captures).length + Object.keys(maps).length + 3} pictures and ${tools.length + guns.length} cut-outs to media-source/game/`)

@@ -3,6 +3,7 @@ import { Band } from '../components/Band.tsx'
 import { FaqSection } from '../components/Faq.tsx'
 import { DispatchBoard, GameStage, Overheard, Pillars } from '../components/GameShowcase.tsx'
 import { PipelineIntro, StudioIntro, StudioLine } from '../components/HomeSections.tsx'
+import { Stats, Ticker, ToolRack } from '../components/Motion.tsx'
 import { gamePath, sheriffTownVr } from '../content/game.ts'
 import { home } from '../content/home.ts'
 import { metaFor } from '../content/routes.ts'
@@ -31,8 +32,11 @@ export function Home() {
           </Action>
         </div>
       </GameStage>
+      <Ticker words={sheriffTownVr.ticker} />
+      <Stats items={sheriffTownVr.stats} label="Sheriff Town VR in numbers" />
       <StudioLine />
       <Pillars heading={home.pillars.heading} action={home.pillars.action} />
+      <ToolRack {...sheriffTownVr.rack} />
       <DispatchBoard band />
       <Overheard />
       <StudioIntro />

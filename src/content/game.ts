@@ -9,6 +9,7 @@
  * no store buttons. Never add a price, date, headset or store that is not real.
  */
 import { images } from './images.ts'
+import { media } from './media.generated.ts'
 import type { ExternalLink, Faq, SiteImage, StoreEntry } from './types.ts'
 
 type Fact = { term: string; detail: string }
@@ -122,8 +123,8 @@ const features: Feature[] = [
       'The Spawn Gun puts props, people, weapons and vehicles wherever you point it. Then the tool guns take over: Gravity, Portal, Ice, Bubble, Size, Copy-Paste, Food, Scanner, Connection and Modification.',
       'The physics tools turn anything into a machine. Thrusters, propellers, balloons, motors, pistons and stabilizers bolt onto whatever you like, and run from remotes, levers and buttons.',
     ],
-    points: ['A rack of tool guns', 'Machines from physics tools', 'Remotes, levers and switches', 'Save a build as a blueprint'],
-    image: images.stvToolGuns,
+    points: ['Fourteen tool guns', 'Machines from physics tools', 'Remotes, levers and switches', 'Save a build as a blueprint'],
+    image: images.stvPhysicsTools,
   },
   {
     id: 'build',
@@ -274,6 +275,44 @@ const maps: GameMap[] = [
   },
 ]
 
+/** One model in the 3D rack: a transparent cut-out from the game's renders. */
+export type RackItem = { id: string; name: string; text: string; image: SiteImage }
+
+const cutout = (key: keyof typeof media, name: string): SiteImage => ({
+  file: media[key],
+  alt: name,
+  caption: 'In-engine render of the in-game model · in development',
+  tone: 'transparent',
+})
+
+const guns: RackItem[] = [
+  { id: 'spawn', name: 'Spawn Gun', text: 'Puts props, people, weapons and vehicles wherever you point it.', image: cutout('gun-spawn', 'Spawn Gun') },
+  { id: 'physics', name: 'Physics Gun', text: 'Picks things up at a distance and holds them where you like.', image: cutout('gun-physics', 'Physics Gun') },
+  { id: 'gravity', name: 'Gravity Gun', text: 'Pull it in, hold it, then punt it down the street.', image: cutout('gun-gravity', 'Gravity Gun') },
+  { id: 'portal', name: 'Portal Gun', text: 'Two doors, one space.', image: cutout('gun-portal', 'Portal Gun') },
+  { id: 'ice', name: 'Ice Gun', text: 'Freezes a person into a statue you can cuff.', image: cutout('gun-ice', 'Ice Gun') },
+  { id: 'bubble', name: 'Bubble Gun', text: 'Anything it touches floats off in a bubble.', image: cutout('gun-bubble', 'Bubble Gun') },
+  { id: 'size', name: 'Size Gun', text: 'Grows things, or shrinks them. People included.', image: cutout('gun-size', 'Size Gun') },
+  { id: 'copypaste', name: 'Copy-Paste Gun', text: 'Copies a contraption and pastes it again, as a blueprint.', image: cutout('gun-copypaste', 'Copy-Paste Gun') },
+  { id: 'food', name: 'Food Gun', text: 'Lunch, a sting, or bait for the town’s dogs.', image: cutout('gun-food', 'Food Gun') },
+  { id: 'scanner', name: 'Scanner Gun', text: 'Reads anything you point it at.', image: cutout('gun-scanner', 'Scanner Gun') },
+  { id: 'joint', name: 'Joint Gun', text: 'Welds, hinges, ropes or springs any two things together.', image: cutout('gun-joint', 'Joint Gun') },
+  { id: 'harpoon', name: 'Harpoon Gun', text: 'Hooks something and reels it in.', image: cutout('gun-harpoon', 'Harpoon Gun') },
+  { id: 'connection', name: 'Connection Gun', text: 'Wires a remote, trigger or tool to the thing it drives.', image: cutout('gun-connection', 'Connection Gun') },
+  { id: 'modification', name: 'Modification Gun', text: 'Changes anything, from a panel on your other hand.', image: cutout('gun-modification', 'Modification Gun') },
+]
+
+const tools: RackItem[] = [
+  { id: 'thruster', name: 'Thruster', text: 'Pushes whatever it is bolted to. People included.', image: cutout('tool-thruster', 'Thruster') },
+  { id: 'propeller', name: 'Propeller', text: 'Lifts what it is bolted to. Enough of them fly a person.', image: cutout('tool-propeller', 'Propeller') },
+  { id: 'motor', name: 'Motor', text: 'Turns whatever is set on it, round and round.', image: cutout('tool-motor', 'Motor') },
+  { id: 'piston', name: 'Piston', text: 'Pushes out and pulls back, when you say so.', image: cutout('tool-piston', 'Piston') },
+  { id: 'balloon', name: 'Balloon', text: 'Ties itself on a string where you set it down, and lifts.', image: cutout('tool-balloon', 'Balloon') },
+  { id: 'stabilizer', name: 'Stabilizer', text: 'Keeps a build upright, whatever it weighs.', image: cutout('tool-stabilizer', 'Stabilizer') },
+  { id: 'climbinggrip', name: 'Climbing Grip', text: 'Fix it to a wall, grab it, and climb.', image: cutout('tool-climbinggrip', 'Climbing Grip') },
+  { id: 'lever', name: 'Lever', text: 'Ten steps from off to full power, for anything wired to it.', image: cutout('tool-lever', 'Lever') },
+]
+
 const extras = [
   'Uncork the containment bottle and the nearest person is drawn inside, a hand’s height tall. Cork it to keep them.',
   'Hold a button and the revolver spins around your trigger finger, then lands back in your grip.',
@@ -350,6 +389,38 @@ export const sheriffTownVr = {
       challenge: { label: 'Challenge', text: 'A goal, a clock and a best time to beat.' },
     } satisfies Record<Mode, { label: string; text: string }>,
     maps,
+  },
+
+  /** Real counts from the game, shown in the strip under the opening. */
+  stats: [
+    { value: 7, suffix: '', label: 'maps to patrol' },
+    { value: 14, suffix: '', label: 'tool guns' },
+    { value: 300, suffix: '+', label: 'voiced story lines' },
+    { value: 2, suffix: '', label: 'ways to play: sandbox and challenge' },
+  ],
+
+  /** Words that run along the moving strip. */
+  ticker: [
+    'Arrests, not kills',
+    'A town that talks back',
+    'The Great Glazed Heist',
+    'Portal Gun',
+    'Ice them, then cuff them',
+    'Big Sal’s birthday',
+    'Build a fort',
+    'Ride the ATV',
+    'The human cannon',
+    'The Colour Bridge',
+    'Put a man in a bottle',
+  ],
+
+  rack: {
+    heading: 'The Sheriff’s kit.',
+    lede: 'Every tool, rendered from the game. Drag to spin the rack, or step through it.',
+    sets: {
+      guns: { label: 'Tool guns', items: guns },
+      tools: { label: 'Physics tools', items: tools },
+    },
   },
 
   extrasHeading: 'Small things we’re proud of.',

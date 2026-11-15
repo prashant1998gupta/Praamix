@@ -28,7 +28,7 @@ const classes = (variant: Variant, wide = false, extra?: string) =>
 /** A button that goes to another page of this site. */
 export function Action({ to, children, variant = 'solid', back = false, wide = false, className }: ActionProps) {
   return (
-    <Link className={classes(variant, wide, className)} to={to}>
+    <Link className={classes(variant, wide, className)} to={to} viewTransition>
       {back && <Arrow back />}
       <span>{children}</span>
       {!back && <Arrow />}

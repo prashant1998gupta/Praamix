@@ -79,6 +79,8 @@ async function settle(page) {
     window.scrollTo(0, 0)
   })
   await page.waitForLoadState('networkidle')
+  /* Sections fade up as they arrive; let the last of them finish. */
+  await page.waitForTimeout(1200)
 }
 
 const slug = (path) => (path === '/' ? 'home' : path.slice(1).replace(/\//g, '-'))
@@ -205,6 +207,25 @@ await run('Voiced lines and gallery viewer', async () => {
   await page.keyboard.press('Escape')
   report.check('Escape closes the viewer', !(await viewer.evaluate((el) => el.open)))
   report.check('Focus returns to the picture that opened it', await shots.nth(1).evaluate((el) => el === document.activeElement))
+  await context.close()
+})
+
+await run('Tool rack', async () => {
+  const { context, page } = await open({ width: 1440, height: 900 })
+  await page.goto(base + '/', { waitUntil: 'networkidle' })
+  const rack = page.locator('.rack-section')
+  const name = rack.locator('.rack__name')
+  const first = await name.textContent()
+  await rack.getByRole('button', { name: 'Next' }).click()
+  report.check('Next brings the next model to the front', (await name.textContent()) !== first)
+  await rack.locator('.rack__stage').focus()
+  await page.keyboard.press('ArrowLeft')
+  report.check('The left arrow key turns it back', (await name.textContent()) === first)
+  await rack.getByRole('button', { name: 'Physics tools' }).click()
+  const count = await rack.locator('.rack__item').count()
+  report.check('Physics tools shows eight models', count === 8, `${count} found`)
+  const broken = await rack.evaluate((el) => [...el.querySelectorAll('img')].filter((img) => img.complete && img.naturalWidth === 0).length)
+  report.check('Every model picture loads', broken === 0, `${broken} broken`)
   await context.close()
 })
 

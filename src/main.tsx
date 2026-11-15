@@ -14,6 +14,7 @@ import './styles/parts.css'
 import './styles/services.css'
 import './styles/pages.css'
 import './styles/forms.css'
+import './styles/motion.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(

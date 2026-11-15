@@ -44,7 +44,9 @@ for (const image of IMAGES) {
     await sized(width).webp({ quality: 80, effort: 5 }).toFile(file(width, 'webp'))
   }
   const fallback = widths.filter((width) => width <= FALLBACK_MAX).at(-1) ?? widths[0]
-  await sized(fallback).jpeg({ quality: 80, mozjpeg: true }).toFile(file(fallback, 'jpg'))
+  /* A cut-out keeps its transparency, so its fallback is a PNG rather than a JPEG. */
+  if (image.alpha) await sized(fallback).png({ compressionLevel: 9 }).toFile(file(fallback, 'png'))
+  else await sized(fallback).jpeg({ quality: 80, mozjpeg: true }).toFile(file(fallback, 'jpg'))
 
   const largest = widths.at(-1)
   entries[image.name] = {
@@ -53,6 +55,7 @@ for (const image of IMAGES) {
     width: largest,
     height: Math.round((largest * area.height) / area.width),
     fallback,
+    ...(image.alpha ? { fallbackType: 'png' } : {}),
   }
 }
 
