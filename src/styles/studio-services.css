@@ -263,13 +263,14 @@
   position: absolute;
   top: -0.12em;
   right: 0.1em;
-  color: transparent;
+  color: var(--surface);
   font-size: clamp(8rem, 4rem + 14vw, 16rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.06em;
   pointer-events: none;
-  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--fg) 14%, transparent);
+  -webkit-text-stroke: 3px color-mix(in srgb, var(--fg) 14%, transparent);
+  paint-order: stroke fill;
 }
 
 .track__body,
@@ -641,13 +642,14 @@ html.night .journey::after {
   position: absolute;
   top: -0.18em;
   right: 0.04em;
-  color: transparent;
+  color: var(--surface);
   font-size: clamp(9rem, 6rem + 12vw, 16rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.06em;
   pointer-events: none;
-  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--fg) 16%, transparent);
+  -webkit-text-stroke: 3px color-mix(in srgb, var(--fg) 16%, transparent);
+  paint-order: stroke fill;
 }
 
 .profile > :not(.profile__mono) {

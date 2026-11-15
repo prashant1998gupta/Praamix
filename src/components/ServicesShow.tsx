@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
 import { images } from '../content/images.ts'
+import { onLeanConnection } from '../hooks/loading.ts'
 import { assetStages, pipeline, stages } from '../content/services.ts'
 import { Arrow } from './Arrow.tsx'
 import { Lines } from './Lines.tsx'
@@ -22,12 +23,14 @@ function AssetStages() {
   const [state, setState] = useState<'poster' | 'ready' | 'failed'>('poster')
   const [engine, setEngine] = useState<Viewer | null>(null)
   const [touched, setTouched] = useState(false)
+  /* On a slow or metered connection the 3D model is fetched only when asked for. */
+  const [allowed, setAllowed] = useState(() => !onLeanConnection())
   const canvas = useRef<HTMLCanvasElement>(null)
   const stage = assetStages.looks[look]
 
   useEffect(() => {
     const surface = canvas.current
-    if (!surface) return
+    if (!surface || !allowed) return
     let cancelled = false
     let made: Viewer | null = null
     import('./showroom3d.ts')
@@ -47,7 +50,7 @@ function AssetStages() {
       cancelled = true
       made?.dispose()
     }
-  }, [])
+  }, [allowed])
 
   useEffect(() => {
     engine?.setLook(look)
@@ -88,8 +91,14 @@ function AssetStages() {
           tabIndex={0}
           onKeyDown={onKeyDown}
         />
+        {!allowed && (
+          <button className="btn btn--light showroom__ask" type="button" onClick={() => setAllowed(true)}>
+            Load the 3D model
+            <span className="showroom__size">about 1 MB</span>
+          </button>
+        )}
       </div>
-      {state !== 'failed' && (
+      {allowed && state !== 'failed' && (
         <div className="asset__looks" role="group" aria-label="Stage of production">
           {LOOKS.map((item, index) => (
             <button
@@ -108,7 +117,7 @@ function AssetStages() {
         </div>
       )}
       <figcaption className="asset__caption">
-        {state !== 'failed' && (
+        {allowed && state !== 'failed' && (
           <span className="asset__text" aria-live="polite">
             {stage.text}
           </span>

@@ -44,4 +44,6 @@ function preloadFonts(): Plugin {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), preloadFonts()],
+  /* The list of built files. scripts/postbuild.mjs reads it, then removes it. */
+  build: { manifest: true },
 })

@@ -10,15 +10,173 @@
     />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <title>Praamix · Original games and game development</title>
+    <!--
+      Everything in this style block and the #boot element below is here so a
+      visitor on a slow connection sees something at once: the right background
+      colour, then the loader, before any of the site's code has arrived.
+    -->
     <style>
       html {
         background: #ffffff;
         color: #191c20;
       }
+
+      html.night {
+        background: #0f1318;
+        color: #f3f5f7;
+      }
+
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 1.1rem;
+        padding: 1.5rem;
+        background: inherit;
+        background-color: #ffffff;
+        font:
+          600 1rem/1.4 system-ui,
+          'Segoe UI',
+          Roboto,
+          Arial,
+          sans-serif;
+        text-align: center;
+        /* Stays invisible for the first third of a second, so a fast load never flashes it. */
+        animation: boot-in 0.3s ease 0.35s both;
+        transition: opacity 0.4s ease;
+      }
+
+      html.night #boot {
+        background-color: #0f1318;
+      }
+
+      #boot[data-done] {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .boot__star {
+        width: 4.5rem;
+        height: 4.5rem;
+        animation: boot-turn 2.4s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+      }
+
+      .boot__name {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0.34em;
+        text-indent: 0.34em;
+      }
+
+      .boot__bar {
+        width: 9rem;
+        height: 3px;
+        overflow: hidden;
+        border-radius: 99rem;
+        background: rgb(128 136 148 / 0.3);
+      }
+
+      .boot__bar span {
+        display: block;
+        width: 40%;
+        height: 100%;
+        border-radius: inherit;
+        background: #f26b38;
+        animation: boot-slide 1.3s ease-in-out infinite;
+      }
+
+      .boot__text {
+        max-width: 22rem;
+        margin: 0;
+        font-size: 0.9rem;
+        opacity: 0.75;
+      }
+
+      .boot__retry {
+        min-height: 2.75rem;
+        padding: 0.5rem 1.25rem;
+        border: 0;
+        border-radius: 0.5rem;
+        background: #f26b38;
+        color: #191c20;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      #boot [hidden] {
+        display: none;
+      }
+
+      @keyframes boot-in {
+        from {
+          opacity: 0;
+        }
+      }
+
+      @keyframes boot-turn {
+        0%,
+        20% {
+          transform: perspective(400px) rotateY(0);
+        }
+
+        80%,
+        100% {
+          transform: perspective(400px) rotateY(360deg);
+        }
+      }
+
+      @keyframes boot-slide {
+        0% {
+          transform: translateX(-110%);
+        }
+
+        100% {
+          transform: translateX(260%);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .boot__star,
+        .boot__bar span {
+          animation: none;
+        }
+
+        .boot__bar span {
+          width: 100%;
+          opacity: 0.6;
+        }
+      }
     </style>
   </head>
   <body>
+    <div id="boot" role="status">
+      <svg class="boot__star" viewBox="0 0 120 120" aria-hidden="true">
+        <defs>
+          <linearGradient id="boot-gold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffe08a" />
+            <stop offset="0.5" stop-color="#f0b43c" />
+            <stop offset="1" stop-color="#b9771a" />
+          </linearGradient>
+        </defs>
+        <circle cx="60" cy="60" r="56" fill="url(#boot-gold)" />
+        <circle cx="60" cy="60" r="47" fill="#1d2633" />
+        <path
+          d="M60 22 L69.4 47.1 L96.2 48.2 L75.2 64.9 L82.4 90.8 L60 76 L37.6 90.8 L44.8 64.9 L23.8 48.2 L50.6 47.1 Z"
+          fill="url(#boot-gold)"
+        />
+      </svg>
+      <p class="boot__name">PRAAMIX</p>
+      <div class="boot__bar" aria-hidden="true"><span></span></div>
+      <p class="boot__text" id="boot-text">Loading…</p>
+      <button class="boot__retry" id="boot-retry" type="button" hidden>Try again</button>
+    </div>
     <div id="root"></div>
     <noscript>
       <p style="margin: 2rem; font: 1.125rem/1.5 system-ui, sans-serif">
@@ -26,6 +184,56 @@
         display.
       </p>
     </noscript>
+    <script>
+      /*
+       * Runs before the site's code arrives. It tells a waiting visitor what
+       * is going on: after a few seconds, that the connection looks slow; and
+       * if the site's code cannot be fetched at all, that it failed, with a
+       * button to try again. The site itself calls window.__bootDone() once
+       * the first page is on screen, and the loader fades away.
+       */
+      ;(function () {
+        var boot = document.getElementById('boot')
+        var text = document.getElementById('boot-text')
+        var retry = document.getElementById('boot-retry')
+        var finished = false
+
+        var slow = setTimeout(function () {
+          if (!finished) text.textContent = 'Still loading. Your connection looks slow, but it is on its way.'
+        }, 6000)
+
+        function fail() {
+          if (finished) return
+          clearTimeout(slow)
+          text.textContent = 'The site could not load. Check your connection and try again.'
+          retry.hidden = false
+        }
+
+        retry.addEventListener('click', function () {
+          location.reload()
+        })
+
+        /* A script or stylesheet that fails to arrive reports an error on itself. */
+        window.addEventListener(
+          'error',
+          function (event) {
+            var target = event.target
+            if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK')) fail()
+          },
+          true,
+        )
+
+        window.__bootDone = function () {
+          if (finished) return
+          finished = true
+          clearTimeout(slow)
+          boot.setAttribute('data-done', '')
+          setTimeout(function () {
+            boot.remove()
+          }, 450)
+        }
+      })()
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -78,6 +78,14 @@ The models and textures in `public/models/` are the game's own, and anyone who v
 
 The home, game, services and studio pages are dark. The contact and legal pages are light, for typing and reading. The list is `isNight` in `src/content/routes.ts`, and the colours are in `src/styles/theme.css`. The light logo used on dark pages is made from the supplied logo by `npm run media`: its charcoal is turned white and its orange is left as supplied.
 
+## Slow connections and offline
+
+- **A loader in the page itself.** `index.html` carries a small loader that shows before any code arrives. It stays hidden for the first third of a second, so a fast load never flashes it. After six seconds it says the connection looks slow, and if the code cannot be fetched it offers to try again.
+- **Each page's code loads when needed.** A visitor downloads only the page they open. Pointing at or touching a link starts fetching that page early. A page that fails to arrive shows a retry screen, not a blank one.
+- **Offline.** On the built site, `public/sw.js` saves the site's core files on the first visit. Pages then open instantly on the next visit and keep working with no connection. It does not run under `npm run dev`. The build stamps it with a new version each time, which replaces what the last build saved.
+- **Data saver.** When a device asks to save data, or the connection is very slow, the 3D models are fetched only when the visitor asks for them.
+- **Installable.** `public/manifest.webmanifest` and the icons from `npm run media` let the site be installed like an app.
+
 ## Motion
 
 Everything that moves is switched off when the visitor's device asks for reduced motion. The page is then still and complete.

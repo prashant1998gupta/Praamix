@@ -127,6 +127,10 @@ const tile = (size, inner) => {
 }
 await tile(64, 48).toFile(join(publicDir, 'favicon.png'))
 await tile(180, 124).toFile(join(publicDir, 'apple-touch-icon.png'))
+/* For installing the site as an app. The "maskable" one leaves room for the device to round its corners. */
+await tile(192, 136).toFile(join(publicDir, 'icon-192.png'))
+await tile(512, 360).toFile(join(publicDir, 'icon-512.png'))
+await tile(512, 260).toFile(join(publicDir, 'icon-maskable-512.png'))
 
 const generated = `/* Written by \`npm run media\`. Do not edit by hand: change scripts/media.config.mjs and run it again. */
 import type { ImageFile } from './types.ts'

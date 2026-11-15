@@ -8,7 +8,7 @@
  * Every page is opened at the screen widths in the brief, plus a short
  * landscape phone. Each one is checked for sideways scrolling, broken
  * pictures, empty or "#" links, missing alt text and console errors. Then the
- * menu, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the project brief, reduced motion, direct loading of
+ * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the project brief, reduced motion, direct loading of
  * every address and the not-found page are exercised.
  *
  * This is emulation inside desktop Chrome or Edge. It does not replace trying
@@ -303,6 +303,109 @@ await run('Services and studio', async () => {
   const portfolios = page.locator('.profile a[target="_blank"]')
   report.check('Both profiles link to a portfolio', (await portfolios.count()) === 2)
   await context.close()
+})
+
+await run('Loading, slow connections and offline', async () => {
+  const pause = (ms) => new Promise((done) => setTimeout(done, ms))
+
+  /* The loader is in the page's own HTML, so it needs no code to show. */
+  const html = await (await fetch(base + '/')).text()
+  report.check('The loader is part of the page before any code runs', html.includes('id="boot"'))
+  report.check('Dark pages are dark from the first byte', html.includes('<html class="night"') || html.includes('class="night"'))
+
+  /* A slow connection: hold the site's main code back for two seconds. */
+  {
+    const { context, page } = await open({ width: 1440, height: 900 })
+    await page.route('**/assets/index-*.js', async (route) => {
+      await pause(2000)
+      await route.continue()
+    })
+    const loading = page.goto(base + '/', { waitUntil: 'load' })
+    await pause(1200)
+    const seen = await page.evaluate(() => {
+      const boot = document.getElementById('boot')
+      return boot ? Number(getComputedStyle(boot).opacity) : -1
+    })
+    report.check('On a slow connection the loader is showing', seen > 0.5, `opacity ${seen}`)
+    await loading
+    await page.waitForSelector('#boot', { state: 'detached', timeout: 8000 })
+    report.check('The loader leaves once the page is on screen', true)
+    await context.close()
+  }
+
+  /* The code never arrives. */
+  {
+    const { context, page } = await open({ width: 1440, height: 900 })
+    await page.route('**/assets/index-*.js', (route) => route.abort())
+    await page.goto(base + '/', { waitUntil: 'domcontentloaded' })
+    const retry = page.locator('#boot-retry')
+    await retry.waitFor({ state: 'visible', timeout: 8000 }).catch(() => undefined)
+    report.check('If the code cannot load, the loader says so and offers to try again', await retry.isVisible())
+    await context.close()
+  }
+
+  /* Once loaded, the loader is taken away. A page that then fails to arrive must say so. */
+  {
+    /* The saved offline copies are switched off here, so the failed download below really fails. */
+    const { context, page } = await open({ width: 1440, height: 900 }, { serviceWorkers: 'block' })
+    await page.goto(base + '/contact', { waitUntil: 'networkidle' })
+    const gone = await page.waitForSelector('#boot', { state: 'detached', timeout: 5000 }).then(() => true, () => false)
+    report.check('After loading, the loader is gone', gone)
+
+    /* One page fails to arrive while moving between pages. */
+    await page.route('**/assets/Services-*.js', (route) => route.abort())
+    await page.locator('.site-nav__link', { hasText: 'Services' }).click()
+    const failed = page.getByRole('heading', { name: 'This page didn’t arrive.' })
+    await failed.waitFor({ state: 'visible', timeout: 8000 }).catch(() => undefined)
+    report.check('A page that fails to load offers to try again', await failed.isVisible())
+    await context.close()
+  }
+
+  /* Offline: after one visit, pages still open with no connection. */
+  {
+    const { context, page } = await open({ width: 1440, height: 900 })
+    await page.goto(base + '/', { waitUntil: 'networkidle' })
+    const controlled = await page
+      .waitForFunction(() => navigator.serviceWorker?.controller != null, null, { timeout: 15000 })
+      .then(() => true, () => false)
+    report.check('The site saves itself for offline use on the first visit', controlled)
+    if (controlled) {
+      await pause(1500)
+      await context.setOffline(true)
+      await page.goto(base + '/', { waitUntil: 'domcontentloaded' })
+      const home = page.getByRole('heading', { level: 1 })
+      await home.waitFor({ state: 'visible', timeout: 10000 }).catch(() => undefined)
+      report.check('The homepage opens with no connection', await home.isVisible())
+      await page.goto(base + '/studio', { waitUntil: 'domcontentloaded' })
+      const studio = page.getByRole('heading', { level: 1 })
+      await studio.waitFor({ state: 'visible', timeout: 10000 }).catch(() => undefined)
+      report.check('A page never opened before also opens offline', /We make games/.test((await studio.textContent().catch(() => '')) ?? ''))
+      const notice = page.locator('.network-notice[data-shown]')
+      report.check('An offline note is shown', (await notice.count()) === 1)
+      await context.setOffline(false)
+    }
+    await context.close()
+  }
+
+  /* Data saver: the 3D model waits to be asked for. */
+  {
+    const { context, page } = await open({ width: 1440, height: 900 })
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'connection', { value: { saveData: true, effectiveType: '4g' }, configurable: true })
+    })
+    const models = []
+    page.on('request', (request) => request.url().includes('/models/') && models.push(request.url()))
+    await page.goto(base + '/', { waitUntil: 'networkidle' })
+    const room = page.locator('.showroom')
+    await room.scrollIntoViewIfNeeded()
+    await pause(1500)
+    const ask = room.getByRole('button', { name: /Load the 3D model/ })
+    report.check('With data saver on, 3D waits to be asked for', (await ask.isVisible()) && models.length === 0, `${models.length} model requests`)
+    await ask.click()
+    await pause(2500)
+    report.check('Asking for it loads the model', models.length > 0, `${models.length} model requests`)
+    await context.close()
+  }
 })
 
 await run('Project brief', async () => {

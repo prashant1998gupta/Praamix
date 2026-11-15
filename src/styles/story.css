@@ -36,12 +36,20 @@
 
 /* A large outlined number beside each part. */
 .story__number {
-  color: transparent;
+  /*
+   * Outlined lettering. The font builds some letters from overlapping pieces,
+   * and a plain outline shows those overlaps inside the letter. So the outline
+   * is drawn first, at twice the width, and the letter is then filled with the
+   * colour behind it. The fill covers the inside half of the outline and every
+   * overlap, leaving one clean line round the outside.
+   */
+  color: var(--bg);
   font-size: clamp(3rem, 2rem + 5vw, 6rem);
   font-weight: 800;
   line-height: 0.9;
   letter-spacing: -0.05em;
-  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--fg) 32%, transparent);
+  -webkit-text-stroke: 3px color-mix(in srgb, var(--fg) 32%, transparent);
+  paint-order: stroke fill;
 }
 
 @media (min-width: 56em) {
@@ -154,7 +162,7 @@
   align-items: center;
   gap: 0.35em;
   width: max-content;
-  color: transparent;
+  color: var(--bg);
   font-size: clamp(3.5rem, 2rem + 11vw, 12rem);
   font-weight: 800;
   line-height: 1;
@@ -162,7 +170,8 @@
   text-transform: uppercase;
   white-space: nowrap;
   translate: -4% 0;
-  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--fg) 36%, transparent);
+  -webkit-text-stroke: 3px color-mix(in srgb, var(--fg) 36%, transparent);
+  paint-order: stroke fill;
 }
 
 .kinetic__line span:nth-child(3) {

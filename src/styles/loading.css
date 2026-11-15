@@ -1,0 +1,139 @@
+/*
+ * Loading states: between pages, and when the connection is slow or gone.
+ * The loader that shows before the site's code arrives is in index.html,
+ * because it has to work before this stylesheet exists.
+ */
+
+/* ---------- A line across the top while the next page is on its way ---------- */
+
+.nav-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 6;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  /* Waits a moment before showing, so a page that arrives at once shows no line at all. */
+  transition: opacity 0.2s ease 0.15s;
+}
+
+.nav-progress[data-active] {
+  opacity: 1;
+}
+
+.nav-progress::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: var(--orange);
+  transform: translateX(-110%);
+}
+
+/* ---------- In place of a page while its code is fetched ---------- */
+
+.page-loading {
+  position: relative;
+  min-height: 100svh;
+}
+
+.page-loading__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+}
+
+.page-loading__bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: var(--orange);
+  transform: translateX(-110%);
+}
+
+/* ---------- Offline ---------- */
+
+.network-notice {
+  position: fixed;
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  z-index: 7;
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  padding: 0.7rem 1.1rem;
+  border-radius: 99rem;
+  background: var(--ink);
+  color: var(--white);
+  font-size: var(--text-s);
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 16px 32px -14px rgb(0 0 0 / 0.6);
+  opacity: 0;
+  translate: -50% 1rem;
+  pointer-events: none;
+  transition:
+    opacity 0.3s ease,
+    translate 0.3s ease;
+}
+
+html.night .network-notice {
+  border: 1px solid rgb(255 255 255 / 0.2);
+}
+
+.network-notice[data-shown] {
+  opacity: 1;
+  translate: -50% 0;
+}
+
+/* ---------- 3D on request, for slow or metered connections ---------- */
+
+.showroom__ask {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 50%;
+  z-index: 1;
+  translate: -50% 0;
+  white-space: nowrap;
+}
+
+.showroom__size {
+  opacity: 0.7;
+  font-size: var(--text-s);
+  font-weight: 600;
+}
+
+/* ---------- Motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav-progress[data-active]::before,
+  .page-loading__bar::before {
+    animation: loading-slide 1.2s ease-in-out infinite;
+  }
+}
+
+/* With reduced motion the line simply shows, full width and still. */
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress::before,
+  .page-loading__bar::before {
+    width: 100%;
+    transform: none;
+    opacity: 0.7;
+  }
+}
+
+@keyframes loading-slide {
+  from {
+    transform: translateX(-110%);
+  }
+
+  to {
+    transform: translateX(260%);
+  }
+}

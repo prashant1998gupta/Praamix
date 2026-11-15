@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent } from 'react'
 import type { RackItem } from '../content/game.ts'
+import { onLeanConnection } from '../hooks/loading.ts'
 import { Arrow } from './Arrow.tsx'
 import { Picture } from './Picture.tsx'
 import type { Viewer } from './showroom3d.ts'
@@ -25,6 +26,8 @@ export function Showroom({ heading, lede, guns, toolsLabel, tools }: Props) {
   const [index, setIndex] = useState(0)
   const [state, setState] = useState<'poster' | 'loading' | 'ready' | 'failed'>('poster')
   const [engine, setEngine] = useState<Viewer | null>(null)
+  /* On a slow or metered connection the 3D model is fetched only when asked for. */
+  const [allowed, setAllowed] = useState(() => !onLeanConnection())
   const section = useRef<HTMLElement>(null)
   const canvas = useRef<HTMLCanvasElement>(null)
   const item = guns[index]
@@ -33,7 +36,7 @@ export function Showroom({ heading, lede, guns, toolsLabel, tools }: Props) {
   useEffect(() => {
     const element = section.current
     const surface = canvas.current
-    if (!element || !surface) return
+    if (!element || !surface || !allowed) return
     let cancelled = false
     let made: Viewer | null = null
     const observer = new IntersectionObserver(
@@ -59,7 +62,7 @@ export function Showroom({ heading, lede, guns, toolsLabel, tools }: Props) {
       observer.disconnect()
       made?.dispose()
     }
-  }, [])
+  }, [allowed])
 
   useEffect(() => {
     if (!engine) return
@@ -113,6 +116,12 @@ export function Showroom({ heading, lede, guns, toolsLabel, tools }: Props) {
             <p className="showroom__hint" aria-hidden="true">
               Drag to turn
             </p>
+            {!allowed && (
+              <button className="btn btn--light showroom__ask" type="button" onClick={() => setAllowed(true)}>
+                Load the 3D model
+                <span className="showroom__size">about 1 MB</span>
+              </button>
+            )}
             {state === 'loading' && (
               <p className="showroom__loading" role="status">
                 Loading the 3D model…

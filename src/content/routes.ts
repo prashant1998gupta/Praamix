@@ -18,6 +18,8 @@ export type RouteMeta = {
   night?: boolean
   /** The main picture at the top of the page. The browser fetches it early. */
   preload?: { file: ImageFile; sizes: string }
+  /** The file that holds the page's code, so the build can have the browser fetch it early. */
+  source?: string
 }
 
 const titled = (page: string) => `${page} · ${site.name}`
@@ -25,6 +27,7 @@ const titled = (page: string) => `${page} · ${site.name}`
 export const routes: RouteMeta[] = [
   {
     path: '/',
+    source: 'src/pages/Home.tsx',
     title: `${site.name} · ${site.descriptor}`,
     description: site.description,
     night: true,
@@ -32,6 +35,7 @@ export const routes: RouteMeta[] = [
   },
   {
     path: gamePath(sheriffTownVr),
+    source: 'src/pages/Game.tsx',
     title: titled(sheriffTownVr.title),
     description: sheriffTownVr.summary,
     night: true,
@@ -39,6 +43,7 @@ export const routes: RouteMeta[] = [
   },
   {
     path: '/services',
+    source: 'src/pages/Services.tsx',
     title: titled('Game development services'),
     description:
       'Full-pipeline game development with Unity and Unreal Engine: design, art, engineering, optimisation and release support, across mobile, PC, web, console and XR.',
@@ -46,6 +51,7 @@ export const routes: RouteMeta[] = [
   },
   {
     path: '/studio',
+    source: 'src/pages/Studio.tsx',
     title: titled('Studio'),
     description: 'What Praamix makes, how it works with clients, and the people behind it.',
     night: true,
@@ -53,18 +59,21 @@ export const routes: RouteMeta[] = [
   },
   {
     path: '/contact',
+    source: 'src/pages/Contact.tsx',
     title: titled('Start a project'),
     description: 'Send Praamix a short brief about the game you want to build.',
     noindex: inquiryMode() === 'draft',
   },
   {
     path: '/terms-and-conditions',
+    source: 'src/pages/Legal.tsx',
     title: titled('Terms & Conditions'),
     description: 'The terms that apply to using the Praamix website.',
     noindex: legalIsDraft(),
   },
   {
     path: '/privacy-policy',
+    source: 'src/pages/Legal.tsx',
     title: titled('Privacy Policy'),
     description: 'What the Praamix website does with information about its visitors.',
     noindex: legalIsDraft(),
