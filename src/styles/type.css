@@ -1,0 +1,221 @@
+/* ---------- Headings and text ---------- */
+
+.h-page {
+  font-size: var(--h-page);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.h-section {
+  font-size: var(--h-section);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.h-sub {
+  font-size: var(--h-sub);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+/* A heading written as short lines, one per row. */
+.line {
+  display: block;
+}
+
+.lede {
+  max-width: var(--measure);
+  color: var(--fg-soft);
+  font-size: var(--text-l);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.quiet {
+  max-width: var(--measure);
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--accent-text);
+  font-size: var(--text-s);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  content: '';
+  flex: none;
+  width: 1.75rem;
+  height: 2px;
+  background: var(--orange);
+}
+
+.label {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.role {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 99rem;
+  background: var(--orange-soft);
+  color: var(--orange-text);
+  font-size: var(--text-s);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ---------- Sections ---------- */
+
+.section {
+  padding-block: var(--space-section);
+}
+
+/* The light grey band that alternates with white. */
+.band {
+  --rule: #d6dade;
+  background: var(--surface);
+}
+
+/* Dark sections. */
+.on-ink {
+  --bg: var(--ink);
+  --fg: var(--white);
+  --fg-soft: #cbd0d6;
+  --rule: rgb(255 255 255 / 0.22);
+  --focus: var(--white);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.section-head {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: var(--gap);
+}
+
+/* Vertical rhythm for a run of text. */
+.stack > * + * {
+  margin-top: 1.25rem;
+}
+
+.stack > p {
+  max-width: var(--measure);
+}
+
+/* Text beside a picture. Text comes first in the page; `--flip` puts the picture on the left. */
+.split {
+  display: grid;
+  gap: var(--gap);
+  align-items: center;
+}
+
+/* Two, three and four items side by side. */
+.duo,
+.trio,
+.quad {
+  display: grid;
+  gap: 2rem var(--gap);
+}
+
+.duo__item {
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+  justify-items: start;
+}
+
+.duo__item > p {
+  max-width: var(--measure);
+}
+
+.trio__item,
+.quad__item {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+  padding-top: 1rem;
+  border-top: 3px solid var(--fg);
+}
+
+.trio__item h3,
+.quad__item h3 {
+  font-size: var(--text-l);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.trio__item p,
+.quad__item p {
+  color: var(--fg-soft);
+}
+
+@media (min-width: 40em) {
+  .quad {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 48em) {
+  .section-head--row {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .duo {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .trio {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 56em) {
+  .split {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  }
+
+  .split--flip {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  }
+
+  .split--flip > :last-child {
+    order: -1;
+  }
+
+  .split--top {
+    align-items: start;
+  }
+}
+
+@media (min-width: 64em) {
+  .quad {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

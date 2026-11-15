@@ -1,0 +1,147 @@
+/* ---------- The project brief ---------- */
+
+.brief {
+  display: grid;
+  gap: 2rem;
+}
+
+.brief__group {
+  display: grid;
+  gap: 1.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.brief__group > legend {
+  margin-bottom: 1.25rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field__label {
+  font-weight: 700;
+}
+
+.field__optional {
+  color: var(--fg-soft);
+  font-weight: 500;
+}
+
+.field__hint {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+}
+
+.field__error {
+  color: var(--error);
+  font-size: var(--text-s);
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+textarea.input {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+.field[data-invalid] .input {
+  border-color: var(--error);
+  border-width: 2px;
+}
+
+/* Tick boxes and either-or options, each a comfortable target. */
+.choices {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.choices > legend {
+  margin-bottom: 0.35rem;
+}
+
+.choices__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: var(--target);
+  padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--white);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.choice input {
+  flex: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  accent-color: var(--ink);
+}
+
+.choice:has(input:checked) {
+  border-color: var(--ink);
+  background: var(--surface);
+}
+
+.choice:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.choice input:focus-visible {
+  outline: none;
+}
+
+.brief__send {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.brief__note {
+  flex: 1 1 16rem;
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+}
+
+/*
+ * What happened when the brief was submitted. The element is always present,
+ * so screen readers announce the message when it arrives.
+ */
+.brief__status {
+  border-radius: var(--radius);
+  font-weight: 700;
+}
+
+.brief__status:not(:empty) {
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+}
+
+.brief__status[data-kind='failed'] {
+  background: var(--error-soft);
+  color: var(--error);
+}

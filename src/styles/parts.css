@@ -1,0 +1,240 @@
+/* ---------- Chapters: tabs with a picture and text ---------- */
+
+.chapters__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.chapters__tab {
+  min-height: var(--target);
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--white);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chapters__tab[aria-selected='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
+}
+
+.chapters__panel {
+  display: grid;
+  gap: 1.5rem var(--gap);
+  align-items: center;
+}
+
+/* The new close-up fades in. With reduced motion requested it simply appears. */
+.chapters__panel .art {
+  animation: chapter-in 280ms ease both;
+}
+
+@keyframes chapter-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.chapters__text {
+  display: grid;
+  gap: 0.9rem;
+  align-content: center;
+  max-width: var(--measure);
+}
+
+.chapters__count {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+  font-weight: 700;
+}
+
+@media (min-width: 56em) {
+  .chapters__panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+/* ---------- Production stages: a numbered list that opens ---------- */
+
+.stages {
+  border-top: 1px solid var(--rule);
+}
+
+.stages__item {
+  border-bottom: 1px solid var(--rule);
+}
+
+.stage__head {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+  gap: 0.15rem 1rem;
+  align-items: center;
+  padding-block: 1.1rem;
+}
+
+.stage__num {
+  color: var(--accent-text);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.stage__title {
+  font-size: var(--text-l);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.stage__summary {
+  grid-column: 2;
+  color: var(--fg-soft);
+}
+
+.stage__head .mark {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
+
+.stage__body {
+  display: grid;
+  gap: 1.25rem var(--gap);
+  padding-bottom: 1.75rem;
+}
+
+.stage__body > p {
+  max-width: var(--measure);
+}
+
+.stage__body .label {
+  margin-bottom: 0.6rem;
+}
+
+@media (min-width: 35em) {
+  .stage__body {
+    padding-left: 3.25rem;
+  }
+}
+
+@media (min-width: 56em) {
+  .stage__head {
+    grid-template-columns: 2.25rem minmax(0, 5fr) minmax(0, 6fr) auto;
+  }
+
+  .stage__summary {
+    grid-column: 3;
+  }
+
+  .stage__head .mark {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  .stage__body {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    padding-right: 2rem;
+  }
+}
+
+/* ---------- Questions ---------- */
+
+.faq-layout {
+  display: grid;
+  gap: var(--gap);
+}
+
+.faq {
+  border-top: 1px solid var(--rule);
+}
+
+.faq__item {
+  border-bottom: 1px solid var(--rule);
+}
+
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 3.5rem;
+  padding-block: 0.9rem;
+  font-size: var(--text-l);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.faq__a {
+  max-width: var(--measure);
+  padding-bottom: 1.25rem;
+  color: var(--fg-soft);
+}
+
+@media (min-width: 56em) {
+  .faq-layout {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    align-items: start;
+  }
+}
+
+/* ---------- Profiles ---------- */
+
+.profiles {
+  display: grid;
+  gap: var(--gap);
+}
+
+/* Both profiles get the same panel, so neither reads as senior to the other. */
+.profile {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+  justify-items: start;
+  padding: clamp(1.25rem, 0.9rem + 1.8vw, 2.5rem);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+}
+
+.profile__portrait {
+  width: min(100%, 14rem);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+}
+
+.profile__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile__name {
+  font-size: var(--h-mid);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.profile__title {
+  font-weight: 700;
+}
+
+.profile__bio {
+  max-width: var(--measure);
+}
+
+.profile .label {
+  margin-top: 0.5rem;
+}
+
+.profile .btn {
+  margin-top: 0.75rem;
+}
+
+@media (min-width: 48em) {
+  .profiles {
+    grid-template-columns: 1fr 1fr;
+  }
+}

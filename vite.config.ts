@@ -2,11 +2,11 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import type { HtmlTagDescriptor, Plugin } from 'vite'
 
-/** The two font files every page needs for its first paint. */
-const CRITICAL_FONTS = ['archivo-latin-wdth-normal', 'instrument-serif-latin-400-italic']
+/** The font file every page needs for its first paint. */
+const CRITICAL_FONTS = ['manrope-latin-wght-normal']
 
 /**
- * Asks the browser to fetch those fonts straight away instead of waiting for
+ * Asks the browser to fetch that font straight away instead of waiting for
  * the stylesheet, so text settles into its final shape sooner.
  */
 function preloadFonts(): Plugin {

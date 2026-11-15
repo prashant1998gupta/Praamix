@@ -1,0 +1,136 @@
+/* ---------- Contact ---------- */
+
+.contact__layout {
+  display: grid;
+  gap: var(--gap);
+}
+
+.contact__aside {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding: clamp(1.25rem, 0.9rem + 1.8vw, 2rem);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+}
+
+@media (min-width: 64em) {
+  .contact__layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    align-items: start;
+  }
+}
+
+/* ---------- Legal pages ---------- */
+
+.legal {
+  padding-block: clamp(2rem, 1.25rem + 3vw, 4rem) var(--space-section);
+}
+
+.legal__layout {
+  display: grid;
+  gap: var(--gap);
+}
+
+.legal__head {
+  display: grid;
+  gap: 1.1rem;
+  justify-items: start;
+  max-width: 46rem;
+}
+
+.legal__dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2.5rem;
+}
+
+.legal__dates dt {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+}
+
+.legal__dates dd {
+  font-weight: 700;
+}
+
+.legal__contents ol {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.legal__contents a {
+  display: flex;
+  align-items: center;
+  min-height: var(--target);
+  padding-block: 0.35rem;
+  border-bottom: 1px solid var(--rule);
+  font-weight: 600;
+  line-height: 1.35;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .legal__contents a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Long-form text, kept to a comfortable line length. */
+.prose {
+  max-width: 42rem;
+}
+
+.prose section + section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+}
+
+.prose h2 {
+  margin-bottom: 0.75rem;
+  font-size: var(--h-sub);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+.prose p + p,
+.prose p + ul,
+.prose ul + p {
+  margin-top: 0.9rem;
+}
+
+.prose ul {
+  display: grid;
+  gap: 0.35rem;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+/* A fact the business still has to supply. */
+.pending {
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--orange);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--orange-soft);
+}
+
+@media (min-width: 64em) {
+  .legal__layout {
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .legal__head {
+    grid-column: 1 / -1;
+  }
+}
+
+/* The contents list follows the reader down the page when the window is tall enough to hold it. */
+@media (min-width: 64em) and (min-height: 50em) {
+  .legal__contents {
+    position: sticky;
+    top: 1.5rem;
+  }
+}

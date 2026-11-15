@@ -1,125 +1,110 @@
 /*
- * Prepares one image for the site.
+ * Prepares the site's pictures.
  *
- *   npm run media -- <image file> <name> [--game sheriff-town-vr] [--no-portrait]
+ *   npm run media
  *
- * Example:
- *   npm run media -- "C:\Captures\town-square.png" hero
- *
- * It writes WebP copies at several widths into public/media/<game>/, plus a
- * 4:5 crop for phones, then prints the entry to paste into
- * src/content/site.ts. Phones then download a small file instead of the
- * full-size capture.
+ * Reads the originals in media-source/ and the list in scripts/media.config.mjs.
+ * For each picture it writes AVIF and WebP copies at several widths, plus one
+ * JPEG for older browsers, into public/media/. It also writes the logo, the
+ * browser tab icons, and src/content/media.generated.ts, which tells the site
+ * which files exist.
  */
-import { mkdir } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
+import { IMAGES, LOGO } from './media.config.mjs'
 
-export const LANDSCAPE_WIDTHS = [480, 800, 1200, 1600, 2400]
-export const PORTRAIT_WIDTHS = [480, 800, 1200]
-const PORTRAIT_ASPECT = 4 / 5
+const root = fileURLToPath(new URL('../', import.meta.url))
+const sourceDir = join(root, 'media-source')
+const publicDir = join(root, 'public')
+const outDir = join(publicDir, 'media')
 
-/**
- * Writes `<name>-<width>.webp` for each width the source is large enough for.
- * With `aspect`, it crops to that shape first, keeping the busiest part of the picture.
- */
-export async function writeVariants({ input, outDir, name, widths, aspect }) {
+/* The JPEG for older browsers is saved at the largest listed width up to this. */
+const FALLBACK_MAX = 1080
+const WHITE = '#ffffff'
+
+await rm(outDir, { recursive: true, force: true })
+await mkdir(outDir, { recursive: true })
+
+const entries = {}
+
+for (const image of IMAGES) {
+  const input = join(sourceDir, image.source)
   const meta = await sharp(input).metadata()
-  let cropWidth = meta.autoOrient?.width ?? meta.width
-  let cropHeight = meta.autoOrient?.height ?? meta.height
+  const area = image.crop ?? { left: 0, top: 0, width: meta.width, height: meta.height }
+  const widths = image.widths.filter((width) => width <= area.width)
+  if (widths.length === 0) throw new Error(`${image.source} is too small for the widths listed for ${image.name}`)
 
-  if (aspect) {
-    if (cropWidth / cropHeight > aspect) cropWidth = Math.round(cropHeight * aspect)
-    else cropHeight = Math.round(cropWidth / aspect)
+  const sized = (width) => sharp(input).extract(area).resize({ width })
+  const file = (width, format) => join(outDir, `${image.name}-${width}.${format}`)
+
+  for (const width of widths) {
+    await sized(width).avif({ quality: 55, effort: 6 }).toFile(file(width, 'avif'))
+    await sized(width).webp({ quality: 80, effort: 5 }).toFile(file(width, 'webp'))
   }
+  const fallback = widths.filter((width) => width <= FALLBACK_MAX).at(-1) ?? widths[0]
+  await sized(fallback).jpeg({ quality: 80, mozjpeg: true }).toFile(file(fallback, 'jpg'))
 
-  /* The standard widths the source is large enough for, plus its full width where that adds detail. */
-  const usable = widths.filter((width) => width <= cropWidth)
-  const full = Math.min(cropWidth, widths.at(-1))
-  if (usable.length === 0 || full > usable.at(-1) * 1.12) usable.push(full)
-
-  await mkdir(outDir, { recursive: true })
-  for (const width of usable) {
-    const height = Math.round((width * cropHeight) / cropWidth)
-    await sharp(input)
-      .rotate()
-      .resize({ width, height, fit: 'cover', position: sharp.strategy.attention })
-      .webp({ quality: 78 })
-      .toFile(join(outDir, `${name}-${width}.webp`))
-  }
-
-  const largest = usable.at(-1)
-  return {
-    name,
-    widths: usable,
+  const largest = widths.at(-1)
+  entries[image.name] = {
+    base: `/media/${image.name}`,
+    widths,
     width: largest,
-    height: Math.round((largest * cropHeight) / cropWidth),
+    height: Math.round((largest * area.height) / area.width),
+    fallback,
   }
 }
 
-function usage(message) {
-  if (message) console.error(`\n${message}`)
-  console.error(
-    '\nUsage: npm run media -- <image file> <name> [--game sheriff-town-vr] [--no-portrait]\n' +
-      'Example: npm run media -- "C:\\Captures\\town-square.png" hero\n',
-  )
-  process.exit(1)
+/* The logo: the empty margin around the artwork is trimmed off. The artwork itself is not altered. */
+const logoInput = join(sourceDir, LOGO.source)
+const logo = await sharp(logoInput).trim().png().toBuffer({ resolveWithObject: true })
+const logoFallback = LOGO.widths[Math.floor(LOGO.widths.length / 2)]
+for (const width of LOGO.widths) {
+  await sharp(logo.data)
+    .resize({ width })
+    .webp({ quality: 92, alphaQuality: 100 })
+    .toFile(join(outDir, `${LOGO.name}-${width}.webp`))
+}
+await sharp(logo.data)
+  .resize({ width: logoFallback })
+  .png({ compressionLevel: 9 })
+  .toFile(join(outDir, `${LOGO.name}-${logoFallback}.png`))
+
+const logoLargest = LOGO.widths.at(-1)
+entries[LOGO.name] = {
+  base: `/media/${LOGO.name}`,
+  widths: LOGO.widths,
+  width: logoLargest,
+  height: Math.round((logoLargest * logo.info.height) / logo.info.width),
+  fallback: logoFallback,
 }
 
-async function main() {
-  const args = process.argv.slice(2)
-  const gameFlag = args.indexOf('--game')
-  const game = gameFlag >= 0 ? args[gameFlag + 1] : 'sheriff-town-vr'
-  const withPortrait = !args.includes('--no-portrait')
-  const [file, name] = args.filter(
-    (arg, index) => !arg.startsWith('--') && (gameFlag < 0 || index !== gameFlag + 1),
-  )
-
-  if (!file || !name) usage()
-  if (!/^[a-z0-9-]+$/.test(name)) usage(`"${name}" should use lower-case letters, numbers and dashes only.`)
-  if (!game || !/^[a-z0-9-]+$/.test(game)) usage('--game needs a folder name such as sheriff-town-vr.')
-
-  const input = resolve(file)
-  const outDir = fileURLToPath(new URL(`../public/media/${game}/`, import.meta.url))
-  const folder = `/media/${game}`
-  const entry = (crop) =>
-    `{ base: '${folder}/${crop.name}', widths: [${crop.widths.join(', ')}], width: ${crop.width}, height: ${crop.height} }`
-
-  const landscape = await writeVariants({ input, outDir, name, widths: LANDSCAPE_WIDTHS })
-  const lines = [`      landscape: ${entry(landscape)},`]
-  let count = landscape.widths.length
-
-  if (withPortrait) {
-    const portrait = await writeVariants({
-      input,
-      outDir,
-      name: `${name}-portrait`,
-      widths: PORTRAIT_WIDTHS,
-      aspect: PORTRAIT_ASPECT,
-    })
-    lines.push(`      portrait: ${entry(portrait)},`)
-    count += portrait.widths.length
-  }
-
-  console.log(`
-Wrote ${count} files to public/media/${game}/
-
-Paste this into src/content/site.ts in place of \`image: null\`,
-then replace the alt text with a description of the picture:
-
-    image: {
-      alt: 'Describe what this picture shows',
-${lines.join('\n')}
-    },
-`)
-  if (landscape.width < 1600) {
-    console.log(`Note: the source is only ${landscape.width}px wide, so it will look soft on large screens.\n`)
-  }
+/* Browser tab and home-screen icons: the P mark from the logo on a white tile. */
+const mark = await sharp(logoInput).extract(LOGO.mark).png().toBuffer()
+const tile = (size, inner) => {
+  const pad = Math.round((size - inner) / 2)
+  return sharp(mark)
+    .resize({ width: inner, height: inner, fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
+    .extend({ top: pad, bottom: size - inner - pad, left: pad, right: size - inner - pad, background: WHITE })
+    .flatten({ background: WHITE })
+    .png({ compressionLevel: 9 })
 }
+await tile(64, 48).toFile(join(publicDir, 'favicon.png'))
+await tile(180, 124).toFile(join(publicDir, 'apple-touch-icon.png'))
 
-/* Run main() only when this file is the command, not when the checks import it. */
-const thisFile = fileURLToPath(import.meta.url).toLowerCase()
-if (process.argv[1] && resolve(process.argv[1]).toLowerCase() === thisFile) {
-  main().catch((error) => usage(error.message))
+const generated = `/* Written by \`npm run media\`. Do not edit by hand: change scripts/media.config.mjs and run it again. */
+import type { ImageFile } from './types.ts'
+
+export const media = ${JSON.stringify(entries, null, 2)} satisfies Record<string, ImageFile>
+`
+await writeFile(join(root, 'src', 'content', 'media.generated.ts'), generated)
+
+let total = 0
+const files = await readdir(outDir)
+for (const name of files) total += (await stat(join(outDir, name))).size
+
+console.log(`media: ${IMAGES.length} pictures and the logo, ${files.length} files, ${Math.round(total / 1024)} KB in public/media/`)
+for (const [name, entry] of Object.entries(entries)) {
+  console.log(`  ${name.padEnd(20)} ${entry.width}x${entry.height}  widths ${entry.widths.join(', ')}`)
 }

@@ -1,44 +1,78 @@
+import { useRef, useState } from 'react'
+import type { KeyboardEvent, MouseEvent } from 'react'
 import { Link, useLocation } from 'react-router'
-import { site } from '../content/site.ts'
-import { Wordmark } from './Wordmark.tsx'
+import { headerAction, nav, site } from '../content/site.ts'
+import { Action } from './Action.tsx'
+import { Logo } from './Logo.tsx'
 
 /**
- * Four destinations, always visible. There is no menu to open, so nothing is
- * hidden behind a tap and there is no dialog to trap focus in.
+ * Logo, four destinations and one button. On wide screens they sit in a row.
+ * On narrow screens a Menu button opens them as a list below the bar. The list
+ * is part of the page, not a pop-up, so Tab moves through it in order and
+ * Escape closes it.
  */
 export function Header() {
   const { pathname } = useLocation()
+  const [open, setOpen] = useState(false)
+  const button = useRef<HTMLButtonElement>(null)
+  const action = headerAction()
+
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape' || !open) return
+    setOpen(false)
+    button.current?.focus()
+  }
+
+  const onNavClick = (event: MouseEvent) => {
+    if (event.target instanceof Element && event.target.closest('a')) setOpen(false)
+  }
 
   return (
-    <header className="site-header">
-      <div className="wrap">
-        <div className="site-header__inner">
-          <Link
-            className="site-header__home"
-            to="/"
-            aria-label={`${site.name}, home`}
-            aria-current={pathname === '/' ? 'page' : undefined}
-          >
-            <Wordmark />
-          </Link>
-          <nav className="site-nav" aria-label="Primary">
-            <ul className="site-nav__list">
-              {site.nav.map((item) => (
-                <li key={item.to}>
-                  <Link
-                    className="site-nav__link"
-                    to={item.to}
-                    aria-current={
-                      item.section && pathname.startsWith(item.section) ? 'true' : undefined
-                    }
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
+    <header className="site-header" onKeyDown={onKeyDown}>
+      <div className="wrap site-header__bar">
+        <Link
+          className="site-header__home"
+          to="/"
+          aria-label={`${site.name} home`}
+          onClick={() => setOpen(false)}
+        >
+          <Logo />
+        </Link>
+        <button
+          ref={button}
+          className="menu-button"
+          type="button"
+          aria-expanded={open}
+          aria-controls="site-menu"
+          onClick={() => setOpen((value) => !value)}
+        >
+          <span className="visually-hidden">Menu</span>
+          <span className="menu-button__bars" aria-hidden="true" />
+        </button>
+        <nav
+          className="site-nav"
+          id="site-menu"
+          aria-label="Primary"
+          data-open={open ? '' : undefined}
+          onClick={onNavClick}
+        >
+          <ul className="site-nav__list">
+            {nav.map((item) => (
+              <li key={item.to}>
+                <Link
+                  className="site-nav__link"
+                  to={item.to}
+                  aria-current={pathname.startsWith(item.match) ? 'page' : undefined}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Action className="site-nav__cta" to={action.to}>
+            {action.label}
+          </Action>
+        </nav>
       </div>
     </header>
   )

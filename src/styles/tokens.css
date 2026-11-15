@@ -1,60 +1,55 @@
-/*
- * Design tokens: colour, type and spacing for the whole site.
- */
+/* Design tokens: colour, type and spacing for the whole site. */
 
 :root {
   color-scheme: light;
 
-  /* Palette */
-  --paper: #f2efe7;
-  --paper-deep: #e6e1d3;
-  --paper-soft: #bdb9ac;
-  --ink: #22221f;
-  --ink-soft: #5a5850;
-  --vermilion: #d64328;
-  --vermilion-deep: #b3341c; /* small text on paper, 5.3:1 */
-  --vermilion-light: #ee6a4e; /* small text on ink, 5.2:1 */
+  /* Palette. Ink and orange are taken from the logo. */
+  --white: #ffffff;
+  --surface: #f5f6f7;
+  --ink: #191c20;
+  --ink-soft: #4a5058; /* supporting text, 8:1 on white */
+  --ink-quiet: #5c636c; /* captions, 6:1 on white */
+  --line: #e2e5e9;
+  --line-strong: #7b838d; /* edges of inputs, 3.9:1 on white */
+  --orange: #f26b38; /* fills and graphics only. White text on it fails contrast, so buttons use ink. */
+  --orange-text: #b93d0b; /* small orange text, 5.6:1 on white */
+  --orange-soft: #fdeee7;
+  --error: #b42318;
+  --error-soft: #fdecea;
 
-  /* Roles. `.on-ink` swaps these for dark sections. */
-  --bg: var(--paper);
+  /* Roles. `.band` and `.on-ink` change these for their sections. */
+  --bg: var(--white);
   --fg: var(--ink);
   --fg-soft: var(--ink-soft);
-  --accent: var(--vermilion); /* large type and graphics only, 3.9:1 on paper */
-  --accent-text: var(--vermilion-deep);
-  --rule: rgb(34 34 31 / 0.22);
-  --focus: var(--vermilion);
+  --rule: var(--line);
+  --accent-text: var(--orange-text);
+  --focus: var(--ink);
 
-  /* Type */
-  --font-sans: 'Archivo Variable', 'Archivo Fallback', 'Helvetica Neue', Arial, sans-serif;
-  /*
-   * The wordmark and game titles are fitted to the width of their column, so
-   * their stand-in face has to match the cut in use: condensed, regular or
-   * expanded. This is the regular one. See fonts.css.
-   */
-  --display-fallback: 'Archivo Display Fallback';
-  --font-serif: 'Instrument Serif', 'Instrument Fallback', Georgia, 'Times New Roman', serif;
+  --font: 'Manrope Variable', 'Manrope Fallback', system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
 
   /*
    * Fluid sizes. Each has a rem part, so browser zoom and text-size settings
    * still apply, and a vw part, so it follows the screen between its limits.
-   * The three display sizes are also capped against the screen width, so that
-   * a long word still fits on a narrow phone when text is enlarged.
+   * Headings are also capped against the screen width, so a long word still
+   * fits a narrow phone when text is enlarged.
    */
-  --step--1: clamp(0.875rem, 0.84rem + 0.16vw, 1rem);
-  --step-0: clamp(1rem, 0.94rem + 0.28vw, 1.1875rem);
-  --step-1: clamp(1.1875rem, 1.08rem + 0.5vw, 1.5rem);
-  --step-2: min(clamp(1.5rem, 1.25rem + 1.2vw, 2.25rem), 9vw);
-  --step-3: min(clamp(2rem, 1.35rem + 3vw, 3.75rem), 11vw);
-  --step-4: min(clamp(2.25rem, 1.3rem + 5vw, 6rem), 12vw);
+  --text-s: 0.875rem;
+  --text: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --text-l: clamp(1.0625rem, 0.99rem + 0.4vw, 1.3125rem);
+  --h-sub: clamp(1.25rem, 1.14rem + 0.5vw, 1.5rem);
+  --h-mid: min(clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem), 9vw);
+  --h-section: min(clamp(1.75rem, 1.3rem + 2.1vw, 3rem), 10vw);
+  --h-page: min(clamp(1.75rem, 1.1rem + 3.4vw, 3.75rem), 11vw);
 
   /* Space */
-  --gutter: clamp(1.125rem, 0.5rem + 3vw, 3rem);
-  --col-gap: clamp(1rem, 0.5rem + 1.5vw, 2rem);
-  --space-block: clamp(1.5rem, 1rem + 2.5vw, 3.5rem);
-  --space-section: clamp(4rem, 2.5rem + 7vw, 9.5rem);
+  --gutter: clamp(1.25rem, 0.5rem + 3.5vw, 3rem);
+  --gap: clamp(1.5rem, 1rem + 2.5vw, 3.5rem);
+  --space-section: clamp(3.5rem, 2.25rem + 5.5vw, 7rem);
 
   /* Limits */
-  --page: 96rem;
-  --measure: 34rem;
+  --page: 80rem;
+  --measure: 38rem;
+  --radius: 0.5rem;
+  --radius-l: 1rem;
   --target: 2.75rem; /* 44px, the smallest comfortable touch target */
 }

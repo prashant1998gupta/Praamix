@@ -1,0 +1,205 @@
+/* ---------- Art sequence: one picture with a label under each stage ---------- */
+
+/*
+ * Narrow screens: the four labels are a numbered list under the picture.
+ * Wide screens: each label sits under its stage. --at is how far across the
+ * picture that stage is.
+ */
+.sequence__labels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1.5rem;
+  margin-top: 1rem;
+  font-weight: 700;
+  counter-reset: stage;
+}
+
+.sequence__labels li {
+  display: flex;
+  gap: 0.6rem;
+  counter-increment: stage;
+}
+
+.sequence__labels li::before {
+  content: counter(stage);
+  color: var(--accent-text);
+  font-weight: 800;
+}
+
+.sequence__more {
+  margin-top: var(--space-section);
+}
+
+@media (min-width: 48em) {
+  .sequence__labels {
+    position: relative;
+    display: block;
+    height: 1.75em;
+  }
+
+  .sequence__labels li {
+    position: absolute;
+    left: var(--at);
+    translate: -50% 0;
+    white-space: nowrap;
+  }
+
+  .sequence__labels li::before {
+    content: none;
+  }
+}
+
+/* ---------- Engines ---------- */
+
+.engine {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+  padding-block: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.engine__name {
+  font-size: var(--h-mid);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.engine__path {
+  font-size: var(--text-l);
+  font-weight: 700;
+}
+
+.engine p:last-child {
+  max-width: 30rem;
+  color: var(--fg-soft);
+}
+
+@media (min-width: 48em) {
+  .engines {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .engine {
+    padding: 0.5rem var(--gap) 0.5rem 0;
+    border-top: 0;
+  }
+
+  .engine + .engine {
+    padding-left: var(--gap);
+    border-left: 1px solid var(--rule);
+  }
+}
+
+/* ---------- Game types ---------- */
+
+.formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2.5rem;
+  margin-bottom: var(--gap);
+  font-size: var(--text-l);
+  font-weight: 800;
+}
+
+/* ---------- Platforms ---------- */
+
+.platforms {
+  border-top: 1px solid var(--rule);
+}
+
+.platform {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.15rem 1rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.platform .icon {
+  grid-row: 1 / span 2;
+  margin-top: 0.15rem;
+  color: var(--orange-text);
+}
+
+.platform__name {
+  font-weight: 800;
+}
+
+.platform p {
+  color: var(--fg-soft);
+}
+
+.platforms + .quiet {
+  margin-top: 1rem;
+}
+
+/* ---------- Our own game, labelled as ours ---------- */
+
+.callout {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+  margin-top: var(--gap);
+  padding: clamp(1.25rem, 0.9rem + 1.8vw, 2.5rem);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+}
+
+.callout > p:not(.label) {
+  max-width: var(--measure);
+}
+
+/* ---------- Numbered steps ---------- */
+
+.journey {
+  border-bottom: 1px solid var(--rule);
+  counter-reset: step;
+}
+
+.journey li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0.15rem 1rem;
+  padding-block: 1rem;
+  border-top: 1px solid var(--rule);
+  counter-increment: step;
+}
+
+.journey li::before {
+  content: counter(step, decimal-leading-zero);
+  color: var(--accent-text);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.journey h3 {
+  font-size: var(--text-l);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.journey p {
+  grid-column: 2;
+  color: var(--fg-soft);
+}
+
+.handoff {
+  display: grid;
+  gap: 0.6rem;
+  max-width: var(--measure);
+  margin-top: var(--gap);
+}
+
+@media (min-width: 56em) {
+  .journey li {
+    grid-template-columns: 2.25rem minmax(0, 5fr) minmax(0, 6fr);
+    align-items: baseline;
+  }
+
+  .journey p {
+    grid-column: 3;
+  }
+}

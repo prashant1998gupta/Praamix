@@ -1,9 +1,16 @@
 # Praamix
 
-Website for Praamix, an independent game studio. Two pages:
+Website for Praamix, a studio that makes original games and develops games for clients with Unity and Unreal Engine.
 
-- `/` the studio homepage
-- `/games/sheriff-town-vr` the page for Sheriff Town VR
+| Page | Address |
+| --- | --- |
+| Home | `/` |
+| Sheriff Town VR | `/games/sheriff-town-vr` |
+| Services | `/services` |
+| Studio, including Who we are | `/studio` |
+| Project brief | `/contact` |
+| Terms & Conditions | `/terms-and-conditions` |
+| Privacy Policy | `/privacy-policy` |
 
 Built with React, TypeScript and Vite, with hand-written CSS. This repository holds the website only. The game's Unity project lives elsewhere.
 
@@ -16,61 +23,45 @@ npm run dev
 
 Then open http://localhost:5173/
 
-Needs Node.js 22.18 or newer. The build runs a TypeScript file directly, which older versions cannot do.
+Needs Node.js 22.18 or newer. The build and the checks run TypeScript files directly, which older versions cannot do.
 
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Runs the site locally and reloads as you edit |
-| `npm run build` | Type-checks, then writes the finished site to `dist/` |
+| `npm run build` | Type-checks, builds `dist/`, and writes an HTML file for every page |
 | `npm run preview` | Serves `dist/` at http://localhost:4173/ |
 | `npm run lint` | Checks the code for mistakes |
-| `npm run check:responsive` | Renders the built site at many screen sizes and reports problems |
-| `npm run media -- <file> <name>` | Prepares a game image for the site |
+| `npm run check:responsive` | Renders the built site at many screen sizes and exercises menus, chapters, the form and legal links |
+| `npm run media` | Rebuilds the responsive images in `public/media/` from `media-source/` |
 
-## Edit the words, links and images
+## Edit the content
 
-Everything editable is in one file: `src/content/site.ts`.
+All words, links and business facts live in `src/content/`. Anything left empty is left off the page, so nothing renders as a dead button or a placeholder.
 
-- **Copy** for both pages, the navigation and the footer.
-- **Contact details**: `site.contact.email` and `site.contact.links`.
-- **Store links**: `sheriffTownVr.storeLinks`.
-- **Images**: `sheriffTownVr.media`.
-
-Anything left empty is left off the page. With no email and no links, the contact section says details are not published yet. With no store links, the store section does not appear. With no gallery images, there is no gallery. Nothing renders as a dead button.
-
-Only add details that are real: real addresses, real store pages, real dates.
-
-## Add game media
-
-Until real captures are added, the image frames show a hatched placeholder labelled "Image pending. Not game footage."
-
-To add a capture:
-
-1. Run the image through the media script. Use a capture at least 2400px wide if you can.
-
-   ```
-   npm run media -- "C:\Captures\town-square.png" hero
-   ```
-
-   This writes several sizes of the image into `public/media/sheriff-town-vr/`, plus a taller crop for phones, so a phone downloads a small file and a large monitor a sharp one.
-
-2. The script prints an `image: { ... }` entry. Paste it into `src/content/site.ts` in place of `image: null`, and write a real description in `alt`.
-
-There are three places for images, all under `sheriffTownVr.media`:
-
-| Slot | Where it appears |
+| File | What it holds |
 | --- | --- |
-| `feature` | The large image on the homepage |
-| `hero` | The main visual at the top of the game page |
-| `gallery` | A list of images further down the game page |
+| `site.ts` | Navigation, inquiry destination, support email, social links, legal business facts |
+| `game.ts` | Sheriff Town VR copy, facts and store entries |
+| `people.ts` | Who we are profiles and portfolio links |
+| `home.ts`, `studio.ts`, `services*.ts` | Page copy |
+| `contact.ts` | Project brief labels and choices |
+| `legal.ts`, `privacy.ts` | Terms & Conditions and Privacy Policy text |
 
-For gallery images add `--no-portrait`, since they are shown uncropped.
+### Switch the project brief on
 
-If a crop cuts off something important, add `focus: '30% 60%'` to the image entry. The two numbers say how far across and how far down the important part is.
+The contact form is an unconnected draft until `inquiry` in `site.ts` has a destination. Set `endpoint` and `provider` for a form service that accepts a JSON POST, or `email` for a real inbox. Then update the Privacy Policy to name that provider.
 
-## Add another game
+### Add a store link
 
-Copy the `sheriffTownVr` entry in `src/content/site.ts`, give it a new `slug` and title, and add it to the `games` list. It gets its own page at `/games/<slug>` and a place on the homepage. Titles using letters outside A to Z and 0 to 9 will still fit, with slightly looser sizing.
+Add an entry to the store list in `game.ts` with the platform, the real store URL, the button wording and its availability. Only real listings belong there.
+
+### Finish the legal pages
+
+Both pages show "Draft — business details pending review" until every business field in `site.ts` is filled and `legalReviewed` is set to `true` after legal review.
+
+## Images
+
+The originals are in `media-source/`. They are studio concept illustrations, not gameplay or client work, and the captions on the site say so. The sizes each image is saved at are listed in `scripts/media.config.mjs`. Run `npm run media` after changing either.
 
 ## Responsive checks
 
@@ -79,27 +70,4 @@ npm run build
 npm run check:responsive
 ```
 
-This opens the built site in the Chrome or Edge already installed on the machine and checks both pages for sideways scrolling, clipped headings, small touch targets, tiny text and long lines, across phone, tablet, laptop, desktop and ultrawide sizes. It also covers a phone held sideways, a split-screen window, enlarged text, keyboard, touch, reduced motion, refreshing a page, and font and image loading.
-
-Results are printed and saved to `.checks/report.txt`, with screenshots in `.checks/screens/`. That folder is rebuilt on each run and is not committed.
-
-To run one part only, name it: `npm run check:responsive -- keyboard` or `npm run check:responsive -- fonts image`.
-
-These are emulated screens in a desktop browser. They do not replace opening the site on real phones and tablets, or in Safari and Firefox.
-
-## How it is put together
-
-```
-src/content/site.ts     all copy, links and media paths
-src/pages/              the two pages and the not-found page
-src/components/         masthead wordmark, media frames, header, footer
-src/hooks/useWeight.ts  the movement of the featured media
-src/styles/             CSS, one file per area; tokens.css holds colour, type and spacing
-scripts/                build step, media preparation and the responsive checks
-```
-
-The build writes a real HTML file for each page, so opening or refreshing a game page works on any static host without extra server rules.
-
-## Not done yet
-
-The site has not been deployed and no domain is configured.
+Results are printed and saved to `.checks/report.txt`, with page sheets in `.checks/screens/`. These are emulated screens in desktop Chrome or Edge, not tests on physical devices.

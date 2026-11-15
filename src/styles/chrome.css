@@ -1,216 +1,265 @@
 /* ---------- Header ---------- */
 
-/* Four destinations, always on show. On the narrowest screens the links wrap under the wordmark. */
 .site-header {
-  padding-top: max(0.375rem, env(safe-area-inset-top, 0px));
+  position: relative;
+  z-index: 3;
+  padding-top: env(safe-area-inset-top, 0px);
+  border-bottom: 1px solid var(--rule);
+  background: var(--white);
 }
 
-.site-header__inner {
+.site-header__bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  column-gap: 1rem;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--rule);
+  column-gap: 1.5rem;
+  min-height: 4rem;
 }
 
-.site-header__home {
-  --wm-stretch: 112%;
+.site-header__home,
+.site-footer__home {
   display: inline-flex;
   align-items: center;
   min-height: var(--target);
-  font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
-  text-decoration: none;
 }
 
-.site-nav__list,
-.site-footer__list {
+/* The supplied logo, always at its own proportions. */
+.logo {
+  width: auto;
+  height: clamp(1.625rem, 1.4rem + 0.9vw, 2.125rem);
+}
+
+.menu-button {
+  display: inline-grid;
+  place-items: center;
+  width: var(--target);
+  height: var(--target);
+  margin-right: -0.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  cursor: pointer;
+}
+
+.menu-button__bars,
+.menu-button__bars::before,
+.menu-button__bars::after {
+  display: block;
+  width: 1.5rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--ink);
+  transition:
+    rotate 200ms ease,
+    top 200ms ease;
+}
+
+.menu-button__bars {
+  position: relative;
+}
+
+.menu-button__bars::before,
+.menu-button__bars::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.menu-button__bars::before {
+  top: -0.45rem;
+}
+
+.menu-button__bars::after {
+  top: 0.45rem;
+}
+
+.menu-button[aria-expanded='true'] .menu-button__bars {
+  background: transparent;
+}
+
+.menu-button[aria-expanded='true'] .menu-button__bars::before {
+  top: 0;
+  rotate: 45deg;
+}
+
+.menu-button[aria-expanded='true'] .menu-button__bars::after {
+  top: 0;
+  rotate: -45deg;
+}
+
+/* Narrow screens: the links open as a list under the bar. */
+.site-nav {
+  display: none;
+  flex-basis: 100%;
+  padding-block: 0.5rem 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+.site-nav[data-open] {
+  display: block;
+}
+
+.site-nav__link {
   display: flex;
-  flex-wrap: wrap;
-  margin-inline: -0.625rem;
-}
-
-.site-nav__link,
-.site-footer__link {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-width: var(--target);
-  min-height: var(--target);
-  padding-inline: 0.625rem;
+  min-height: 3rem;
+  font-size: var(--text-l);
   font-weight: 600;
   text-decoration: none;
 }
 
 .site-nav__link[aria-current] {
-  text-decoration: underline 2px var(--accent);
-  text-underline-offset: 0.35em;
+  font-weight: 800;
+}
+
+.site-nav__cta {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+/* Wide screens: everything in one row. */
+@media (min-width: 58em) {
+  .menu-button {
+    display: none;
+  }
+
+  .site-header__bar {
+    flex-wrap: nowrap;
+    min-height: 4.5rem;
+  }
+
+  .site-nav,
+  .site-nav[data-open] {
+    display: flex;
+    flex-basis: auto;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 2rem);
+    padding: 0;
+    border: 0;
+  }
+
+  .site-nav__list {
+    display: flex;
+    gap: clamp(0.25rem, 1.2vw, 1.25rem);
+  }
+
+  .site-nav__link {
+    min-height: var(--target);
+    padding-inline: 0.6rem;
+    font-size: var(--text);
+  }
+
+  .site-nav__link[aria-current] {
+    box-shadow: inset 0 -2px 0 var(--orange);
+  }
+
+  .site-nav__cta {
+    width: auto;
+    min-height: var(--target);
+    margin: 0;
+    padding-block: 0.5rem;
+  }
 }
 
 @media (hover: hover) {
   .site-nav__link:hover,
-  .site-footer__link:hover {
-    text-decoration: underline 2px var(--accent);
+  .site-footer a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
     text-underline-offset: 0.35em;
   }
 }
 
 /* ---------- Closing band ---------- */
 
-.closing {
-  padding-block: var(--space-section) var(--space-block);
+.cta {
+  padding-block: clamp(2.5rem, 1.75rem + 3vw, 4.25rem);
 }
 
-.closing__grid {
+.cta__grid {
   display: grid;
-  gap: var(--space-block) var(--col-gap);
+  gap: 2.25rem var(--gap);
 }
 
-.closing__line {
-  max-width: 5.5em;
-  font-family: var(--font-serif);
-  font-size: var(--step-4);
-  font-style: italic;
-  line-height: 0.98;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
+.cta__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
 }
 
-.closing__side {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-  justify-items: start;
-  max-width: var(--measure);
+.cta__title {
+  font-size: var(--h-mid);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
-.closing__note {
+.cta__text {
+  margin-top: 0.35rem;
   color: var(--fg-soft);
 }
 
-.contact-list__link {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--target);
-  font-size: var(--step-1);
-  font-weight: 600;
-  text-decoration-color: var(--accent);
-  overflow-wrap: anywhere;
-}
-
-@media (min-width: 64em) {
-  .closing__grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    align-items: end;
+@media (min-width: 56em) {
+  .cta__grid[data-count='2'] {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .closing__line {
-    grid-column: 1 / span 7;
-  }
-
-  .closing__side {
-    grid-column: 9 / -1;
-    padding-bottom: 0.5rem;
+  .cta__grid[data-count='2'] .cta__item + .cta__item {
+    padding-left: var(--gap);
+    border-left: 1px solid var(--rule);
   }
 }
 
 /* ---------- Footer ---------- */
 
+/* On white, because the logo is dark artwork and cannot sit on a dark band. */
 .site-footer {
-  padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
-}
-
-.site-footer__inner {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem 2rem;
-  padding-top: var(--space-block);
+  padding-block: 1.5rem max(1.5rem, env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--rule);
+  font-size: var(--text-s);
 }
 
-.site-footer__home {
-  --wm-stretch: 125%;
-  --display-fallback: 'Archivo Display Fallback Expanded';
+.site-footer__top,
+.site-footer__base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 2rem;
+}
+
+.site-footer__top {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.site-footer__base {
+  padding-top: 0.5rem;
+  color: var(--fg-soft);
+}
+
+.site-footer .logo {
+  height: 1.625rem;
+}
+
+.site-footer__nav,
+.site-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: -0.6rem;
+}
+
+.site-footer__nav a,
+.site-footer__links a {
   display: inline-flex;
   align-items: center;
-  justify-self: start;
+  min-width: var(--target);
   min-height: var(--target);
-  /* Capped against the screen width so it still fits a phone when text is enlarged. */
-  font-size: min(clamp(2rem, 1.25rem + 3.75vw, 4.5rem), 12vw);
+  padding-inline: 0.6rem;
+  font-weight: 600;
   text-decoration: none;
-}
-
-.site-footer__small {
-  color: var(--fg-soft);
-  font-size: var(--step--1);
-}
-
-@media (min-width: 45em) {
-  .site-footer__inner {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-  }
-
-  .site-footer__note {
-    justify-self: end;
-  }
-}
-
-/* ---------- Margin notes, very wide screens only ---------- */
-
-.rails {
-  display: none;
-}
-
-@media (min-width: 120em) and (min-height: 40em) {
-  .rails {
-    display: block;
-  }
-
-  /* `difference` keeps the note legible over both the paper and the ink sections. */
-  .rail {
-    position: fixed;
-    top: 50%;
-    z-index: 5;
-    margin: 0;
-    color: var(--paper);
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    writing-mode: vertical-rl;
-    mix-blend-mode: difference;
-    pointer-events: none;
-  }
-
-  .rail--start {
-    left: clamp(1.5rem, 3vw, 4.5rem);
-    transform: translateY(-50%) rotate(180deg);
-  }
-
-  .rail--end {
-    right: clamp(1.5rem, 3vw, 4.5rem);
-    transform: translateY(-50%);
-  }
-}
-
-/* ---------- Not found ---------- */
-
-.notfound__inner {
-  display: grid;
-  gap: 1.5rem;
-  align-content: center;
-  justify-items: start;
-  min-height: 60svh;
-  padding-block: var(--space-section);
-}
-
-.notfound__title {
-  max-width: 5.5em;
-  font-family: var(--font-serif);
-  font-size: var(--step-4);
-  font-style: italic;
-  line-height: 1;
 }

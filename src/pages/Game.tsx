@@ -1,17 +1,19 @@
-import { Link, useParams } from 'react-router'
-import { Arrow } from '../components/Arrow.tsx'
-import { Closing } from '../components/Closing.tsx'
-import { DevelopmentStatus } from '../components/DevelopmentStatus.tsx'
-import { heroFrame } from '../components/frames.ts'
-import { GameGallery } from '../components/GameGallery.tsx'
-import { GameTitle } from '../components/GameTitle.tsx'
-import { Plate } from '../components/Plate.tsx'
-import { WeightedFrame } from '../components/WeightedFrame.tsx'
-import { games, site } from '../content/site.ts'
-import type { Game as GameContent } from '../content/site.ts'
+import { useParams } from 'react-router'
+import { ExternalAction } from '../components/Action.tsx'
+import { Band } from '../components/Band.tsx'
+import { Chapters } from '../components/Chapters.tsx'
+import { FaqSection } from '../components/Faq.tsx'
+import { GameStatus, StoreLinks } from '../components/GameParts.tsx'
+import { Lines } from '../components/Lines.tsx'
+import { PageHero } from '../components/PageHero.tsx'
+import { Art } from '../components/Picture.tsx'
+import { gamePath, games } from '../content/game.ts'
+import { SIZES, images } from '../content/images.ts'
+import { metaFor } from '../content/routes.ts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
-import { useWeight } from '../hooks/useWeight.ts'
 import { NotFound } from './NotFound.tsx'
+
+type GameContent = (typeof games)[number]
 
 export function Game() {
   const { slug } = useParams()
@@ -21,91 +23,94 @@ export function Game() {
 }
 
 function GamePage({ game }: { game: GameContent }) {
-  useDocumentMeta(`${game.title} · ${site.name}`, game.summary)
-
-  const zone = useWeight<HTMLElement>()
-  const number = String(games.indexOf(game) + 1).padStart(2, '0')
-  const labels = site.gamePage
-  const { hero, pendingNote } = game.media
-  const caption = hero.image ? hero.image.caption : pendingNote
+  useDocumentMeta(metaFor(gamePath(game)))
+  const facts = [...game.glance, ...game.confirmed]
 
   return (
-    <main id="main" className="game" tabIndex={-1}>
-      <div className="game-hero">
-        <div className="wrap">
-          <div className="game-hero__layout">
-            <div className="game-hero__meta">
-              <p className="kicker game-hero__crumb">
-                <Link className="crumb" to="/#games">
-                  {labels.crumb}
-                </Link>
-                <span aria-hidden="true">/ {number}</span>
-              </p>
-              <p className="kicker status-flag">{game.status}</p>
-            </div>
+    <main id="main" tabIndex={-1}>
+      <PageHero
+        id="game-title"
+        eyebrow={game.label}
+        title={[game.title]}
+        fit={8.4}
+        image={images.townInHands}
+        variant="panel"
+      >
+        <p>
+          <span className="pill">{game.status}</span>
+        </p>
+        <p className="hero__tagline">
+          <Lines lines={game.tagline} />
+        </p>
+        <p className="lede">{game.summary}</p>
+        <StoreLinks stores={game.stores} />
+        {game.trailer && (
+          <ExternalAction href={game.trailer.url} variant="outline">
+            {game.trailer.label}
+          </ExternalAction>
+        )}
+      </PageHero>
 
-            <GameTitle game={game} level={1} className="game-hero__title" />
-
-            <p className="game-hero__standfirst">{game.standfirst}</p>
-
-            <figure className="game-hero__figure" ref={zone}>
-              <WeightedFrame>
-                <Plate slot={hero} frame={heroFrame} priority />
-              </WeightedFrame>
-              {caption && <figcaption className="caption">{caption}</figcaption>}
-            </figure>
-          </div>
-        </div>
-      </div>
-
-      <section className="game-intro" aria-labelledby="intro-heading">
-        <div className="wrap">
-          <div className="game-intro__grid">
-            <h2 className="kicker" id="intro-heading">
-              {labels.introHeading}
-            </h2>
-            <div className="game-intro__body">
-              {game.intro.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-          </div>
+      <section className="section band" aria-labelledby="glance-title">
+        <div className="wrap faq-layout">
+          <h2 className="h-section" id="glance-title">
+            {game.glanceHeading}
+          </h2>
+          <dl className="facts-list">
+            {facts.map((fact) => (
+              <div key={fact.term}>
+                <dt className="label">{fact.term}</dt>
+                <dd>{fact.detail}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
-      <section className="identity" aria-labelledby="identity-heading">
+      <section className="section" aria-labelledby="chapters-title">
         <div className="wrap">
           <div className="section-head">
-            <h2 className="kicker" id="identity-heading">
-              {game.identityHeading}
+            <h2 className="h-section" id="chapters-title">
+              {game.chaptersHeading}
             </h2>
           </div>
-          <ol className="identity__list">
-            {game.identity.map((entry, index) => (
-              <li
-                className={entry.key ? 'identity__item identity__item--key' : 'identity__item'}
-                key={entry.title}
-              >
-                <span className="kicker identity__num" aria-hidden="true">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-                <h3 className="identity__title">{entry.title}</h3>
-                <p className="identity__body">{entry.body}</p>
-              </li>
-            ))}
-          </ol>
+          <Chapters label={game.chaptersHeading} chapters={game.chapters} />
         </div>
       </section>
 
-      <GameGallery game={game} />
-      <DevelopmentStatus game={game} />
+      {game.gallery.length > 0 && (
+        <section className="section" aria-labelledby="gallery-title">
+          <div className="wrap">
+            <div className="section-head">
+              <h2 className="h-section" id="gallery-title">
+                {game.galleryHeading}
+              </h2>
+            </div>
+            <ul className="gallery">
+              {game.gallery.map((image) => (
+                <li key={image.file.base}>
+                  <Art image={image} sizes={SIZES.panel} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
-      <Closing label={labels.closingLabel}>
-        <Link className="action" to="/">
-          <Arrow back />
-          <span>{labels.backLabel}</span>
-        </Link>
-      </Closing>
+      <GameStatus game={game} />
+      <FaqSection id="faq-title" heading={game.faqHeading} items={game.faq} />
+      <Band
+        label="More from Praamix"
+        items={[
+          {
+            title: game.closing.title,
+            text: game.closing.text,
+            action: game.closing.action,
+            to: '/',
+            back: true,
+          },
+        ]}
+      />
     </main>
   )
 }

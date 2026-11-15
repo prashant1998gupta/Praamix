@@ -3,22 +3,22 @@ import type { MouseEvent } from 'react'
 import { Route, Routes, useLocation, useNavigationType } from 'react-router'
 import { Footer } from './components/Footer.tsx'
 import { Header } from './components/Header.tsx'
-import { site } from './content/site.ts'
+import { Contact } from './pages/Contact.tsx'
 import { Game } from './pages/Game.tsx'
 import { Home } from './pages/Home.tsx'
+import { Privacy, Terms } from './pages/Legal.tsx'
 import { NotFound } from './pages/NotFound.tsx'
+import { Services } from './pages/Services.tsx'
+import { Studio } from './pages/Studio.tsx'
 
 /**
  * Scroll and focus after navigation.
- *   /#section    go to the section and move focus there. It glides when the
+ *   #section     go to the section and move focus there. It glides when the
  *                section is on the page already showing, and jumps otherwise
  *                or when reduced motion is requested.
  *   new page     start at the top with focus on the page content
  *   back/forward leave scrolling to the browser, which restores the old position
  *   first load   leave everything alone unless the address names a section
- *
- * Scrolling is animated here and nowhere else, so moving through the page
- * with the Tab key is never slowed down by it.
  */
 function RouteEffects() {
   const { pathname, hash, key } = useLocation()
@@ -69,16 +69,14 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/games/:slug" element={<Game />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/studio" element={<Studio />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/terms-and-conditions" element={<Terms />} />
+        <Route path="/privacy-policy" element={<Privacy />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
-      {/* Margin notes for very wide screens. Decorative: the same words are in the page. */}
-      <div className="rails" aria-hidden="true">
-        <p className="rail rail--start">
-          {site.wordmark} · {site.descriptor}
-        </p>
-        <p className="rail rail--end">{site.rail}</p>
-      </div>
     </>
   )
 }

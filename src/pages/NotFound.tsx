@@ -1,21 +1,25 @@
-import { Link } from 'react-router'
-import { Arrow } from '../components/Arrow.tsx'
-import { site } from '../content/site.ts'
+import { Action } from '../components/Action.tsx'
+import { notFound } from '../content/routes.ts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
 
 export function NotFound() {
-  useDocumentMeta(`Page not found · ${site.name}`, site.description)
+  useDocumentMeta(notFound)
 
   return (
-    <main id="main" className="notfound" tabIndex={-1}>
+    <main id="main" className="page" tabIndex={-1}>
       <div className="wrap">
-        <div className="notfound__inner">
-          <p className="kicker">404</p>
-          <h1 className="notfound__title">{site.notFound.title}</h1>
-          <Link className="action" to="/">
-            <Arrow back />
-            <span>{site.notFound.actionLabel}</span>
-          </Link>
+        <div className="page-head">
+          <p className="eyebrow">Page not found</p>
+          <h1 className="h-page">There’s nothing at this address.</h1>
+          <p className="lede">The page may have moved, or the link may be wrong.</p>
+          <div className="actions">
+            <Action to="/" back>
+              Back to Praamix
+            </Action>
+            <Action to="/services" variant="outline">
+              Explore our services
+            </Action>
+          </div>
         </div>
       </div>
     </main>

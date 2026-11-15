@@ -1,0 +1,225 @@
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  min-height: 3rem;
+  padding: 0.65rem 1.35rem;
+  border: 1.5px solid var(--btn-edge);
+  border-radius: var(--radius);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.btn--solid {
+  --btn-bg: var(--ink);
+  --btn-fg: var(--white);
+  --btn-edge: var(--ink);
+}
+
+.btn--outline {
+  --btn-bg: var(--white);
+  --btn-fg: var(--ink);
+  --btn-edge: var(--ink);
+}
+
+/* Orange with ink text. White text on this orange would be too faint to read. */
+.btn--accent {
+  --btn-bg: var(--orange);
+  --btn-fg: var(--ink);
+  --btn-edge: var(--orange);
+}
+
+.btn--light {
+  --btn-bg: var(--white);
+  --btn-fg: var(--ink);
+  --btn-edge: var(--white);
+}
+
+.btn:active {
+  translate: 0 1px;
+}
+
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.btn .icon {
+  width: 1.15em;
+  height: 1.15em;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* On phones the main actions fill the width, with the arrow at the far edge. */
+@media (max-width: 34.99em) {
+  .actions {
+    display: grid;
+    width: 100%;
+  }
+
+  .btn--wide {
+    justify-content: space-between;
+  }
+}
+
+/* ---------- Links with an arrow ---------- */
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  min-height: var(--target);
+  color: var(--accent-text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+.link-arrow .icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.arrow {
+  flex: none;
+  width: 1.4em;
+  height: auto;
+  transition: transform 200ms ease;
+}
+
+.arrow--back {
+  scale: -1 1;
+}
+
+.icon {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@media (hover: hover) {
+  .btn--solid:hover {
+    --btn-bg: #30353c;
+    --btn-edge: #30353c;
+  }
+
+  .btn--outline:hover {
+    --btn-bg: var(--surface);
+  }
+
+  .btn--accent:hover {
+    --btn-bg: #f58556;
+    --btn-edge: #f58556;
+  }
+
+  .btn--light:hover {
+    --btn-bg: #e8eaed;
+    --btn-edge: #e8eaed;
+  }
+
+  .btn:hover .arrow,
+  .link-arrow:hover .arrow {
+    transform: translateX(0.25rem);
+  }
+}
+
+/* ---------- Small parts ---------- */
+
+/* A list with a small orange square before each entry. */
+.ticks {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ticks li {
+  position: relative;
+  padding-left: 1.25rem;
+}
+
+.ticks li::before {
+  content: '';
+  position: absolute;
+  top: 0.6em;
+  left: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--orange);
+}
+
+/* The plus that turns into a minus when a question or stage is open. */
+.mark {
+  position: relative;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+
+.mark::before,
+.mark::after {
+  content: '';
+  position: absolute;
+  top: calc(50% - 1px);
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transition: rotate 200ms ease;
+}
+
+.mark::after {
+  rotate: 90deg;
+}
+
+details[open] > summary .mark::after {
+  rotate: 0deg;
+}
+
+/* A marked note: drafts, and problems with a form. */
+.notice {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 44rem;
+  padding: 1rem 1.25rem;
+  border-left: 4px solid var(--orange);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--orange-soft);
+}
+
+.notice__title {
+  font-weight: 800;
+}
+
+.notice--error {
+  border-color: var(--error);
+  background: var(--error-soft);
+}
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--error);
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}

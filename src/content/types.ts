@@ -1,65 +1,55 @@
-/*
- * The shapes that entries in site.ts have to follow.
- * Edit site.ts for words, images and links. This file rarely needs to change.
- */
+/* The shapes the content files follow. Edit the content files, not this one. */
 
-/** One crop of an image, saved at several widths so phones download small files. */
-export type ImageCrop = {
-  /** Path without the size suffix, e.g. '/media/sheriff-town-vr/hero' */
+/** A picture saved at several widths by `npm run media`. */
+export type ImageFile = {
+  /** Path without size or format, e.g. '/media/town-in-hands'. */
   base: string
-  /** Widths that exist as files: hero-480.webp, hero-800.webp and so on. */
   widths: number[]
-  /** Pixel size of the largest file. Reserves the space before the image loads. */
+  /** Pixel size of the largest file. Reserves the space before the picture loads. */
   width: number
   height: number
+  /** Width of the plain JPEG or PNG that older browsers use. */
+  fallback: number
 }
 
-export type GameImage = {
-  /** Describe what the image shows. Read aloud by screen readers. */
+export type SiteImage = {
+  file: ImageFile
+  /** Describes the picture for people who cannot see it. */
   alt: string
-  landscape: ImageCrop
-  /** Optional taller crop (4:5) used on phones held upright. */
-  portrait?: ImageCrop
-  /** The part of the image to keep in frame when it is cropped, e.g. '30% 60%'. */
-  focus?: string
-  caption?: string
+  /** Shown under the picture. Says what kind of artwork it is. */
+  caption: string
+  /** The picture's own background colour, shown behind it while it loads. */
+  tone: string
 }
 
-export type MediaSlot = {
-  /** Named on the placeholder while `image` is null. */
-  label: string
-  image: GameImage | null
-}
+export type IconName =
+  | 'bulb'
+  | 'pencil'
+  | 'code'
+  | 'rocket'
+  | 'phone'
+  | 'monitor'
+  | 'globe'
+  | 'gamepad'
+  | 'headset'
+  | 'layers'
+  | 'external'
+
+export type Faq = { question: string; answer: string }
 
 export type ExternalLink = { label: string; url: string }
 
-export type Game = {
-  /** The page address: /games/<slug> */
-  slug: string
-  title: string
-  /** One word of the title set in the accent style. */
-  accentWord?: string
-  status: string
-  summary: string
-  standfirst: string
-  intro: string[]
-  identityHeading: string
-  identity: { title: string; body: string; key?: boolean }[]
-  media: {
-    /** Homepage feature image. */
-    feature: MediaSlot
-    /** Main visual on the game page. */
-    hero: MediaSlot
-    /** Shown under the main visual while it is still a placeholder. */
-    pendingNote: string
-    /** The gallery section appears only when this list has images in it. */
-    gallery: GameImage[]
-  }
-  development: {
-    heading: string
-    facts: { term: string; detail: string }[]
-    note: string
-  }
-  /** The store section appears only when this list has real URLs in it. */
-  storeLinks: ExternalLink[]
+/** One real store page for a game. */
+export type StoreEntry = {
+  /** The store's name, e.g. 'Steam'. */
+  store: string
+  url: string
+  /** available: on sale now. wishlist and preorder: a real listing that is not on sale yet. */
+  state: 'available' | 'wishlist' | 'preorder'
+  /** The platform this listing is for, if the store has several. */
+  platform?: string
+  /** A confirmed price, exactly as the store shows it. */
+  price?: string
+  /** Replaces the usual button wording. */
+  label?: string
 }
