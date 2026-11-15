@@ -9,7 +9,8 @@
   isolation: isolate;
   display: grid;
   min-height: min(92svh, 58rem);
-  overflow: hidden;
+  /* "clip", not "hidden", so the scroll effects below follow the page and not this box. */
+  overflow: clip;
   background: #0b0e12;
   color: #f3f5f7;
 }
@@ -335,7 +336,8 @@
     .showcase__content {
       animation: hero-lift linear both;
       animation-timeline: view();
-      animation-range: exit 0% exit 70%;
+      /* Starts late and never fades right out, so the buttons stay readable while they are still on screen. */
+      animation-range: exit 30% exit 100%;
     }
   }
 }
@@ -419,7 +421,7 @@
 
 @keyframes hero-lift {
   to {
-    opacity: 0;
-    transform: translateY(-3rem);
+    opacity: 0.3;
+    transform: translateY(-2.5rem);
   }
 }

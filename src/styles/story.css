@@ -150,10 +150,17 @@
   }
 }
 
-/* ---------- One line, very large, sliding past as the page scrolls ---------- */
+/*
+ * ---------- The motto, large, drifting as the page scrolls ----------
+ *
+ * Three copies in a row. The middle one is solid and sized so the whole
+ * phrase fits on screen; it sits in the centre. The outlined copies either
+ * side run off the edges. The row drifts a little as the page scrolls.
+ */
 
 .kinetic {
-  overflow: hidden;
+  /* "clip", not "hidden": hidden would make this box its own scroll area, and the drift would watch it instead of the page. */
+  overflow: clip;
   padding-block: clamp(0.5rem, 2vw, 2rem);
 }
 
@@ -162,15 +169,19 @@
   align-items: center;
   gap: 0.35em;
   width: max-content;
+  /* The row is wider than the screen. These two lines centre it, which centres the solid copy. */
+  margin-left: 50%;
+  translate: -50% 0;
   color: var(--bg);
-  font-size: clamp(3.5rem, 2rem + 11vw, 12rem);
+  /* The phrase is about 9.6 times as wide as its letters are tall, so this fills about three quarters of the screen. */
+  font-size: clamp(1.5rem, 8vw, 8.5rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.05em;
   text-transform: uppercase;
   white-space: nowrap;
-  translate: -4% 0;
-  -webkit-text-stroke: 3px color-mix(in srgb, var(--fg) 36%, transparent);
+  /* The outline scales with the letters, so it stays fine on a phone. Half of it is hidden under the fill. */
+  -webkit-text-stroke: clamp(1.4px, 0.028em, 3px) color-mix(in srgb, var(--fg) 40%, transparent);
   paint-order: stroke fill;
 }
 
@@ -291,12 +302,13 @@
   }
 }
 
+/* A small drift either side of centre, so the solid phrase stays readable the whole way. */
 @keyframes kinetic {
   from {
-    transform: translateX(8%);
+    transform: translateX(3%);
   }
 
   to {
-    transform: translateX(-36%);
+    transform: translateX(-3%);
   }
 }

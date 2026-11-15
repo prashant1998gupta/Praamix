@@ -92,7 +92,7 @@ export function Story() {
   )
 }
 
-/* ---------- One line, very large, sliding past as the page scrolls ---------- */
+/* ---------- The motto, large, drifting as the page scrolls ---------- */
 
 /** Decorative: the same words are the motto in the opening. */
 export function Kinetic({ text }: { text: string }) {
