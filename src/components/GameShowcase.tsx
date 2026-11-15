@@ -24,9 +24,9 @@ type StageProps = {
 }
 
 /**
- * The top of the homepage and the game page: an in-game picture on a dark
- * stage, with the heading on the stage beside it. On phones the picture comes
- * first and the text sits below it.
+ * The top of the homepage and the game page: the in-game picture from edge to
+ * edge with the heading over it. The picture, the light and the words sit on
+ * separate layers that move apart with the pointer and as the page scrolls.
  */
 export function GameStage({ id, eyebrow, title, children }: StageProps) {
   const zone = useDrift<HTMLElement>()
@@ -34,31 +34,31 @@ export function GameStage({ id, eyebrow, title, children }: StageProps) {
 
   return (
     <section className="showcase" aria-labelledby={id} ref={zone}>
-      <div className="wrap">
-        <div className="showcase__frame on-ink" data-drift="">
-          <div className="showcase__art">
-            <div className="showcase__picture">
-              <Picture image={image} sizes={SIZES.stage} priority />
-            </div>
-            <Motes />
-            <div className="showcase__glare" aria-hidden="true" />
-            <StarBadge text="Sheriff Town · Est. 1887" />
-          </div>
-          <div className="showcase__text">
-            <p className="eyebrow">{eyebrow}</p>
-            <h1 className="showcase__title" id={id}>
-              {title.split(' ').flatMap((word, index) => [
-                index > 0 ? ' ' : '',
-                <span className="word" key={`${word}-${index}`} style={{ '--w': index } as CSSProperties}>
-                  {word}
-                </span>,
-              ])}
-            </h1>
-            {children}
-          </div>
+      <div className="showcase__art" data-drift="">
+        <div className="showcase__picture">
+          <Picture image={image} sizes={SIZES.stage} priority />
         </div>
-        <p className="art__caption">{image.caption}</p>
+        <Motes />
+        <div className="showcase__glare" aria-hidden="true" />
       </div>
+      <div className="showcase__shade" aria-hidden="true" />
+      <div className="wrap showcase__content">
+        <div className="showcase__text">
+          <p className="eyebrow">{eyebrow}</p>
+          <h1 className="showcase__title" id={id}>
+            {title.split(' ').flatMap((word, index) => [
+              index > 0 ? ' ' : '',
+              <span className="word" key={`${word}-${index}`} style={{ '--w': index } as CSSProperties}>
+                {word}
+              </span>,
+            ])}
+          </h1>
+          {children}
+        </div>
+        <p className="showcase__caption">{image.caption}</p>
+      </div>
+      <StarBadge text="Sheriff Town · Est. 1887" />
+      <div className="showcase__cue" aria-hidden="true" />
     </section>
   )
 }
@@ -270,39 +270,6 @@ export function DispatchBoard({ band = false }: { band?: boolean }) {
 }
 
 /* ---------- Game page ---------- */
-
-/** One part of the game: a picture beside what it shows. Every other one sits on a grey band, picture first. */
-export function FeatureRow({ index }: { index: number }) {
-  const feature = game.features[index]
-  const titleId = `${feature.id}-title`
-
-  return (
-    <section
-      className={index % 2 === 1 ? 'section band' : 'section'}
-      id={feature.id}
-      aria-labelledby={titleId}
-      tabIndex={-1}
-    >
-      <div className={index % 2 === 1 ? 'wrap split split--flip' : 'wrap split'}>
-        <div className="stack">
-          <p className="eyebrow">{feature.eyebrow}</p>
-          <h2 className="h-section" id={titleId}>
-            {feature.title}
-          </h2>
-          {feature.body.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-          <ul className="ticks ticks--two">
-            {feature.points.map((point) => (
-              <li key={point}>{point}</li>
-            ))}
-          </ul>
-        </div>
-        <Art image={feature.image} sizes={SIZES.half} />
-      </div>
-    </section>
-  )
-}
 
 /** The game's stories, as three case files. */
 export function CaseFiles() {

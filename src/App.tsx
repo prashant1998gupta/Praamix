@@ -4,6 +4,7 @@ import { Route, Routes, useLocation, useNavigationType } from 'react-router'
 import { Footer } from './components/Footer.tsx'
 import { Header } from './components/Header.tsx'
 import { MotionEffects } from './components/Motion.tsx'
+import { isNight } from './content/routes.ts'
 import { Contact } from './pages/Contact.tsx'
 import { Game } from './pages/Game.tsx'
 import { Home } from './pages/Home.tsx'
@@ -26,6 +27,11 @@ function RouteEffects() {
   const navigationType = useNavigationType()
   const firstKey = useRef<string | null>(null)
   const lastPath = useRef<string | null>(null)
+
+  /* The game's pages are dark. The class sits on <html> so the whole window follows. */
+  useEffect(() => {
+    document.documentElement.classList.toggle('night', isNight(pathname))
+  }, [pathname])
 
   useEffect(() => {
     if (firstKey.current === null) firstKey.current = key
@@ -64,6 +70,7 @@ export default function App() {
     <>
       <RouteEffects />
       <MotionEffects />
+      <div className="scroll-progress" aria-hidden="true" />
       <a className="skip-link" href="#main" onClick={skipToContent}>
         Skip to content
       </a>

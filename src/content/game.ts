@@ -55,6 +55,7 @@ const glance: Fact[] = [
   },
   { term: 'Where you go', detail: 'Five sandbox maps and two challenge maps, chosen from the precinct’s Dispatch board' },
   { term: 'Voices', detail: 'Every story line is voiced, each character in their own voice' },
+  { term: 'Multiplayer', detail: 'Planned. The game is single-player today.' },
   { term: 'Status', detail: 'In development' },
   { term: 'Development targets', detail: 'Standalone VR and PC VR' },
   { term: 'Release date', detail: 'Not announced' },
@@ -341,6 +342,11 @@ const faq: Faq[] = [
       'Several. Most sandbox maps have their own cast and their own story, fully voiced, and the town’s faces turn up from one map to the next.',
   },
   {
+    question: 'Will it have multiplayer?',
+    answer:
+      'Yes, multiplayer is planned. It is not in the game yet, and we have not announced how it will work or when it will arrive.',
+  },
+  {
     question: 'Where can I buy it?',
     answer:
       'It isn’t on sale yet, and no store listing has been announced. When there is one, this page will link to it.',
@@ -412,15 +418,25 @@ export const sheriffTownVr = {
     'The human cannon',
     'The Colour Bridge',
     'Put a man in a bottle',
+    'Multiplayer on the way',
   ],
 
-  rack: {
-    heading: 'The Sheriff’s kit.',
-    lede: 'Every tool, rendered from the game. Drag to spin the rack, or step through it.',
-    sets: {
-      guns: { label: 'Tool guns', items: guns },
-      tools: { label: 'Physics tools', items: tools },
-    },
+  showroom: {
+    heading: 'The Sheriff’s kit, in your hands.',
+    lede: 'These are the game’s real models, running live in your browser. Pick a tool gun and turn it over.',
+    guns,
+    toolsLabel: 'And the physics tools that go with them',
+    tools,
+  },
+
+  /** Planned, by the studio's own word. Nothing here describes how it will work. */
+  multiplayer: {
+    status: 'Planned',
+    heading: 'Deputies wanted.',
+    body: [
+      'Multiplayer is coming to Sheriff Town VR.',
+      'It is planned, not playable yet. We will show how it works, and how many sheriffs one town can take, when it is ready.',
+    ],
   },
 
   extrasHeading: 'Small things we’re proud of.',

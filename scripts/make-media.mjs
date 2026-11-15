@@ -74,7 +74,39 @@ await sharp(logo.data)
   .png({ compressionLevel: 9 })
   .toFile(join(outDir, `${LOGO.name}-${logoFallback}.png`))
 
+/*
+ * A light logo for dark pages: the same artwork with its charcoal turned
+ * white. The orange is left exactly as supplied. Pixels are mixed by how
+ * orange they are, so the edges between the two colours stay smooth.
+ */
+const { data: logoPixels, info: logoInfo } = await sharp(logo.data).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+for (let i = 0; i < logoPixels.length; i += 4) {
+  const [r, g, b] = [logoPixels[i], logoPixels[i + 1], logoPixels[i + 2]]
+  const orange = Math.min(1, Math.max(0, (Math.max(r, g, b) - Math.min(r, g, b) - 30) / 110))
+  logoPixels[i] = Math.round(255 + (r - 255) * orange)
+  logoPixels[i + 1] = Math.round(255 + (g - 255) * orange)
+  logoPixels[i + 2] = Math.round(255 + (b - 255) * orange)
+}
+const logoLight = await sharp(logoPixels, { raw: { width: logoInfo.width, height: logoInfo.height, channels: 4 } }).png().toBuffer()
+for (const width of LOGO.widths) {
+  await sharp(logoLight)
+    .resize({ width })
+    .webp({ quality: 92, alphaQuality: 100 })
+    .toFile(join(outDir, `${LOGO.name}-light-${width}.webp`))
+}
+await sharp(logoLight)
+  .resize({ width: logoFallback })
+  .png({ compressionLevel: 9 })
+  .toFile(join(outDir, `${LOGO.name}-light-${logoFallback}.png`))
+
 const logoLargest = LOGO.widths.at(-1)
+entries[`${LOGO.name}-light`] = {
+  base: `/media/${LOGO.name}-light`,
+  widths: LOGO.widths,
+  width: logoLargest,
+  height: Math.round((logoLargest * logo.info.height) / logo.info.width),
+  fallback: logoFallback,
+}
 entries[LOGO.name] = {
   base: `/media/${LOGO.name}`,
   widths: LOGO.widths,

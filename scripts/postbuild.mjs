@@ -45,7 +45,7 @@ function page(meta) {
     )
   }
 
-  return shell
+  return (meta.night ? shell.replace('<html', '<html class="night"') : shell)
     .replace(/<title>[\s\S]*?<\/title>/, () => `<title>${esc(meta.title)}</title>`)
     .replace(
       /(<meta\s+name="description"\s+content=")[^"]*(")/,

@@ -32,6 +32,9 @@ export function PeopleProfiles() {
               <Picture image={person.portrait} sizes="(min-width: 56em) 280px, 60vw" />
             </div>
           )}
+          <span className="profile__mono" aria-hidden="true">
+            {person.name.charAt(0)}
+          </span>
           <h3 className="profile__name" id={`${person.id}-name`}>
             {person.name}
           </h3>
@@ -39,7 +42,7 @@ export function PeopleProfiles() {
           {person.title && <p className="profile__title">{person.title}</p>}
           <p className="profile__bio">{person.bio}</p>
           <p className="label">{whoWeAre.areasLabel}</p>
-          <ul className="ticks">
+          <ul className="profile__areas">
             {person.areas.map((area) => (
               <li key={area}>{area}</li>
             ))}

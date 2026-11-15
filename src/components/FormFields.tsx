@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import type { IconName } from '../content/types.ts'
+import { Icon } from './Icon.tsx'
 
 type ControlProps = { id: string; 'aria-describedby'?: string; 'aria-invalid'?: true }
 
@@ -38,29 +40,6 @@ export function Field({ id, label, optional, hint, error, children }: FieldProps
   )
 }
 
-type SelectProps = ControlProps & {
-  value: string
-  options: string[]
-  onChange: (value: string) => void
-}
-
-/** A drop-down list whose first entry means "no answer". */
-export function Select({ value, options, onChange, ...control }: SelectProps) {
-  return (
-    <select
-      className="input"
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      {...control}
-    >
-      <option value="">No preference</option>
-      {options.map((option) => (
-        <option key={option}>{option}</option>
-      ))}
-    </select>
-  )
-}
-
 type ChoicesProps = {
   legend: string
   hint?: string
@@ -69,10 +48,16 @@ type ChoicesProps = {
   options: string[]
   selected: string[]
   onToggle: (option: string) => void
+  /** An icon for some or all of the options, by option name. */
+  icons?: Record<string, IconName>
 }
 
-/** A group of tick boxes or either-or options. Always optional. */
-export function Choices({ legend, hint, name, type, options, selected, onToggle }: ChoicesProps) {
+/**
+ * A group of chips: tick as many as apply, or pick one. Always optional. Each
+ * chip is a real checkbox or radio button, so keyboards and screen readers
+ * treat it as one.
+ */
+export function Choices({ legend, hint, name, type, options, selected, onToggle, icons }: ChoicesProps) {
   return (
     <fieldset className="choices">
       <legend className="field__label">
@@ -90,7 +75,9 @@ export function Choices({ legend, hint, name, type, options, selected, onToggle 
               checked={selected.includes(option)}
               onChange={() => onToggle(option)}
             />
+            {icons?.[option] && <Icon name={icons[option]} />}
             <span>{option}</span>
+            <span className="choice__tick" aria-hidden="true" />
           </label>
         ))}
       </div>

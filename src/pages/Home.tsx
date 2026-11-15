@@ -2,8 +2,10 @@ import { Action } from '../components/Action.tsx'
 import { Band } from '../components/Band.tsx'
 import { FaqSection } from '../components/Faq.tsx'
 import { DispatchBoard, GameStage, Overheard, Pillars } from '../components/GameShowcase.tsx'
+import { ComingNext, Kinetic } from '../components/GameStory.tsx'
 import { PipelineIntro, StudioIntro, StudioLine } from '../components/HomeSections.tsx'
-import { Stats, Ticker, ToolRack } from '../components/Motion.tsx'
+import { Stats, Ticker } from '../components/Motion.tsx'
+import { Showroom } from '../components/Showroom.tsx'
 import { gamePath, sheriffTownVr } from '../content/game.ts'
 import { home } from '../content/home.ts'
 import { metaFor } from '../content/routes.ts'
@@ -36,7 +38,9 @@ export function Home() {
       <Stats items={sheriffTownVr.stats} label="Sheriff Town VR in numbers" />
       <StudioLine />
       <Pillars heading={home.pillars.heading} action={home.pillars.action} />
-      <ToolRack {...sheriffTownVr.rack} />
+      <Kinetic text={sheriffTownVr.motto} />
+      <Showroom {...sheriffTownVr.showroom} />
+      <ComingNext />
       <DispatchBoard band />
       <Overheard />
       <StudioIntro />

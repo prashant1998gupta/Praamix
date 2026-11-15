@@ -23,6 +23,13 @@ export const studio = {
     ],
   },
 
+  /* The strip of in-game captures under the opening. */
+  bench: {
+    eyebrow: 'On the workbench',
+    heading: 'Sheriff Town VR, in development.',
+    action: 'See the game',
+  },
+
   approach: {
     heading: 'How we work with you.',
     lede: 'A project moves through five steps, and you can see where it stands at each one.',

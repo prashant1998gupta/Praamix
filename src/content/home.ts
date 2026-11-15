@@ -14,7 +14,7 @@ const faq: Faq[] = [
   {
     question: 'What is Sheriff Town VR?',
     answer:
-      'Our first original game: a VR sandbox where you are the sheriff of a town that talks back, built around arrests rather than kills. It is in development for standalone and PC VR, and no release date or store listing has been announced.',
+      'Our first original game: a VR sandbox where you are the sheriff of a town that talks back, built around arrests rather than kills. It is in development for standalone and PC VR, with multiplayer planned. No release date or store listing has been announced.',
   },
   {
     question: 'What does Praamix make?',

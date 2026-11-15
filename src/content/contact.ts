@@ -90,6 +90,34 @@ export const contact = {
     link: 'Privacy Policy',
   },
 
+  /* What follows a brief. No timings are promised here. */
+  next: {
+    label: 'What happens next',
+    steps: [
+      { title: 'You send a brief', text: 'A few sentences are enough.' },
+      { title: 'We talk it through', text: 'Goals, platforms and constraints.' },
+      { title: 'You get a scope', text: 'A plan and a proposal to decide on.' },
+    ],
+  },
+
+  /* The live summary beside the form. */
+  file: {
+    heading: 'Project file',
+    essentials: 'Essentials',
+    ready: 'Ready to go',
+    empty: 'Not answered yet',
+    rows: {
+      client: 'Client',
+      reply: 'Reply to',
+      game: 'The game',
+      type: 'Type',
+      platforms: 'Platforms',
+      engine: 'Engine',
+      budget: 'Budget',
+      timeframe: 'Timeframe',
+    },
+  },
+
   aside: {
     heading: 'What a brief is for.',
     points: [

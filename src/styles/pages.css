@@ -1,26 +1,3 @@
-/* ---------- Contact ---------- */
-
-.contact__layout {
-  display: grid;
-  gap: var(--gap);
-}
-
-.contact__aside {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-  padding: clamp(1.25rem, 0.9rem + 1.8vw, 2rem);
-  border-radius: var(--radius-l);
-  background: var(--surface);
-}
-
-@media (min-width: 64em) {
-  .contact__layout {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-    align-items: start;
-  }
-}
-
 /* ---------- Legal pages ---------- */
 
 .legal {

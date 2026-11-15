@@ -1,0 +1,150 @@
+/*
+ * The night theme: the game's pages (the homepage and the game page) are dark.
+ * The class sits on <html>, put there by the build for those pages and kept in
+ * step by App as the visitor moves around. The client pages stay light.
+ *
+ * Most of the site reads its colours from the role tokens, so changing the
+ * tokens re-colours it. The rest of this file is the handful of places that
+ * need a different treatment in the dark.
+ */
+
+html.night {
+  color-scheme: dark;
+
+  --bg: #0f1318;
+  --surface: #161b23;
+  --fg: #f3f5f7;
+  --fg-soft: #b4bcc6;
+  --rule: rgb(255 255 255 / 0.12);
+  --line: rgb(255 255 255 / 0.12);
+  --ink-quiet: #98a1ac; /* captions, 7:1 on the dark page */
+  --accent-text: var(--orange); /* 5.6:1 on the dark page */
+  --orange-text: var(--orange);
+  --orange-soft: rgb(242 107 56 / 0.16);
+  --focus: #ffffff;
+}
+
+html.night body {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Bands step up slightly from the page instead of down to grey. */
+html.night .band {
+  --rule: rgb(255 255 255 / 0.12);
+}
+
+/* Panels that were dark on a light page are now a raised surface with an edge. */
+html.night .on-ink {
+  --bg: #1b212a;
+}
+
+html.night .dispatch,
+html.night .file {
+  border: 1px solid var(--rule);
+}
+
+/* The main button is light on dark; the second button is an outline. */
+html.night .btn--solid {
+  --btn-bg: var(--white);
+  --btn-fg: var(--ink);
+  --btn-edge: var(--white);
+}
+
+html.night .btn--outline {
+  --btn-bg: transparent;
+  --btn-fg: var(--white);
+  --btn-edge: rgb(255 255 255 / 0.55);
+}
+
+html.night .bubble,
+html.night .band .bubble {
+  background: #1f2630;
+}
+
+html.night .bubble::after,
+html.night .band .bubble::after {
+  border-top-color: #1f2630;
+}
+
+html.night .case,
+html.night .profile {
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--orange);
+}
+
+html.night .menu-button__bars,
+html.night .menu-button__bars::before,
+html.night .menu-button__bars::after {
+  background: var(--white);
+}
+
+html.night .menu-button[aria-expanded='true'] .menu-button__bars {
+  background: transparent;
+}
+
+html.night .stats__value {
+  background: linear-gradient(180deg, #ffffff 35%, #9fb0c4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- The header: stays with you, steps aside while you read ---------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  background: rgb(255 255 255 / 0.88);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  transition: translate 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.site-header[data-hidden] {
+  translate: 0 -105%;
+}
+
+html.night .site-header {
+  background: rgb(15 19 24 / 0.78);
+}
+
+/* Sections reached by a link stop clear of the header. */
+section[id],
+article[id] {
+  scroll-margin-top: 5rem;
+}
+
+/* A thin line at the very top shows how far down the page you are. */
+.scroll-progress {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 5;
+      display: block;
+      width: 100%;
+      height: 3px;
+      background: var(--orange);
+      transform-origin: 0 50%;
+      animation: progress linear both;
+      animation-timeline: scroll(root);
+      pointer-events: none;
+    }
+  }
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}

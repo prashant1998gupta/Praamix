@@ -8,7 +8,7 @@
  * Every page is opened at the screen widths in the brief, plus a short
  * landscape phone. Each one is checked for sideways scrolling, broken
  * pictures, empty or "#" links, missing alt text and console errors. Then the
- * menu, the Dispatch board, the voiced lines, the gallery viewer, the project brief, reduced motion, direct loading of
+ * menu, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the project brief, reduced motion, direct loading of
  * every address and the not-found page are exercised.
  *
  * This is emulation inside desktop Chrome or Edge. It does not replace trying
@@ -156,7 +156,7 @@ await run('Menu on a phone', async () => {
   await page.waitForURL('**/services')
   report.check('Choosing a link goes there and closes the menu', (await button.getAttribute('aria-expanded')) === 'false')
   const targets = await page.evaluate(() =>
-    [...document.querySelectorAll('.btn, .menu-button, .dispatch__mode, .dispatch__map')]
+    [...document.querySelectorAll('.btn, .menu-button, .dispatch__mode, .dispatch__map, .asset__look, .choice')]
       .filter((el) => el.getBoundingClientRect().width > 0)
       .filter((el) => el.getBoundingClientRect().height < 44).length,
   )
@@ -210,22 +210,98 @@ await run('Voiced lines and gallery viewer', async () => {
   await context.close()
 })
 
-await run('Tool rack', async () => {
+await run('3D showroom and multiplayer', async () => {
   const { context, page } = await open({ width: 1440, height: 900 })
   await page.goto(base + '/', { waitUntil: 'networkidle' })
-  const rack = page.locator('.rack-section')
-  const name = rack.locator('.rack__name')
+  const room = page.locator('.showroom')
+  await room.scrollIntoViewIfNeeded()
+  const name = room.locator('.showroom__name')
   const first = await name.textContent()
-  await rack.getByRole('button', { name: 'Next' }).click()
-  report.check('Next brings the next model to the front', (await name.textContent()) !== first)
-  await rack.locator('.rack__stage').focus()
-  await page.keyboard.press('ArrowLeft')
-  report.check('The left arrow key turns it back', (await name.textContent()) === first)
-  await rack.getByRole('button', { name: 'Physics tools' }).click()
-  const count = await rack.locator('.rack__item').count()
-  report.check('Physics tools shows eight models', count === 8, `${count} found`)
-  const broken = await rack.evaluate((el) => [...el.querySelectorAll('img')].filter((img) => img.complete && img.naturalWidth === 0).length)
-  report.check('Every model picture loads', broken === 0, `${broken} broken`)
+  await room.getByRole('button', { name: 'Next' }).click()
+  report.check('Next shows the next tool gun', (await name.textContent()) !== first)
+  await room.getByRole('button', { name: 'Portal Gun' }).click()
+  report.check('The picker chooses a gun by name', (await name.textContent()) === 'Portal Gun')
+  const picks = await room.locator('.showroom__pick').count()
+  report.check('The picker lists fourteen guns', picks === 14, `${picks} found`)
+  const tools = await room.locator('.showroom__tool-list li').count()
+  report.check('Eight physics tools are shown', tools === 8, `${tools} found`)
+  await page.waitForTimeout(2500)
+  const state = await room.locator('.showroom__stage').getAttribute('data-state')
+  report.check('The stage shows the live model, or its picture where 3D is unavailable', ['ready', 'failed'].includes(state ?? ''), state ?? 'none')
+  report.note(state === 'ready' ? 'Real-time 3D ran in this browser.' : 'This browser had no 3D, so the picture stood in.')
+  const models = await page.evaluate(async () => {
+    const answers = await Promise.all(['gun-spawn.glb', 'gun-portal.glb', 'gun-portal-albedo.webp'].map((file) => fetch('/models/' + file, { method: 'HEAD' })))
+    return answers.every((answer) => answer.ok)
+  })
+  report.check('The model files are published', models)
+  const heading = page.locator('#multiplayer-title')
+  await heading.scrollIntoViewIfNeeded()
+  report.check('Multiplayer is shown as planned', (await page.locator('#multiplayer .pill').textContent()) === 'Planned')
+  await context.close()
+})
+
+await run('Night theme', async () => {
+  const { context, page } = await open({ width: 1440, height: 900 })
+  const dark = async () => page.evaluate(() => document.documentElement.classList.contains('night'))
+  await page.goto(base + '/', { waitUntil: 'networkidle' })
+  report.check('The homepage is dark', await dark())
+  await page.goto(base + '/games/sheriff-town-vr', { waitUntil: 'networkidle' })
+  report.check('The game page is dark', await dark())
+  await page.goto(base + '/services', { waitUntil: 'networkidle' })
+  report.check('The services page is dark', await dark())
+  await page.goto(base + '/studio', { waitUntil: 'networkidle' })
+  report.check('The studio page is dark', await dark())
+  await page.goto(base + '/contact', { waitUntil: 'networkidle' })
+  report.check('The contact page is light', !(await dark()))
+  await page.locator('.site-nav__link', { hasText: 'Games' }).click()
+  await page.waitForURL('**/games/**')
+  const switched = await page
+    .waitForFunction(() => document.documentElement.classList.contains('night'), null, { timeout: 3000 })
+    .then(() => true, () => false)
+  report.check('Moving to a game page switches to dark', switched)
+  await context.close()
+})
+
+await run('Services and studio', async () => {
+  const { context, page } = await open({ width: 1440, height: 900 })
+  await page.goto(base + '/services', { waitUntil: 'networkidle' })
+
+  const looks = page.locator('.asset__look')
+  const stage = page.locator('.asset__stage')
+  await page.waitForTimeout(2500)
+  const state = await stage.getAttribute('data-state')
+  if (state === 'ready') {
+    await looks.nth(2).click()
+    report.check('The asset can be shown finished', (await stage.getAttribute('data-look')) === 'final')
+    await looks.nth(0).click()
+    report.check('The asset can be shown as a wireframe', (await stage.getAttribute('data-look')) === 'wire')
+  } else {
+    report.check('Without 3D the asset falls back to its picture', state === 'failed', state ?? 'none')
+  }
+
+  const track = page.locator('.track')
+  const stops = track.getByRole('tab')
+  const title = track.locator('.track__title')
+  const count = await stops.count()
+  report.check('The track has nine stages', count === 9, `${count} found`)
+  const first = await title.textContent()
+  await stops.nth(0).focus()
+  await page.keyboard.press('ArrowRight')
+  report.check('Arrow key moves to the next stage', (await stops.nth(1).getAttribute('aria-selected')) === 'true')
+  report.check('The stage text changes with it', (await title.textContent()) !== first)
+  await track.getByRole('button', { name: 'Next stage' }).click()
+  report.check('Next stage moves along the track', (await stops.nth(2).getAttribute('aria-selected')) === 'true')
+  await page.keyboard.press('End')
+  await stops.nth(8).click()
+  report.check('Next is switched off at the last stage', await track.getByRole('button', { name: 'Next stage' }).isDisabled())
+
+  await page.goto(base + '/studio', { waitUntil: 'networkidle' })
+  const doors = page.locator('.door')
+  report.check('The studio opens on two doors', (await doors.count()) === 2)
+  report.check('One door leads to the game', (await doors.nth(0).getAttribute('href')) === '/games/sheriff-town-vr')
+  report.check('The other leads to services', (await doors.nth(1).getAttribute('href')) === '/services')
+  const portfolios = page.locator('.profile a[target="_blank"]')
+  report.check('Both profiles link to a portfolio', (await portfolios.count()) === 2)
   await context.close()
 })
 
@@ -245,6 +321,10 @@ await run('Project brief', async () => {
   report.check('A complete brief gives a truthful result', ['checked', 'sent', 'mail', 'failed'].includes(status ?? ''), status ?? 'none')
   report.check('Answers stay in the form afterwards', (await page.inputValue('#brief-email')) === 'test@example.com')
   report.check('Privacy Policy is linked beside the form', await page.locator('.brief__note a[href="/privacy-policy"]').isVisible())
+  await page.getByLabel('Mobile').check({ force: true })
+  await page.getByLabel('Unity', { exact: true }).check({ force: true })
+  const file = await page.locator('.file__rows').textContent()
+  report.check('The project file fills in as answers are given', /Mobile/.test(file ?? '') && /Unity/.test(file ?? '') && /Test Person/.test(file ?? ''))
   await context.close()
 })
 

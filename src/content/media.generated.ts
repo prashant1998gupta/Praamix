@@ -513,6 +513,17 @@ export const media = {
     "fallback": 480,
     "fallbackType": "png"
   },
+  "praamix-logo-light": {
+    "base": "/media/praamix-logo-light",
+    "widths": [
+      192,
+      384,
+      576
+    ],
+    "width": 576,
+    "height": 108,
+    "fallback": 384
+  },
   "praamix-logo": {
     "base": "/media/praamix-logo",
     "widths": [

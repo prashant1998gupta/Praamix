@@ -1,0 +1,293 @@
+/* ---------- The game, told as you scroll ---------- */
+
+.story {
+  padding-block: var(--space-section);
+}
+
+.story__grid {
+  display: grid;
+  gap: var(--gap);
+}
+
+/* Narrow screens: each part is a picture, then its text. The sticky frame is for wide screens. */
+.story__media {
+  display: none;
+}
+
+.story__steps {
+  display: grid;
+  gap: var(--space-section);
+}
+
+.story__step {
+  display: grid;
+  gap: 1.1rem;
+  align-content: center;
+  justify-items: start;
+}
+
+.story__step > p {
+  max-width: var(--measure);
+}
+
+.story__inline {
+  width: 100%;
+}
+
+/* A large outlined number beside each part. */
+.story__number {
+  color: transparent;
+  font-size: clamp(3rem, 2rem + 5vw, 6rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--fg) 32%, transparent);
+}
+
+@media (min-width: 56em) {
+  .story__grid {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+
+  /* The frame stays in view while the text beside it scrolls. */
+  .story__media {
+    position: sticky;
+    top: 14vh;
+    display: block;
+    align-self: start;
+  }
+
+  .story__frame {
+    position: relative;
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    background: #0b0e12;
+    box-shadow: 0 50px 90px -40px rgb(0 0 0 / 0.7);
+  }
+
+  /* One picture per part, stacked. The one being read fades and settles in. */
+  .story__slide {
+    position: absolute;
+    inset: 0;
+    visibility: hidden;
+    opacity: 0;
+    scale: 1.07;
+    transition:
+      opacity 0.7s ease,
+      scale 1.3s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s 0.7s;
+  }
+
+  .story__slide[data-active] {
+    visibility: visible;
+    opacity: 1;
+    scale: 1;
+    transition-delay: 0s;
+  }
+
+  .story__slide picture {
+    display: block;
+    height: 100%;
+  }
+
+  .story__slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .story__dots {
+    position: absolute;
+    top: 50%;
+    right: 0.9rem;
+    display: grid;
+    gap: 0.5rem;
+    translate: 0 -50%;
+  }
+
+  .story__dots li {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 99rem;
+    background: rgb(255 255 255 / 0.4);
+    transition:
+      height 0.4s ease,
+      background-color 0.4s ease;
+  }
+
+  .story__dots li[data-active] {
+    height: 1.6rem;
+    background: var(--orange);
+  }
+
+  .story__inline {
+    display: none;
+  }
+
+  .story__steps {
+    gap: 0;
+  }
+
+  /* Each part takes most of a screen, so one is read at a time. The rest wait, dimmed. */
+  .story__step {
+    min-height: 84vh;
+    opacity: 0.36;
+    transition: opacity 0.5s ease;
+  }
+
+  .story__step[data-active] {
+    opacity: 1;
+  }
+}
+
+/* ---------- One line, very large, sliding past as the page scrolls ---------- */
+
+.kinetic {
+  overflow: hidden;
+  padding-block: clamp(0.5rem, 2vw, 2rem);
+}
+
+.kinetic__line {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  width: max-content;
+  color: transparent;
+  font-size: clamp(3.5rem, 2rem + 11vw, 12rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  translate: -4% 0;
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--fg) 36%, transparent);
+}
+
+.kinetic__line span:nth-child(3) {
+  color: var(--fg);
+  -webkit-text-stroke: 0;
+}
+
+.kinetic__line .kinetic__star {
+  color: var(--orange);
+  font-size: 0.45em;
+  -webkit-text-stroke: 0;
+}
+
+/* ---------- What is coming: multiplayer ---------- */
+
+.coming {
+  display: grid;
+  gap: var(--gap);
+  align-items: center;
+  overflow: hidden;
+  padding: clamp(1.5rem, 1rem + 3vw, 3.5rem);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  background:
+    radial-gradient(60% 90% at 88% 50%, rgb(242 107 56 / 0.2), transparent 70%),
+    radial-gradient(50% 80% at 10% 100%, rgb(90 150 235 / 0.14), transparent 70%), var(--bg);
+}
+
+.coming__text {
+  display: grid;
+  gap: 1.1rem;
+  justify-items: start;
+}
+
+.coming__text > p:not(:first-child) {
+  max-width: var(--measure);
+  color: var(--fg-soft);
+  font-size: var(--text-l);
+  line-height: 1.5;
+}
+
+.coming__art svg {
+  display: block;
+  width: 100%;
+  max-width: 26rem;
+  margin-inline: auto;
+  overflow: visible;
+}
+
+.coming__star circle {
+  fill: #1d2633;
+  stroke: #f0b43c;
+  stroke-width: 3;
+}
+
+.coming__link {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 10;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.coming__link--low {
+  stroke: #6aa5ff;
+  opacity: 0.6;
+}
+
+@media (min-width: 56em) {
+  .coming {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  }
+}
+
+/* ---------- Motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .coming__link {
+    animation: signal 1.6s linear infinite;
+  }
+
+  .coming__link--low {
+    animation-direction: reverse;
+  }
+
+  .coming__star {
+    animation: star-bob 4.2s ease-in-out infinite;
+  }
+
+  .coming__star--b {
+    animation-delay: -1.4s;
+  }
+
+  .coming__star--c {
+    animation-delay: -2.6s;
+  }
+
+  @supports (animation-timeline: view()) {
+    .kinetic__line {
+      animation: kinetic linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+
+@keyframes signal {
+  to {
+    stroke-dashoffset: -32;
+  }
+}
+
+@keyframes star-bob {
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+@keyframes kinetic {
+  from {
+    transform: translateX(8%);
+  }
+
+  to {
+    transform: translateX(-36%);
+  }
+}

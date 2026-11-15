@@ -11,14 +11,46 @@ type Stage = {
 }
 
 export const servicesIntro = {
+  eyebrow: 'Game development services',
   title: ['Your game.', 'Our full pipeline.'],
   lede: 'Unity and Unreal Engine development, from concept to launch.',
   options: 'Hand us the whole production, a single stage, or a project that is already under way.',
+  pipelineAction: 'See the nine stages',
+  /* The words on the moving strip: what we build, and where. */
+  ticker: [
+    'Unity',
+    'Unreal Engine',
+    '2D and 3D',
+    'Mobile',
+    'PC',
+    'Web',
+    'Console',
+    'VR',
+    'AR and mixed reality',
+    'Single-player and multiplayer',
+    'Concept to launch',
+  ],
+}
+
+/*
+ * The live asset at the top of the page. It is one of our own, from Sheriff
+ * Town VR, so the caption says so: it is not client work.
+ */
+export const assetStages = {
+  /** The model's file name in public/models/, without 'gun-'. */
+  model: 'portal',
+  name: 'The Portal Gun from Sheriff Town VR',
+  caption: 'A real asset from our own game, Sheriff Town VR, drawn live in your browser. It is not client work.',
+  looks: {
+    wire: { label: 'Wireframe', text: 'The shape, in 9,176 triangles.' },
+    clay: { label: 'Clay', text: 'The form, before any colour. Proportions get settled here.' },
+    final: { label: 'Finished', text: 'Textured and lit, as it is in the game.' },
+  },
 }
 
 export const pipeline = {
   heading: 'From an idea to a playable build.',
-  lede: 'Scope, milestones and target devices are agreed around your project. Open a stage to see the work and what it typically produces.',
+  lede: 'Scope, milestones and target devices are agreed around your project. Choose a stage to see the work and what it typically produces.',
   deliverablesLabel: 'Typical deliverables',
 }
 

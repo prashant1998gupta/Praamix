@@ -34,7 +34,7 @@ export function PipelineIntro() {
             <p className="lede">{pipeline.lede}</p>
             <TextLink to="/services">{pipeline.action}</TextLink>
           </div>
-          <Art image={images.deviceFamily} sizes={SIZES.half} variant="open" />
+          <Art image={images.deviceFamily} sizes={SIZES.half} />
         </div>
         <ol className="steps">
           {pipeline.steps.map((step) => (

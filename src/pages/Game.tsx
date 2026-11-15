@@ -3,9 +3,11 @@ import { Action, ExternalAction } from '../components/Action.tsx'
 import { Band } from '../components/Band.tsx'
 import { FaqSection } from '../components/Faq.tsx'
 import { Gallery } from '../components/Gallery.tsx'
-import { CaseFiles, DispatchBoard, Extras, FeatureRow, GameStage } from '../components/GameShowcase.tsx'
+import { CaseFiles, DispatchBoard, Extras, GameStage } from '../components/GameShowcase.tsx'
+import { ComingNext, Story } from '../components/GameStory.tsx'
 import { GameStatus, StoreLinks } from '../components/GameParts.tsx'
-import { Stats, Ticker, ToolRack } from '../components/Motion.tsx'
+import { Stats, Ticker } from '../components/Motion.tsx'
+import { Showroom } from '../components/Showroom.tsx'
 import { gamePath, games } from '../content/game.ts'
 import { metaFor } from '../content/routes.ts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
@@ -67,13 +69,11 @@ function GamePage({ game }: { game: GameContent }) {
         </div>
       </section>
 
-      <FeatureRow index={0} />
-      <FeatureRow index={1} />
+      <Story />
+      <Showroom {...game.showroom} />
       <CaseFiles />
-      <FeatureRow index={2} />
-      <ToolRack {...game.rack} />
-      <FeatureRow index={3} />
       <DispatchBoard band />
+      <ComingNext />
       <Gallery id="gallery" heading={game.galleryHeading} lede={game.galleryLede} images={game.gallery} />
       <GameStatus game={game} />
       <Extras />

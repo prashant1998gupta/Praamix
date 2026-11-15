@@ -14,6 +14,8 @@ export type RouteMeta = {
   description: string
   /** Keeps unfinished pages out of search results. */
   noindex?: boolean
+  /** True for the pages that use the dark theme. Keep in step with isNight below. */
+  night?: boolean
   /** The main picture at the top of the page. The browser fetches it early. */
   preload?: { file: ImageFile; sizes: string }
 }
@@ -25,12 +27,14 @@ export const routes: RouteMeta[] = [
     path: '/',
     title: `${site.name} · ${site.descriptor}`,
     description: site.description,
+    night: true,
     preload: { file: images.stvArrival.file, sizes: SIZES.stage },
   },
   {
     path: gamePath(sheriffTownVr),
     title: titled(sheriffTownVr.title),
     description: sheriffTownVr.summary,
+    night: true,
     preload: { file: images.stvArrival.file, sizes: SIZES.stage },
   },
   {
@@ -38,13 +42,14 @@ export const routes: RouteMeta[] = [
     title: titled('Game development services'),
     description:
       'Full-pipeline game development with Unity and Unreal Engine: design, art, engineering, optimisation and release support, across mobile, PC, web, console and XR.',
-    preload: { file: images.worldBuilding.file, sizes: SIZES.hero },
+    night: true,
   },
   {
     path: '/studio',
     title: titled('Studio'),
     description: 'What Praamix makes, how it works with clients, and the people behind it.',
-    preload: { file: images.townTree.file, sizes: SIZES.hero },
+    night: true,
+    preload: { file: images.stvArrival.file, sizes: SIZES.half },
   },
   {
     path: '/contact',
@@ -71,6 +76,16 @@ export const notFound: RouteMeta = {
   title: titled('Page not found'),
   description: site.description,
   noindex: true,
+}
+
+/** Every main page is dark. The brief form and the legal pages stay light, for reading and typing. */
+export function isNight(pathname: string): boolean {
+  return (
+    pathname === '/' ||
+    pathname.startsWith('/games') ||
+    pathname.startsWith('/services') ||
+    pathname.startsWith('/studio')
+  )
 }
 
 export function metaFor(path: string): RouteMeta {

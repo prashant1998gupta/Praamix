@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent, MouseEvent } from 'react'
 import { Link, useLocation } from 'react-router'
 import { headerAction, nav, site } from '../content/site.ts'
@@ -16,6 +16,20 @@ export function Header() {
   const [open, setOpen] = useState(false)
   const button = useRef<HTMLButtonElement>(null)
   const action = headerAction()
+  /* The bar slides away while the visitor scrolls down, and comes back as soon as they scroll up. */
+  const [hidden, setHidden] = useState(false)
+
+  useEffect(() => {
+    let last = window.scrollY
+    const onScroll = () => {
+      const now = window.scrollY
+      if (Math.abs(now - last) < 8) return
+      setHidden(now > last && now > 240)
+      last = now
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape' || !open) return
@@ -28,7 +42,12 @@ export function Header() {
   }
 
   return (
-    <header className="site-header" onKeyDown={onKeyDown}>
+    <header
+      className="site-header"
+      onKeyDown={onKeyDown}
+      onFocus={() => setHidden(false)}
+      data-hidden={hidden && !open ? '' : undefined}
+    >
       <div className="wrap site-header__bar">
         <Link
           className="site-header__home"

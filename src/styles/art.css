@@ -67,54 +67,6 @@
   }
 }
 
-/* ---------- The top of a page ---------- */
-
-.hero {
-  padding-block: clamp(1.75rem, 1rem + 3vw, 3.5rem) clamp(2.25rem, 1.5rem + 3vw, 4.5rem);
-}
-
-.hero__grid {
-  display: grid;
-  gap: clamp(1.5rem, 1rem + 2.5vw, 3rem);
-  align-items: center;
-}
-
-.hero__text {
-  container-type: inline-size;
-  display: grid;
-  gap: 1.1rem;
-  justify-items: start;
-}
-
-/*
- * The heading is sized so that its longest line fits the column on one row.
- * --fit is the width of that line in em.
- */
-.hero .h-page {
-  font-size: min(var(--h-page), calc(100cqi / var(--fit, 9.4)));
-}
-
-.hero__audiences {
-  font-weight: 700;
-}
-
-.hero__tagline {
-  font-size: var(--h-mid);
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-}
-
-.hero__text .actions {
-  margin-top: 0.4rem;
-}
-
-@media (min-width: 56em) {
-  .hero__grid {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
-  }
-}
-
 /* ---------- Plain page tops: contact, legal, not found ---------- */
 
 .page {

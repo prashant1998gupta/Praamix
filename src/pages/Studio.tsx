@@ -1,50 +1,25 @@
-import { TextLink } from '../components/Action.tsx'
 import { Band } from '../components/Band.tsx'
-import { PageHero } from '../components/PageHero.tsx'
 import { PeopleProfiles } from '../components/People.tsx'
-import { images } from '../content/images.ts'
+import { CaptureStrip, Doors } from '../components/StudioShow.tsx'
 import { whoWeAre } from '../content/people.ts'
 import { metaFor } from '../content/routes.ts'
 import { studio } from '../content/studio.ts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
 
+/**
+ * Opens on two doors, ours and yours. Then what is on the workbench, the
+ * people, how a project moves, and what the first conversation covers.
+ */
 export function Studio() {
   useDocumentMeta(metaFor('/studio'))
-  const { make, approach, discuss, closing } = studio
+  const { approach, discuss, closing } = studio
 
   return (
     <main id="main" tabIndex={-1}>
-      <PageHero
-        id="studio-title"
-        eyebrow={studio.eyebrow}
-        title={studio.title}
-        fit={8}
-        image={images.townTree}
-        variant="panel"
-      >
-        <p className="lede">{studio.lede}</p>
-      </PageHero>
+      <Doors />
+      <CaptureStrip />
 
-      <section className="section band" aria-labelledby="make-title">
-        <div className="wrap">
-          <div className="section-head">
-            <h2 className="h-section" id="make-title">
-              {make.heading}
-            </h2>
-          </div>
-          <div className="duo">
-            {make.items.map((item) => (
-              <div className="duo__item" key={item.title}>
-                <h3 className="h-sub">{item.title}</h3>
-                <p>{item.text}</p>
-                <TextLink to={item.to}>{item.action}</TextLink>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section" id={whoWeAre.id} tabIndex={-1} aria-labelledby="people-title">
+      <section className="section band" id={whoWeAre.id} tabIndex={-1} aria-labelledby="people-title">
         <div className="wrap">
           <div className="section-head">
             <h2 className="h-section" id="people-title">
@@ -55,7 +30,7 @@ export function Studio() {
         </div>
       </section>
 
-      <section className="section band" aria-labelledby="approach-title">
+      <section className="section" aria-labelledby="approach-title">
         <div className="wrap">
           <div className="section-head">
             <h2 className="h-section" id="approach-title">
@@ -74,21 +49,24 @@ export function Studio() {
         </div>
       </section>
 
-      <section className="section" aria-labelledby="discuss-title">
+      <section className="section band" aria-labelledby="discuss-title">
         <div className="wrap">
           <div className="section-head">
             <h2 className="h-section" id="discuss-title">
               {discuss.heading}
             </h2>
           </div>
-          <div className="quad">
-            {discuss.items.map((item) => (
-              <div className="quad__item" key={item.title}>
+          <ol className="agenda">
+            {discuss.items.map((item, index) => (
+              <li className="agenda__item" key={item.title} data-tilt="">
+                <span className="agenda__number" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 

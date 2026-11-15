@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 import { useLocation } from 'react-router'
-import type { RackItem } from '../content/game.ts'
-import { Arrow } from './Arrow.tsx'
-import { Picture } from './Picture.tsx'
 
 /*
  * Everything that moves on the site lives here. Each effect checks
@@ -35,7 +31,8 @@ const REVEAL = [
   '.dispatch',
   '.overheard > *',
   '.stats__item',
-  '.rack__stage',
+  '.showroom__grid',
+  '.showroom__tool-list > li',
   '.cta__item',
 ].join(', ')
 
@@ -342,185 +339,5 @@ export function TypedLine({ text }: { text: string }) {
         <i />
       </span>
     </>
-  )
-}
-
-/* ---------- The 3D rack ---------- */
-
-type RackSet = { label: string; items: RackItem[] }
-
-/**
- * The Sheriff's kit on a turning ring. It turns by itself while nobody is
- * using it; drag it, use the buttons, or the arrow keys when it has focus.
- * The name and use of the model at the front are read out as it changes.
- */
-export function ToolRack({ heading, lede, sets }: { heading: string; lede: string; sets: Record<string, RackSet> }) {
-  const keys = Object.keys(sets)
-  const [setKey, setSetKey] = useState(keys[0])
-  const items = sets[setKey].items
-  const count = items.length
-  const step = 360 / count
-  const [turn, setTurn] = useState(0)
-  const [drag, setDrag] = useState<number | null>(null)
-  const [paused, setPaused] = useState(false)
-  /* Once someone turns the rack themselves, it stops turning by itself. */
-  const [touched, setTouched] = useState(false)
-  const section = useRef<HTMLElement>(null)
-  const start = useRef(0)
-  const front = ((turn % count) + count) % count
-  const item = items[front]
-
-  /* Turns by itself, every few seconds, while visible and not in use. */
-  useEffect(() => {
-    if (!motionAllowed() || paused || touched || drag !== null) return
-    const element = section.current
-    let visible = false
-    const observer = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting
-    })
-    if (element) observer.observe(element)
-    const timer = window.setInterval(() => {
-      if (visible && !document.hidden) setTurn((now) => now + 1)
-    }, 3200)
-    return () => {
-      window.clearInterval(timer)
-      observer.disconnect()
-    }
-  }, [paused, touched, drag, setKey])
-
-  const go = (by: number) => {
-    setTouched(true)
-    setTurn((now) => now + by)
-  }
-
-  const chooseSet = (key: string) => {
-    setTouched(true)
-    setSetKey(key)
-    setTurn(0)
-  }
-
-  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    event.currentTarget.setPointerCapture(event.pointerId)
-    start.current = event.clientX
-    setTouched(true)
-    setDrag(0)
-  }
-  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (drag === null) return
-    setDrag(event.clientX - start.current)
-  }
-  const onPointerUp = () => {
-    if (drag === null) return
-    const moved = Math.round(-drag / 90)
-    setTurn((now) => now + moved)
-    setDrag(null)
-  }
-  const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'ArrowRight') go(1)
-    else if (event.key === 'ArrowLeft') go(-1)
-    else return
-    event.preventDefault()
-  }
-
-  const rotation = -turn * step + (drag ?? 0) * 0.35
-  const radiusFactor = (0.62 / Math.tan(Math.PI / count)).toFixed(3)
-
-  return (
-    <section
-      className="rack-section on-ink"
-      aria-labelledby="rack-title"
-      ref={section}
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-    >
-      <div className="wrap">
-        <div className="section-head rack__head">
-          <h2 className="h-section" id="rack-title">
-            {heading}
-          </h2>
-          <p className="lede">{lede}</p>
-          <div className="rack__sets" role="group" aria-label="Which kit">
-            {keys.map((key) => (
-              <button
-                key={key}
-                className="dispatch__mode"
-                type="button"
-                aria-pressed={key === setKey}
-                onClick={() => chooseSet(key)}
-              >
-                {sets[key].label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div
-          className="rack__stage"
-          tabIndex={0}
-          role="group"
-          aria-roledescription="carousel"
-          aria-label={`${sets[setKey].label}. Use the arrow keys to turn.`}
-          onKeyDown={onKeyDown}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          data-dragging={drag !== null ? '' : undefined}
-        >
-          <div className="rack__floor" aria-hidden="true" />
-          <div
-            className="rack__ring"
-            aria-hidden="true"
-            style={{ '--rotation': `${rotation}deg`, '--factor': radiusFactor } as CSSProperties}
-          >
-            {items.map((entry, index) => {
-              const angle = index * step
-              const facing = Math.cos(((angle + rotation) * Math.PI) / 180)
-              return (
-                <div
-                  key={`${setKey}-${entry.id}`}
-                  className="rack__item"
-                  data-front={index === front ? '' : undefined}
-                  style={
-                    {
-                      '--angle': `${angle}deg`,
-                      '--i': index,
-                      opacity: (0.18 + 0.82 * Math.max(0, (facing + 0.35) / 1.35)).toFixed(3),
-                    } as CSSProperties
-                  }
-                >
-                  <div className="rack__float">
-                    <Picture image={{ ...entry.image, alt: '' }} sizes="(min-width: 56em) 240px, 40vw" />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        <div className="rack__caption">
-          <div aria-live="polite" className="rack__now">
-            <p className="rack__count">
-              {front + 1} / {count}
-            </p>
-            <h3 className="rack__name">{item.name}</h3>
-            <p className="rack__text">{item.text}</p>
-          </div>
-          <div className="rack__nav">
-            <button className="btn btn--light" type="button" onClick={() => go(-1)}>
-              <Arrow back />
-              <span>Previous</span>
-            </button>
-            <button className="btn btn--accent" type="button" onClick={() => go(1)}>
-              <span>Next</span>
-              <Arrow />
-            </button>
-          </div>
-          <p className="rack__note">{item.image.caption}</p>
-        </div>
-      </div>
-    </section>
   )
 }

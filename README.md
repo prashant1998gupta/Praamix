@@ -34,6 +34,7 @@ Needs Node.js 22.18 or newer. The build and the checks run TypeScript files dire
 | `npm run check:responsive` | Renders the built site at many screen sizes and exercises the menu, the Dispatch board, the gallery, the form and legal links |
 | `npm run media` | Rebuilds the responsive images in `public/media/` from `media-source/` |
 | `node scripts/stage-game-art.mjs <exports> <unity project>` | Prepares the Sheriff Town VR pictures in `media-source/game/` from the game's own art exports |
+| `node scripts/stage-game-models.mjs <unity project>` | Converts the game's tool gun models and textures for the 3D viewer, into `public/models/`. Needs Blender |
 
 ## Edit the content
 
@@ -66,6 +67,20 @@ The originals are in `media-source/`. Two kinds:
 
 - **Studio illustrations** in the folder itself. They are generated artwork, not gameplay or client work, and the captions say so.
 - **Sheriff Town VR** in `media-source/game/`: in-game captures, the Dispatch board's map pictures, and in-engine renders of in-game models. `scripts/stage-game-art.mjs` prepares them from the game's own art exports. Captures get a gentle sharpen and grade. Renders are lifted off their flat background and set on a studio backdrop. Nothing is repainted, and the captions say what each picture is. The sizes each image is saved at are listed in `scripts/media.config.mjs`. Run `npm run media` after changing either.
+
+## Real-time 3D
+
+The showroom on the home and game pages, and the asset at the top of the services page, draw the game's own tool gun models live with three.js. The 3D code loads only when one of those sections is near the screen. Where 3D is not available, a picture of the same model stands in.
+
+The models and textures in `public/models/` are the game's own, and anyone who visits the site can download them. Publish only models you are happy to share: the list is at the top of `scripts/stage-game-models.mjs`.
+
+## Light and dark
+
+The home, game, services and studio pages are dark. The contact and legal pages are light, for typing and reading. The list is `isNight` in `src/content/routes.ts`, and the colours are in `src/styles/theme.css`. The light logo used on dark pages is made from the supplied logo by `npm run media`: its charcoal is turned white and its orange is left as supplied.
+
+## Motion
+
+Everything that moves is switched off when the visitor's device asks for reduced motion. The page is then still and complete.
 
 ## Responsive checks
 

@@ -1,24 +1,162 @@
-/* ---------- The project brief ---------- */
+/* ---------- Contact: the opening ---------- */
+
+.contact-hero {
+  padding-block: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+  background:
+    radial-gradient(45% 80% at 12% 20%, rgb(242 107 56 / 0.2), transparent 70%),
+    radial-gradient(40% 80% at 92% 80%, rgb(90 150 235 / 0.2), transparent 70%), var(--ink);
+}
+
+.contact-hero__grid {
+  display: grid;
+  gap: var(--gap);
+  align-items: center;
+}
+
+.contact-hero__text {
+  display: grid;
+  gap: 1.1rem;
+  justify-items: start;
+}
+
+/* What happens after a brief: three steps. */
+.next {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.next__step {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.1rem 1rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  background: rgb(255 255 255 / 0.05);
+}
+
+.next__number {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.next__title {
+  font-weight: 800;
+}
+
+.next__text {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+}
+
+@media (min-width: 64em) {
+  .contact-hero__grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  }
+}
+
+/* ---------- Contact: the brief and the project file ---------- */
+
+.contact-body {
+  padding-block: clamp(1.75rem, 1rem + 3vw, 3.5rem) var(--space-section);
+}
+
+.contact__layout {
+  display: grid;
+  gap: var(--gap);
+}
+
+.contact__aside {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.contact__notes {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.25rem, 0.9rem + 1.8vw, 1.75rem);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  background: var(--white);
+}
+
+@media (min-width: 64em) {
+  .contact__layout {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    align-items: start;
+  }
+
+  /* The project file stays in view while the form scrolls. */
+  .contact__aside {
+    position: sticky;
+    top: 1.5rem;
+  }
+}
 
 .brief {
   display: grid;
-  gap: 2rem;
+  gap: 1.25rem;
 }
 
+.brief > .notice {
+  max-width: none;
+}
+
+/* One numbered card of the brief. */
 .brief__group {
   display: grid;
-  gap: 1.25rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--rule);
+  gap: 1.4rem;
+  min-width: 0;
+  padding: clamp(1.25rem, 0.9rem + 2vw, 2rem);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  background: var(--white);
+  box-shadow: 0 14px 30px -24px rgb(25 28 32 / 0.35);
 }
 
-.brief__group > legend {
-  margin-bottom: 1.25rem;
+/* Floating the legend puts it inside the card instead of on its edge. */
+.brief__legend {
+  float: left;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0;
+}
+
+.brief__number {
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius);
+  background: var(--orange-soft);
+  color: var(--orange-text);
+  font-size: var(--text-s);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.brief__pair {
+  display: grid;
+  gap: 1.4rem 1.25rem;
+}
+
+@media (min-width: 40em) {
+  .brief__pair {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .field {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.4rem;
+  align-content: start;
 }
 
 .field__label {
@@ -43,15 +181,28 @@
 
 .input {
   width: 100%;
-  min-height: 3rem;
-  padding: 0.65rem 0.85rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 0.95rem;
   border: 1.5px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--white);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.input:hover {
+  border-color: var(--ink);
+}
+
+.input:focus-visible {
+  border-color: var(--ink);
+  outline: none;
+  box-shadow: 0 0 0 4px rgb(242 107 56 / 0.3);
 }
 
 textarea.input {
-  min-height: 8rem;
+  min-height: 8.5rem;
   resize: vertical;
 }
 
@@ -60,47 +211,93 @@ textarea.input {
   border-width: 2px;
 }
 
-/* Tick boxes and either-or options, each a comfortable target. */
+/* Chips: each is a real tick box or either-or button with its box hidden. */
 .choices {
   display: grid;
   gap: 0.35rem;
+  min-width: 0;
 }
 
 .choices > legend {
   margin-bottom: 0.35rem;
+  padding: 0;
 }
 
 .choices__list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.25rem;
+  margin-top: 0.3rem;
 }
 
 .choice {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
   min-height: var(--target);
-  padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+  padding: 0.45rem 1.05rem;
   border: 1.5px solid var(--line-strong);
-  border-radius: var(--radius);
+  border-radius: 99rem;
   background: var(--white);
   font-weight: 600;
   cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
 }
 
 .choice input {
-  flex: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.choice .icon {
   width: 1.15rem;
   height: 1.15rem;
-  margin: 0;
-  accent-color: var(--ink);
+  color: var(--orange-text);
+}
+
+/* The tick that appears on a chosen chip. */
+.choice__tick {
+  width: 0;
+  height: 0.55rem;
+  margin-left: -0.5rem;
+  border: solid transparent;
+  border-width: 0 0 2.5px 2.5px;
+  rotate: -45deg;
+  translate: 0 -0.15rem;
+  transition:
+    width 160ms ease,
+    margin 160ms ease;
+}
+
+@media (hover: hover) {
+  .choice:hover {
+    border-color: var(--ink);
+  }
 }
 
 .choice:has(input:checked) {
   border-color: var(--ink);
-  background: var(--surface);
+  background: var(--ink);
+  color: var(--white);
+}
+
+.choice:has(input:checked) .icon {
+  color: var(--orange);
+}
+
+.choice:has(input:checked) .choice__tick {
+  width: 0.95rem;
+  margin-left: 0.1rem;
+  border-color: var(--orange);
 }
 
 .choice:has(input:focus-visible) {
@@ -108,17 +305,15 @@ textarea.input {
   outline-offset: 3px;
 }
 
-.choice input:focus-visible {
-  outline: none;
-}
-
 .brief__send {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--rule);
+  padding: clamp(1.1rem, 0.9rem + 1vw, 1.5rem);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  background: var(--white);
 }
 
 .brief__note {
@@ -132,16 +327,98 @@ textarea.input {
  * so screen readers announce the message when it arrives.
  */
 .brief__status {
-  border-radius: var(--radius);
+  border-radius: var(--radius-l);
   font-weight: 700;
 }
 
 .brief__status:not(:empty) {
   padding: 1rem 1.25rem;
-  background: var(--surface);
+  border: 1px solid var(--rule);
+  background: var(--white);
 }
 
 .brief__status[data-kind='failed'] {
   background: var(--error-soft);
   color: var(--error);
+}
+
+/* ---------- The project file: the brief so far ---------- */
+
+.file {
+  display: grid;
+  gap: 1.1rem;
+  padding: clamp(1.25rem, 0.9rem + 1.8vw, 1.75rem);
+  border-radius: var(--radius-l);
+  background:
+    radial-gradient(80% 60% at 100% 0%, rgb(242 107 56 / 0.18), transparent 70%), var(--ink);
+  box-shadow: 0 30px 50px -30px rgb(25 28 32 / 0.6);
+}
+
+.file__tab {
+  color: var(--orange);
+  font-size: var(--text-s);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.file__meter p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.45rem;
+  font-size: var(--text-s);
+  font-weight: 700;
+}
+
+.file__bar {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 99rem;
+  background: rgb(255 255 255 / 0.14);
+}
+
+.file__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--orange);
+  transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.file__rows > div {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.6rem 0 0.6rem 0.8rem;
+  border-top: 1px solid var(--rule);
+  border-left: 2px solid transparent;
+  transition: border-color 300ms ease;
+}
+
+.file__rows > div[data-filled] {
+  border-left-color: var(--orange);
+}
+
+.file__rows dt {
+  color: var(--fg-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.file__rows dd {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  color: #8e97a2;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  transition: color 300ms ease;
+}
+
+.file__rows > div[data-filled] dd {
+  color: var(--fg);
 }

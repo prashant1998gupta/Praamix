@@ -116,6 +116,13 @@ export const images = {
     tone: '#222c3a',
   },
 
+  gunPortal: {
+    file: media['gun-portal'],
+    alt: 'The Portal Gun: a dark tool gun with an orange and blue ring at its front.',
+    caption: RENDER,
+    tone: 'transparent',
+  },
+
   /* ---------- Sheriff Town VR: the Dispatch board's map pictures ---------- */
   mapPoliceStation: {
     file: media['map-police-station'],
