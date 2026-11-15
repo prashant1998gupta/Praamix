@@ -1,0 +1,619 @@
+/* ---------- Sheriff Town VR: the sections that show the game ---------- */
+
+/* On dark sections the brighter orange reads well, even as small text (5.6:1 on ink). */
+.on-ink {
+  --accent-text: var(--orange);
+}
+
+/* ---------- The opening: an in-game picture on a dark stage ---------- */
+
+.showcase {
+  padding-block: clamp(0.75rem, 0.25rem + 2vw, 2rem) clamp(1.5rem, 1rem + 2vw, 3rem);
+}
+
+.showcase__frame {
+  display: grid;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+}
+
+.showcase__art {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+/* A little larger than its box, so the pointer drift never shows an edge. */
+.showcase__picture {
+  position: absolute;
+  inset: -0.6rem;
+}
+
+/* The <picture> wrapper has to fill its box too, or the image cannot. */
+.showcase__picture picture,
+.dispatch__thumb picture,
+.shot picture {
+  display: block;
+  height: 100%;
+}
+
+.showcase__picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.showcase__text {
+  container-type: inline-size;
+  display: grid;
+  gap: 1rem;
+  align-content: center;
+  justify-items: start;
+  padding: clamp(1.25rem, 0.75rem + 2.5vw, 3rem);
+}
+
+.showcase__title {
+  font-size: min(clamp(2.25rem, 1.3rem + 4vw, 4.5rem), 12.5cqi);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.showcase__motto {
+  color: var(--orange);
+  font-size: var(--h-mid);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.showcase__lede {
+  max-width: 34rem;
+  color: var(--fg-soft);
+  font-size: var(--text-l);
+  line-height: 1.5;
+}
+
+.showcase__text .actions {
+  width: 100%;
+  margin-top: 0.4rem;
+}
+
+.showcase .art__caption {
+  text-align: right;
+}
+
+@media (min-width: 56em) {
+  .showcase__frame {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+
+  .showcase__text {
+    order: -1;
+  }
+
+  .showcase__text .actions {
+    width: auto;
+  }
+
+  /* The picture fades into the stage on its left edge, under the text. */
+  .showcase__art {
+    min-height: clamp(26rem, 36vw, 36rem);
+    aspect-ratio: auto;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 18%);
+    mask-image: linear-gradient(to right, transparent, #000 18%);
+  }
+}
+
+.pill--ink {
+  background: rgb(242 107 56 / 0.16);
+  color: var(--orange);
+}
+
+/* ---------- Who Praamix is, in one line ---------- */
+
+.studio-line {
+  border-block: 1px solid var(--rule);
+}
+
+.studio-line__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  padding-block: 1.25rem;
+}
+
+.studio-line p {
+  max-width: 52rem;
+  font-weight: 600;
+}
+
+/* ---------- Four ways into the game ---------- */
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--gap) 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.pillar {
+  display: grid;
+  gap: 0.7rem;
+  align-content: start;
+  color: inherit;
+  text-decoration: none;
+}
+
+.pillar .art__frame {
+  --frame: 4 / 3;
+}
+
+.pillar__title {
+  font-size: var(--h-sub);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.pillar p {
+  color: var(--fg-soft);
+}
+
+@media (hover: hover) {
+  .pillar img {
+    transition: scale 300ms ease;
+  }
+
+  .pillar:hover img {
+    scale: 1.04;
+  }
+
+  .pillar:hover .pillar__title {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+/* ---------- Overheard: a speech bubble ---------- */
+
+.overheard {
+  display: grid;
+  gap: var(--gap);
+  align-items: center;
+}
+
+.bubble {
+  position: relative;
+  display: grid;
+  align-content: center;
+  min-height: 13rem;
+  padding: clamp(1.25rem, 0.9rem + 2vw, 2.25rem);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+}
+
+.band .bubble {
+  background: var(--white);
+}
+
+/* The bubble's tail. */
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -0.95rem;
+  left: 2.5rem;
+  border-width: 1rem 1rem 0 0;
+  border-style: solid;
+  border-color: var(--surface) transparent transparent;
+}
+
+.band .bubble::after {
+  border-top-color: var(--white);
+}
+
+.bubble__line {
+  margin: 0;
+}
+
+.bubble__line p {
+  font-size: var(--h-mid);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  animation: soft-in 260ms ease both;
+}
+
+.bubble__who {
+  margin-top: 1rem;
+  color: var(--fg-soft);
+}
+
+.overheard__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 2rem;
+}
+
+.overheard__count {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+  font-weight: 700;
+}
+
+@media (min-width: 56em) {
+  .overheard {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+}
+
+/* ---------- The Dispatch board ---------- */
+
+.dispatch {
+  overflow: hidden;
+  border-radius: var(--radius-l);
+}
+
+.dispatch__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  padding: 1rem clamp(1rem, 0.5rem + 2vw, 2rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.dispatch__brand {
+  color: var(--orange);
+  font-size: var(--text-s);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.dispatch__modes {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 0.08);
+}
+
+.dispatch__mode {
+  min-height: var(--target);
+  padding: 0.5rem 1.1rem;
+  border: 0;
+  border-radius: calc(var(--radius) - 0.15rem);
+  background: transparent;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dispatch__mode[aria-pressed='true'] {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+.dispatch__mode-text {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+}
+
+.dispatch__body {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1rem, 0.5rem + 2vw, 2rem);
+}
+
+.dispatch__maps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr));
+  gap: 0.6rem;
+  align-content: start;
+}
+
+.dispatch__map {
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+  min-height: var(--target);
+  padding: 0.45rem;
+  border: 1.5px solid rgb(255 255 255 / 0.16);
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 0.04);
+  color: var(--fg);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dispatch__map[aria-selected='true'] {
+  border-color: var(--orange);
+  background: rgb(242 107 56 / 0.14);
+}
+
+.dispatch__thumb {
+  display: block;
+  aspect-ratio: 16 / 7;
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 0.2rem);
+}
+
+.dispatch__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dispatch__name {
+  padding-inline: 0.15rem;
+  font-size: var(--text-s);
+  line-height: 1.25;
+}
+
+.dispatch__detail {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+.dispatch__detail .art__frame {
+  --frame: 16 / 9;
+}
+
+.dispatch__detail .art {
+  animation: soft-in 280ms ease both;
+}
+
+.dispatch__text {
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.dispatch__text p {
+  max-width: var(--measure);
+  color: var(--fg-soft);
+}
+
+.dispatch__text .dispatch__kind {
+  color: var(--orange);
+  font-size: var(--text-s);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.dispatch__caption {
+  font-size: var(--text-s);
+}
+
+@media (min-width: 56em) {
+  .dispatch__body {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 9fr);
+  }
+
+  .dispatch__maps {
+    grid-template-columns: 1fr;
+  }
+
+  .dispatch__map {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .dispatch__thumb {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (min-width: 72em) {
+  .dispatch__detail {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
+
+/* ---------- Case files ---------- */
+
+.cases {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1.5rem;
+}
+
+.case {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+  padding: 1.5rem;
+  border-top: 4px solid var(--orange);
+  border-radius: 0 0 var(--radius-l) var(--radius-l);
+  background: var(--surface);
+}
+
+.case__tab {
+  color: var(--accent-text);
+  font-size: var(--text-s);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.case__title {
+  font-size: var(--h-sub);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.case__hook {
+  font-weight: 700;
+}
+
+.case p:last-child {
+  color: var(--fg-soft);
+}
+
+/* ---------- Feature rows ---------- */
+
+@media (min-width: 40em) {
+  .ticks--two {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem 1.5rem;
+  }
+}
+
+/* ---------- Small things ---------- */
+
+.extras li {
+  padding-block: 1rem;
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-l);
+  line-height: 1.5;
+}
+
+.extras li:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ---------- Gallery and its viewer ---------- */
+
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 0.9rem;
+}
+
+.shot {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius);
+  cursor: zoom-in;
+}
+
+.shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (hover: hover) {
+  .shot img {
+    transition: scale 300ms ease;
+  }
+
+  .shot:hover img {
+    scale: 1.04;
+  }
+}
+
+.viewer {
+  width: min(100% - 1.5rem, 80rem);
+  max-width: none;
+  max-height: calc(100dvh - 1.5rem);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-l);
+}
+
+.viewer::backdrop {
+  background: rgb(10 12 15 / 0.85);
+}
+
+.viewer__inner {
+  display: grid;
+  gap: 0.9rem;
+  padding: clamp(0.75rem, 0.5rem + 1.5vw, 1.5rem);
+}
+
+.viewer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.viewer__count {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+  font-weight: 700;
+}
+
+.viewer__close {
+  min-height: var(--target);
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid rgb(255 255 255 / 0.4);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.viewer__figure img {
+  width: 100%;
+  max-height: calc(100dvh - 16rem);
+  border-radius: var(--radius);
+  background: #0e1014;
+  object-fit: contain;
+}
+
+.viewer__figure figcaption {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+}
+
+.viewer__kind {
+  color: var(--fg-soft);
+  font-size: var(--text-s);
+}
+
+.viewer__nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* ---------- A section that follows another white one ---------- */
+
+.section--ruled {
+  padding-top: 0;
+}
+
+.section--ruled > .wrap {
+  padding-top: var(--space-section);
+  border-top: 1px solid var(--rule);
+}
+
+/* ---------- Gentle arrivals; none at all with reduced motion ---------- */
+
+@keyframes soft-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble__line p,
+  .dispatch__detail .art {
+    animation: none;
+  }
+
+  .pillar img,
+  .shot img {
+    transition: none;
+  }
+}

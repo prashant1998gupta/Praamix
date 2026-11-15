@@ -12,9 +12,14 @@ const steps: Step[] = [
 
 const faq: Faq[] = [
   {
+    question: 'What is Sheriff Town VR?',
+    answer:
+      'Our first original game: a VR sandbox where you are the sheriff of a town that talks back, built around arrests rather than kills. It is in development for standalone and PC VR, and no release date or store listing has been announced.',
+  },
+  {
     question: 'What does Praamix make?',
     answer:
-      'Two things. Our own original games, starting with Sheriff Town VR, and games developed for clients, from a single production stage to the whole pipeline.',
+      'Our own original games first, starting with Sheriff Town VR. We also develop games for clients, from a single production stage to the whole pipeline.',
   },
   {
     question: 'Do you work in Unity or Unreal Engine?',
@@ -27,57 +32,41 @@ const faq: Faq[] = [
       'We build across mobile, PC, web, console and XR. The actual devices and the test coverage are defined for each project.',
   },
   {
-    question: 'How is full-pipeline work scoped?',
-    answer:
-      'It starts with discovery: your goals, audience, platforms and constraints. From that comes a scope and a delivery plan with milestones. Timing, price, rights and support are agreed for each project and written into the project agreement.',
-  },
-  {
     question: 'How do I start a project?',
     answer:
       'With a short brief: what the game is, where it should run and how far along it is. The brief is on the contact page.',
-  },
-  {
-    question: 'What is the status of Sheriff Town VR?',
-    answer:
-      'It is in development for standalone and PC VR. No release date or store listing has been announced.',
   },
 ]
 
 export const home = {
   hero: {
-    eyebrow: 'Original games + client development',
-    title: ['From first idea.', 'To playable world.'],
-    lede: 'Original games and full-pipeline development with Unity and Unreal Engine.',
-    audiences: 'For players with curiosity. For clients with a vision.',
-    playerAction: 'Explore our games',
-    clientAction: 'Build a game with us',
+    eyebrow: 'A Praamix original · In development',
+    playerAction: 'Discover the game',
+    mapsAction: 'Pick a map',
   },
 
-  facts: ['Unity + Unreal Engine', '2D + 3D', 'Mobile · PC · Web · Console · XR'],
+  studioLine: {
+    text: 'Praamix is an independent game studio. We make our own games first, and build games for clients with Unity and Unreal Engine.',
+    action: 'Game development services',
+  },
+
+  pillars: {
+    heading: 'What you do in Sheriff Town.',
+    action: 'Everything in the game',
+  },
 
   pipeline: {
-    title: ['One studio.', 'The whole pipeline.'],
-    lede: 'We create original games and partner with clients to develop games from concept to launch. Bring us the whole production, or a single stage of it.',
+    title: ['We build games', 'for others, too.'],
+    lede: 'The skills behind Sheriff Town VR are available for your game. Bring us the whole production, from concept to launch, or a single stage of it.',
     action: 'Explore our services',
     steps,
   },
 
-  game: {
-    heading: 'Our first world.',
-    action: 'Discover the game',
-  },
-
-  curious: {
-    heading: 'Made for the curious.',
-    lede: 'Three things Sheriff Town VR is built around.',
-    tabsLabel: 'What Sheriff Town VR is built around',
-  },
-
   studio: {
-    title: ['Games with room', 'to try things.'],
+    title: ['Games you can', 'get your hands on.'],
     body: [
-      'We like games you can get your hands on. The kind where you wonder what happens if you try something, and the game lets you find out.',
-      'That curiosity is behind Sheriff Town VR, and it is how we approach the games we build with clients.',
+      'We make the kind of games we want to play: you reach out, grab something, and the world answers back. Sheriff Town VR is the first.',
+      'The same habits go into client work. Prototype early, play it often, and keep what feels good in the hand.',
     ],
     action: 'About the studio',
   },
@@ -92,14 +81,14 @@ export const home = {
   },
 
   closing: {
+    player: {
+      title: 'Ready for your first shift?',
+      text: 'Everything about Sheriff Town VR, in one place.',
+      action: 'Discover the game',
+    },
     client: {
       title: 'Have a game in mind?',
       text: 'See what we can take on and how a project runs.',
-    },
-    player: {
-      title: 'Looking for your next game?',
-      text: 'Meet Sheriff Town VR, our first original game.',
-      action: 'Discover the game',
     },
   },
 }

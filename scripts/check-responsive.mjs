@@ -8,7 +8,7 @@
  * Every page is opened at the screen widths in the brief, plus a short
  * landscape phone. Each one is checked for sideways scrolling, broken
  * pictures, empty or "#" links, missing alt text and console errors. Then the
- * menu, the chapters, the project brief, reduced motion, direct loading of
+ * menu, the Dispatch board, the voiced lines, the gallery viewer, the project brief, reduced motion, direct loading of
  * every address and the not-found page are exercised.
  *
  * This is emulation inside desktop Chrome or Edge. It does not replace trying
@@ -154,7 +154,7 @@ await run('Menu on a phone', async () => {
   await page.waitForURL('**/services')
   report.check('Choosing a link goes there and closes the menu', (await button.getAttribute('aria-expanded')) === 'false')
   const targets = await page.evaluate(() =>
-    [...document.querySelectorAll('.btn, .menu-button, .chapters__tab')]
+    [...document.querySelectorAll('.btn, .menu-button, .dispatch__mode, .dispatch__map')]
       .filter((el) => el.getBoundingClientRect().width > 0)
       .filter((el) => el.getBoundingClientRect().height < 44).length,
   )
@@ -162,22 +162,49 @@ await run('Menu on a phone', async () => {
   await context.close()
 })
 
-await run('Chapters with keyboard and pointer', async () => {
+await run('Dispatch board with keyboard and pointer', async () => {
   const { context, page } = await open({ width: 1440, height: 900 })
   await page.goto(base + '/', { waitUntil: 'networkidle' })
-  const tabs = page.getByRole('tab')
-  const count = await tabs.count()
-  report.check('There are three chapters', count === 3, `${count} found`)
-  const heading = page.locator('.chapters__text h3')
+  const board = page.locator('.dispatch')
+  const tabs = board.getByRole('tab')
+  const heading = board.locator('.dispatch__text h3')
+  const sandbox = await tabs.count()
+  report.check('Sandbox lists five maps', sandbox === 5, `${sandbox} found`)
   const first = await heading.textContent()
   await tabs.nth(0).focus()
   await page.keyboard.press('ArrowRight')
-  report.check('Arrow key selects the next chapter', (await tabs.nth(1).getAttribute('aria-selected')) === 'true')
-  report.check('The text changes with it', (await heading.textContent()) !== first)
+  report.check('Arrow key selects the next map', (await tabs.nth(1).getAttribute('aria-selected')) === 'true')
+  report.check('The picture and text change with it', (await heading.textContent()) !== first)
   await page.keyboard.press('End')
-  report.check('End selects the last chapter', (await tabs.nth(2).getAttribute('aria-selected')) === 'true')
-  await tabs.nth(0).click()
-  report.check('Clicking selects a chapter', (await tabs.nth(0).getAttribute('aria-selected')) === 'true')
+  report.check('End selects the last map', (await tabs.nth(sandbox - 1).getAttribute('aria-selected')) === 'true')
+  await board.getByRole('button', { name: 'Challenge' }).click()
+  const challenge = await tabs.count()
+  report.check('Challenge lists two maps', challenge === 2, `${challenge} found`)
+  await tabs.nth(1).click()
+  report.check('Clicking selects a map', (await heading.textContent()) === 'The Colour Bridge')
+  await context.close()
+})
+
+await run('Voiced lines and gallery viewer', async () => {
+  const { context, page } = await open({ width: 1440, height: 900 })
+  await page.goto(base + '/', { waitUntil: 'networkidle' })
+  const line = page.locator('.bubble__line')
+  const before = await line.textContent()
+  await page.getByRole('button', { name: 'Hear another' }).click()
+  report.check('Hear another shows a different line', (await line.textContent()) !== before)
+
+  await page.goto(base + '/games/sheriff-town-vr', { waitUntil: 'networkidle' })
+  const shots = page.locator('.shot')
+  report.check('The gallery has pictures', (await shots.count()) >= 6, `${await shots.count()} found`)
+  await shots.nth(1).click()
+  const viewer = page.locator('dialog.viewer')
+  report.check('Selecting a picture opens the viewer', await viewer.evaluate((el) => el.open))
+  const count = page.locator('.viewer__count')
+  await page.keyboard.press('ArrowRight')
+  report.check('Right arrow moves to the next picture', (await count.textContent())?.startsWith('3 of') === true)
+  await page.keyboard.press('Escape')
+  report.check('Escape closes the viewer', !(await viewer.evaluate((el) => el.open)))
+  report.check('Focus returns to the picture that opened it', await shots.nth(1).evaluate((el) => el === document.activeElement))
   await context.close()
 })
 

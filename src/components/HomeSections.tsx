@@ -1,23 +1,20 @@
-import { gamePath, sheriffTownVr } from '../content/game.ts'
 import { home } from '../content/home.ts'
 import { SIZES, images } from '../content/images.ts'
 import { whoWeAre } from '../content/people.ts'
-import { Action, TextLink } from './Action.tsx'
-import { Chapters } from './Chapters.tsx'
+import { TextLink } from './Action.tsx'
 import { Icon } from './Icon.tsx'
 import { Lines } from './Lines.tsx'
 import { PeopleBrief } from './People.tsx'
 import { Art } from './Picture.tsx'
 
-/** Three facts in a strip under the opening. */
-export function Facts() {
+/** One line under the opening that says who Praamix is, with the way to the services. */
+export function StudioLine() {
   return (
-    <section className="facts band" aria-label="At a glance">
-      <ul className="wrap facts__list">
-        {home.facts.map((fact) => (
-          <li key={fact}>{fact}</li>
-        ))}
-      </ul>
+    <section className="studio-line band" aria-label="About Praamix">
+      <div className="wrap studio-line__inner">
+        <p>{home.studioLine.text}</p>
+        <TextLink to="/services">{home.studioLine.action}</TextLink>
+      </div>
     </section>
   )
 }
@@ -27,7 +24,7 @@ export function PipelineIntro() {
   const { pipeline } = home
 
   return (
-    <section className="section" aria-labelledby="pipeline-title">
+    <section className="section section--ruled" aria-labelledby="pipeline-title">
       <div className="wrap">
         <div className="split">
           <div className="stack">
@@ -50,59 +47,6 @@ export function PipelineIntro() {
             </li>
           ))}
         </ol>
-      </div>
-    </section>
-  )
-}
-
-/** Sheriff Town VR as one large feature. */
-export function FirstGame() {
-  const game = sheriffTownVr
-
-  return (
-    <section className="section band" aria-labelledby="game-title">
-      <div className="wrap">
-        <h2 className="h-section" id="game-title">
-          {home.game.heading}
-        </h2>
-        <article className="feature">
-          <Art
-            className="feature__art"
-            image={images.townInHands}
-            sizes={SIZES.hero}
-            variant="cover"
-            caption={false}
-          />
-          <div className="feature__text">
-            <div className="feature__name">
-              <h3 className="h-sub">{game.title}</h3>
-              <span className="pill">{game.status}</span>
-            </div>
-            <p className="feature__tagline">
-              <Lines lines={game.tagline} />
-            </p>
-            <p>{game.summary}</p>
-            <Action to={gamePath(game)}>{home.game.action}</Action>
-            <p className="art__caption">{images.townInHands.caption}</p>
-          </div>
-        </article>
-      </div>
-    </section>
-  )
-}
-
-/** The three chapters about what the game is built around. */
-export function Curious() {
-  return (
-    <section className="section" aria-labelledby="curious-title">
-      <div className="wrap">
-        <div className="section-head">
-          <h2 className="h-section" id="curious-title">
-            {home.curious.heading}
-          </h2>
-          <p className="lede">{home.curious.lede}</p>
-        </div>
-        <Chapters label={home.curious.tabsLabel} chapters={sheriffTownVr.chapters} />
       </div>
     </section>
   )

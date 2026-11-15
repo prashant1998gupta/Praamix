@@ -1,14 +1,11 @@
 import { useParams } from 'react-router'
-import { ExternalAction } from '../components/Action.tsx'
+import { Action, ExternalAction } from '../components/Action.tsx'
 import { Band } from '../components/Band.tsx'
-import { Chapters } from '../components/Chapters.tsx'
 import { FaqSection } from '../components/Faq.tsx'
+import { Gallery } from '../components/Gallery.tsx'
+import { CaseFiles, DispatchBoard, Extras, FeatureRow, GameStage } from '../components/GameShowcase.tsx'
 import { GameStatus, StoreLinks } from '../components/GameParts.tsx'
-import { Lines } from '../components/Lines.tsx'
-import { PageHero } from '../components/PageHero.tsx'
-import { Art } from '../components/Picture.tsx'
 import { gamePath, games } from '../content/game.ts'
-import { SIZES, images } from '../content/images.ts'
 import { metaFor } from '../content/routes.ts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
 import { NotFound } from './NotFound.tsx'
@@ -23,33 +20,33 @@ export function Game() {
 }
 
 function GamePage({ game }: { game: GameContent }) {
-  useDocumentMeta(metaFor(gamePath(game)))
+  const path = gamePath(game)
+  useDocumentMeta(metaFor(path))
   const facts = [...game.glance, ...game.confirmed]
 
   return (
     <main id="main" tabIndex={-1}>
-      <PageHero
-        id="game-title"
-        eyebrow={game.label}
-        title={[game.title]}
-        fit={8.4}
-        image={images.townInHands}
-        variant="panel"
-      >
+      <GameStage id="game-title" eyebrow={game.label} title={game.title}>
         <p>
-          <span className="pill">{game.status}</span>
+          <span className="pill pill--ink">{game.status}</span>
         </p>
-        <p className="hero__tagline">
-          <Lines lines={game.tagline} />
-        </p>
-        <p className="lede">{game.summary}</p>
+        <p className="showcase__motto">{game.motto}</p>
+        <p className="showcase__lede">{game.summary}</p>
         <StoreLinks stores={game.stores} />
+        <div className="actions">
+          <Action to={`${path}#maps`} variant="accent" wide>
+            Pick a map
+          </Action>
+          <Action to={`${path}#gallery`} variant="light" wide>
+            See the game
+          </Action>
+        </div>
         {game.trailer && (
-          <ExternalAction href={game.trailer.url} variant="outline">
+          <ExternalAction href={game.trailer.url} variant="light">
             {game.trailer.label}
           </ExternalAction>
         )}
-      </PageHero>
+      </GameStage>
 
       <section className="section band" aria-labelledby="glance-title">
         <div className="wrap faq-layout">
@@ -67,38 +64,16 @@ function GamePage({ game }: { game: GameContent }) {
         </div>
       </section>
 
-      <section className="section" aria-labelledby="chapters-title">
-        <div className="wrap">
-          <div className="section-head">
-            <h2 className="h-section" id="chapters-title">
-              {game.chaptersHeading}
-            </h2>
-          </div>
-          <Chapters label={game.chaptersHeading} chapters={game.chapters} />
-        </div>
-      </section>
-
-      {game.gallery.length > 0 && (
-        <section className="section" aria-labelledby="gallery-title">
-          <div className="wrap">
-            <div className="section-head">
-              <h2 className="h-section" id="gallery-title">
-                {game.galleryHeading}
-              </h2>
-            </div>
-            <ul className="gallery">
-              {game.gallery.map((image) => (
-                <li key={image.file.base}>
-                  <Art image={image} sizes={SIZES.panel} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
-
+      <FeatureRow index={0} />
+      <FeatureRow index={1} />
+      <CaseFiles />
+      <FeatureRow index={2} />
+      <FeatureRow index={3} />
+      <DispatchBoard band />
+      <Gallery id="gallery" heading={game.galleryHeading} lede={game.galleryLede} images={game.gallery} />
       <GameStatus game={game} />
-      <FaqSection id="faq-title" heading={game.faqHeading} items={game.faq} />
+      <Extras />
+      <FaqSection id="faq-title" heading={game.faqHeading} items={game.faq} band />
       <Band
         label="More from Praamix"
         items={[

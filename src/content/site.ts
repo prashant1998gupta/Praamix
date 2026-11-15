@@ -10,7 +10,7 @@ export const site = {
   name: 'Praamix',
   descriptor: 'Original games and game development',
   description:
-    'Praamix makes original games and develops games for clients with Unity and Unreal Engine, across mobile, PC, web, console and XR.',
+    'Praamix is an independent game studio making Sheriff Town VR, a VR sandbox where you bring them in alive. We also develop games for clients with Unity and Unreal Engine.',
   /** The site's public address once it has one, e.g. 'https://example.com'. Empty until then. */
   url: '',
 }

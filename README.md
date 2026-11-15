@@ -31,8 +31,9 @@ Needs Node.js 22.18 or newer. The build and the checks run TypeScript files dire
 | `npm run build` | Type-checks, builds `dist/`, and writes an HTML file for every page |
 | `npm run preview` | Serves `dist/` at http://localhost:4173/ |
 | `npm run lint` | Checks the code for mistakes |
-| `npm run check:responsive` | Renders the built site at many screen sizes and exercises menus, chapters, the form and legal links |
+| `npm run check:responsive` | Renders the built site at many screen sizes and exercises the menu, the Dispatch board, the gallery, the form and legal links |
 | `npm run media` | Rebuilds the responsive images in `public/media/` from `media-source/` |
+| `node scripts/stage-game-art.mjs <exports> <unity project>` | Prepares the Sheriff Town VR pictures in `media-source/game/` from the game's own art exports |
 
 ## Edit the content
 
@@ -61,7 +62,10 @@ Both pages show "Draft — business details pending review" until every business
 
 ## Images
 
-The originals are in `media-source/`. They are studio concept illustrations, not gameplay or client work, and the captions on the site say so. The sizes each image is saved at are listed in `scripts/media.config.mjs`. Run `npm run media` after changing either.
+The originals are in `media-source/`. Two kinds:
+
+- **Studio illustrations** in the folder itself. They are generated artwork, not gameplay or client work, and the captions say so.
+- **Sheriff Town VR** in `media-source/game/`: in-game captures, the Dispatch board's map pictures, and in-engine renders of in-game models. `scripts/stage-game-art.mjs` prepares them from the game's own art exports. Captures get a gentle sharpen and grade. Renders are lifted off their flat background and set on a studio backdrop. Nothing is repainted, and the captions say what each picture is. The sizes each image is saved at are listed in `scripts/media.config.mjs`. Run `npm run media` after changing either.
 
 ## Responsive checks
 

@@ -25,13 +25,13 @@ export const routes: RouteMeta[] = [
     path: '/',
     title: `${site.name} · ${site.descriptor}`,
     description: site.description,
-    preload: { file: images.worldBuilding.file, sizes: SIZES.hero },
+    preload: { file: images.stvArrival.file, sizes: SIZES.stage },
   },
   {
     path: gamePath(sheriffTownVr),
     title: titled(sheriffTownVr.title),
     description: sheriffTownVr.summary,
-    preload: { file: images.townInHands.file, sizes: SIZES.hero },
+    preload: { file: images.stvArrival.file, sizes: SIZES.stage },
   },
   {
     path: '/services',
