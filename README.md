@@ -80,7 +80,7 @@ The home, game, services and studio pages are dark. The contact and legal pages 
 
 ## Hosting
 
-The site is plain files after `npm run build`, so any static host can serve it. It is set up for **Cloudflare Pages**, which is free, allows business sites and serves from a worldwide network. Vercel's free plan is for non-commercial use only, so it does not fit a studio that sells services.
+The site is plain files after `npm run build`, so any static host can serve it. It is hosted on **Cloudflare**, which is free, allows business sites and serves from a worldwide network. Vercel's free plan is for non-commercial use only, so it does not fit a studio that sells services.
 
 One deployment serves three things from `dist/`:
 
@@ -92,16 +92,15 @@ One deployment serves three things from `dist/`:
 
 The portfolios are plain folders of their own files. To change one, edit it in its folder here and push.
 
-**To put it online, once:**
+**How it is deployed.** The Cloudflare project `praamix` is connected to this GitHub repository. Every push to `main` makes Cloudflare run `npm run build` and then `npx wrangler deploy`, which publishes `dist/` as set out in `wrangler.jsonc`. The Node version comes from `.node-version`, the one the build was tested on.
 
-1. In Cloudflare, open Workers & Pages, create a Pages project and connect this GitHub repository.
-2. Build command `npm run build`, output directory `dist`. The Node version comes from `.node-version`, the one the build was tested on.
-3. Deploy. Cloudflare gives a `*.pages.dev` address to check first.
-4. In the project, open Custom domains and add `praamix.com` and `www.praamix.com`. Cloudflare shows what to change at the place the domain was bought. HTTPS is set up automatically.
+**To connect the domain, once:**
 
-After that, every push to `main` rebuilds and publishes the site.
+1. In Cloudflare, add `praamix.com` as a domain on the free plan. Cloudflare shows two nameservers.
+2. Where the domain was bought, replace its nameservers with those two, and wait for Cloudflare to show the domain as active.
+3. In the `praamix` project, open Domains and add `praamix.com` and `www.praamix.com`. HTTPS is set up automatically.
 
-Nothing needs uploading to a CDN by hand. Everything in `dist/`, the 3D models in `public/models/` included, is served from Cloudflare's network. `public/_headers` tells browsers how long to keep each kind of file.
+Nothing needs uploading to a CDN by hand. Everything in `dist/`, the 3D models in `public/models/` included, is served from Cloudflare's network. `public/_headers` tells browsers how long to keep each kind of file, and `wrangler.jsonc` says how addresses map to files and what an unknown address gets.
 
 The site's address is `site.url` in `src/content/site.ts`. The build uses it for link previews, `sitemap.xml` and `robots.txt`. Once the site is live, put the host's name in `business.hostingProvider` there, because the Privacy Policy names it.
 

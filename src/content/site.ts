@@ -68,7 +68,7 @@ export const business = {
   legalContactEmail: '',
   privacyContactEmail: '',
   /** The company that hosts the site, once it is hosted. */
-  hostingProvider: '',
+  hostingProvider: 'Cloudflare',
   /** A full sentence on how long server logs and inquiries are kept. */
   retention: '',
   /** A full sentence on children and age limits, if any apply. */

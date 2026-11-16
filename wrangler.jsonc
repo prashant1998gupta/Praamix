@@ -1,0 +1,18 @@
+/*
+ * How Cloudflare serves the site. Cloudflare runs `npm run build`, then
+ * `npx wrangler deploy`, which reads this file and publishes the dist folder.
+ *
+ * The site is files only: there is no server code, so there is no "main".
+ */
+{
+  // Must match the project's name in the Cloudflare dashboard.
+  "name": "praamix",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    // /services is served from services.html, and a folder such as /prashant gets its trailing slash.
+    "html_handling": "auto-trailing-slash",
+    // An address that does not exist gets 404.html and a real "not found" answer, not the homepage.
+    "not_found_handling": "404-page"
+  }
+}

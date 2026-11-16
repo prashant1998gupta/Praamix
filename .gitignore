@@ -25,3 +25,6 @@ dist-ssr
 
 # Output of npm run check:responsive
 .checks
+
+# Cloudflare tool working files
+.wrangler
