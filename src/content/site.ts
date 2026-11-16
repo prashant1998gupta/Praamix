@@ -39,6 +39,7 @@ export const legalNav = [
  *   endpoint  the address of a form service that accepts a JSON POST and
  *             answers with a success status. Name the service in `provider`,
  *             because the Privacy Policy has to say who handles the data.
+ *             The site's own is '/api/brief', run by Cloudflare from worker/.
  *   email     a real inbox. The form then opens the visitor's own email app.
  * While both are empty the form is shown as an unconnected draft and sends nothing.
  */
@@ -46,6 +47,8 @@ export const inquiry = {
   endpoint: '',
   provider: '',
   email: '',
+  /** The company whose email service the briefs arrive in, e.g. 'Google'. The Privacy Policy names it. */
+  inbox: '',
 }
 
 /** A real address for player support. Empty hides it. */

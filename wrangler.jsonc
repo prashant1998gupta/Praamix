@@ -2,17 +2,30 @@
  * How Cloudflare serves the site. Cloudflare runs `npm run build`, then
  * `npx wrangler deploy`, which reads this file and publishes the dist folder.
  *
- * The site is files only: there is no server code, so there is no "main".
+ * The site is files, plus one small piece of server code in worker/ that
+ * emails the contact form's project brief to the studio.
  */
 {
   // Must match the project's name in the Cloudflare dashboard.
   "name": "praamix",
   "compatibility_date": "2026-11-01",
+  "main": "worker/index.js",
   "assets": {
     "directory": "./dist",
+    // Lets the server code hand a request back to the files.
+    "binding": "ASSETS",
     // /services is served from services.html, and a folder such as /prashant gets its trailing slash.
     "html_handling": "auto-trailing-slash",
     // An address that does not exist gets 404.html and a real "not found" answer, not the homepage.
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    // Only addresses under /api/ run the server code. Everything else is served as a file, as before.
+    "run_worker_first": ["/api/*"]
+  },
+  // Lets the server code send email through Cloudflare, to addresses verified in this account only.
+  "send_email": [{ "name": "EMAIL" }],
+  "vars": {
+    // The address briefs are sent from. It must be on a domain with Cloudflare Email Routing switched on.
+    "BRIEF_FROM": "website@praamix.com"
   }
+  // The inbox briefs go to is the secret BRIEF_TO, set in the Cloudflare dashboard and never written here.
 }

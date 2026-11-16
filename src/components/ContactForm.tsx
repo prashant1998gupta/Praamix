@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { Link } from 'react-router'
 import { contact } from '../content/contact.ts'
@@ -95,7 +95,14 @@ export function ContactForm() {
   const [errors, setErrors] = useState<BriefErrors>({})
   const [status, setStatus] = useState<BriefStatus>('idle')
   const problems = useRef<HTMLDivElement>(null)
+  /* A field no person sees, and the moment the form appeared. Together they help turn robots away. */
+  const trap = useRef<HTMLInputElement>(null)
+  const opened = useRef(0)
   const { fields, groups, aside } = contact
+
+  useEffect(() => {
+    opened.current = Date.now()
+  }, [])
   const found = Object.entries(errors)
 
   const set = (key: TextKey) => (value: string) => setBrief((now) => ({ ...now, [key]: value }))
@@ -122,7 +129,7 @@ export function ContactForm() {
       return
     }
     setStatus('sending')
-    setStatus(await deliver(brief))
+    setStatus(await deliver(brief, { website: trap.current?.value ?? '', elapsed: Date.now() - opened.current }))
   }
 
   return (
@@ -134,6 +141,14 @@ export function ContactForm() {
             <p>{contact.draft.text}</p>
           </div>
         )}
+
+        {/* Hidden from people and from screen readers. Only a robot fills it in, and its brief is then dropped. */}
+        <div className="brief__trap" aria-hidden="true">
+          <label>
+            Leave this field empty
+            <input ref={trap} type="text" name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
+          </label>
+        </div>
 
         {found.length > 0 && (
           <div className="notice notice--error" role="alert" tabIndex={-1} ref={problems}>

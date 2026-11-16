@@ -50,9 +50,21 @@ All words, links and business facts live in `src/content/`. Anything left empty 
 | `contact.ts` | Project brief labels and choices |
 | `legal.ts`, `privacy.ts` | Terms & Conditions and Privacy Policy text |
 
-### Switch the project brief on
+### The project brief
 
-The contact form is an unconnected draft until `inquiry` in `site.ts` has a destination. Set `endpoint` and `provider` for a form service that accepts a JSON POST, or `email` for a real inbox. Then update the Privacy Policy to name that provider.
+The contact form's brief is emailed to the studio by a small piece of server code in `worker/`, which Cloudflare runs at `/api/brief`. Nothing else on the site runs on a server. The email is sent through Cloudflare, from `website@praamix.com` to the studio's inbox, and replying to it replies to the visitor.
+
+It needs three things set up once in Cloudflare:
+
+1. **Email Routing switched on** for `praamix.com` (Cloudflare dashboard, the domain, Email). This is also what gives the studio addresses such as `hello@praamix.com`.
+2. **The studio's inbox verified** there as a destination address. Cloudflare only lets the site email addresses it has verified.
+3. **The secret `BRIEF_TO`** on the `praamix` Worker (Settings, Variables and secrets, type Secret), holding that inbox address. It is a secret so the address is never written in this repository.
+
+Then set `inquiry` in `src/content/site.ts`: `endpoint: '/api/brief'`, `provider: 'Cloudflare'`, and `inbox` to the company whose email the briefs arrive in. Until `endpoint` is set, the form is shown as an unconnected draft and sends nothing.
+
+The server code checks every brief again, accepts posts only from the site's own pages, and quietly drops robots: the form has a hidden field that people never see, and a brief that fills it in, or arrives faster than a person could type, is told "sent" while nothing is sent. `npm run dev` and `npm run preview` run the same code on this machine and print the email in the terminal instead of sending it.
+
+A different form service works too: set `endpoint` to its address and `provider` to its name. Or set `email` to a real inbox, and the form opens the visitor's own email app instead.
 
 ### Add a store link
 
@@ -141,7 +153,7 @@ The portfolios are plain folders of their own files. To change one, edit it in i
 2. Where the domain was bought, replace its nameservers with those two, and wait for Cloudflare to show the domain as active.
 3. In the `praamix` project, open Domains and add `praamix.com` and `www.praamix.com`. HTTPS is set up automatically.
 
-Nothing needs uploading to a CDN by hand. Everything in `dist/`, the 3D models in `public/models/` included, is served from Cloudflare's network. `public/_headers` tells browsers how long to keep each kind of file, and `wrangler.jsonc` says how addresses map to files and what an unknown address gets.
+Nothing needs uploading to a CDN by hand. Everything in `dist/`, the 3D models in `public/models/` included, is served from Cloudflare's network. `public/_headers` tells browsers how long to keep each kind of file, and `wrangler.jsonc` says how addresses map to files, what an unknown address gets, and that addresses under `/api/` run the server code in `worker/`.
 
 The site's address is `site.url` in `src/content/site.ts`. The build uses it for link previews, `sitemap.xml` and `robots.txt`. Once the site is live, put the host's name in `business.hostingProvider` there, because the Privacy Policy names it.
 

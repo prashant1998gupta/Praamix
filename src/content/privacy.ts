@@ -37,6 +37,7 @@ function inquiryBlocks(): LegalBlock[] {
     inquiry.provider
       ? { p: `The form is delivered by ${inquiry.provider}, which handles that information on our behalf.` }
       : { pending: 'The name of the provider that delivers the inquiry form.' },
+    ...(inquiry.inbox ? [{ p: `It reaches us as an email, in an inbox provided by ${inquiry.inbox}.` }] : []),
     { p: 'We use it to reply to you and to discuss the project.' },
   ]
 }

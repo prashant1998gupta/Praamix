@@ -79,8 +79,52 @@ function portfolioFolders(): Plugin {
 }
 
 // https://vite.dev/config/
+/*
+ * On the live site, Cloudflare runs worker/ to email a project brief. On this
+ * machine there is no Cloudflare, so `npm run dev` and `npm run preview` run
+ * the same code here, with the email printed in the terminal instead of sent.
+ */
+function localBrief(): Plugin {
+  const answer: Connect.NextHandleFunction = (req, res) => {
+    const chunks: Buffer[] = []
+    req.on('data', (chunk: Buffer) => chunks.push(chunk))
+    req.on('end', async () => {
+      const { handleBrief } = await import('./worker/brief.js')
+      const headers = new Headers()
+      for (const [name, value] of Object.entries(req.headers)) if (typeof value === 'string') headers.set(name, value)
+      const method = req.method ?? 'GET'
+      const request = new Request(`http://${req.headers.host}/api/brief`, {
+        method,
+        headers,
+        body: method === 'GET' || method === 'HEAD' ? undefined : Buffer.concat(chunks),
+      })
+      const response = await handleBrief(request, {
+        EMAIL: {
+          send: async (message) => {
+            console.log(`\n[brief] This is the local site, so nothing was emailed. It would have gone to the studio as:\n\n${message.subject}\n\n${message.text}`)
+          },
+        },
+        BRIEF_TO: 'local@example.invalid',
+        BRIEF_FROM: 'website@praamix.com',
+      })
+      res.statusCode = response.status
+      res.setHeader('Content-Type', response.headers.get('Content-Type') ?? 'application/json')
+      res.end(await response.text())
+    })
+  }
+  return {
+    name: 'praamix:local-brief',
+    configureServer(server) {
+      server.middlewares.use('/api/brief', answer)
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use('/api/brief', answer)
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react(), preloadFonts(), portfolioFolders()],
+  plugins: [react(), preloadFonts(), portfolioFolders(), localBrief()],
   /* The list of built files. scripts/postbuild.mjs reads it, then removes it. */
   build: { manifest: true },
 })

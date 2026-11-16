@@ -8,7 +8,7 @@
  * Every page is opened at the screen widths in the brief, plus a short
  * landscape phone. Each one is checked for sideways scrolling, broken
  * pictures, empty or "#" links, missing alt text and console errors. Then the
- * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the key art, the homepage slideshow and logo, the Praamix logo, the trailer and the game’s channels, the project brief, reduced motion, direct loading of
+ * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the key art, the homepage slideshow and logo, the Praamix logo, the trailer and the game’s channels, the project brief and its delivery, reduced motion, direct loading of
  * every address and the not-found page are exercised.
  *
  * This is emulation inside desktop Chrome or Edge. It does not replace trying
@@ -670,6 +670,62 @@ await run('Project brief', async () => {
   await page.getByLabel('Unity', { exact: true }).check({ force: true })
   const file = await page.locator('.file__rows').textContent()
   report.check('The project file fills in as answers are given', /Mobile/.test(file ?? '') && /Unity/.test(file ?? '') && /Test Person/.test(file ?? ''))
+  await context.close()
+})
+
+await run('Delivering a project brief', async () => {
+  /* The code Cloudflare runs, run here with a stand-in for the email service. */
+  const { default: worker } = await import('../worker/index.js')
+  const sent = []
+  const env = (over = {}) => ({
+    EMAIL: { send: async (message) => sent.push(message) },
+    BRIEF_TO: 'studio@example.com',
+    BRIEF_FROM: 'website@praamix.com',
+    ASSETS: { fetch: async () => new Response('not found', { status: 404 }) },
+    ...over,
+  })
+  const brief = { name: 'Test Person', email: 'test@example.com', company: '', summary: 'A small physics puzzle game for phones.', gameType: '', platforms: 'Mobile', engine: 'Unity', budget: '', timeframe: '', website: '', elapsed: 9000 }
+  const post = (body, headers = {}) =>
+    new Request('https://praamix.com/api/brief', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://praamix.com', ...headers }, body: JSON.stringify(body) })
+  const status = async (request, with_ = env()) => (await worker.fetch(request, with_)).status
+
+  report.check('A good brief is emailed', (await status(post(brief))) === 200 && sent.length === 1)
+  const mail = sent[0] ?? {}
+  report.check('It goes to the studio, from the site’s own address', mail.to === 'studio@example.com' && mail.from?.email === 'website@praamix.com')
+  report.check('Replying to it replies to the visitor', mail.replyTo?.email === 'test@example.com')
+  report.check('It carries the answers', /Test Person/.test(mail.text ?? '') && /physics puzzle/.test(mail.text ?? '') && /Unity/.test(mail.text ?? ''))
+
+  sent.length = 0
+  await status(post({ ...brief, name: 'Eve\r\nBcc: everyone@example.com' }))
+  report.check('A visitor’s words cannot add lines to the email’s headers', !/[\r\n]/.test(sent[0]?.subject ?? '\n') && sent[0]?.to === 'studio@example.com')
+
+  sent.length = 0
+  report.check('A page on another site cannot use it', (await status(post(brief, { Origin: 'https://elsewhere.example' }))) === 403)
+  report.check('A bad email address is refused', (await status(post({ ...brief, email: 'nope' }))) === 400)
+  report.check('An oversized brief is refused', (await status(post({ ...brief, summary: 'x'.repeat(30000) }))) === 413)
+  report.check('Only a POST is accepted', (await status(new Request('https://praamix.com/api/brief'))) === 405)
+  report.check('None of those sent an email', sent.length === 0)
+
+  const trapped = await status(post({ ...brief, website: 'https://spam.example' }))
+  const rushed = await status(post({ ...brief, elapsed: 200 }))
+  report.check('A robot is told "sent" and nothing is sent', trapped === 200 && rushed === 200 && sent.length === 0)
+
+  report.check('Before the inbox is set up it says so, and does not pretend', (await status(post(brief), env({ BRIEF_TO: undefined }))) === 503)
+  const broken = env({ EMAIL: { send: async () => Promise.reject(Object.assign(new Error('refused'), { code: 'E_SENDER_NOT_VERIFIED' })) } })
+  const quiet = console.error
+  console.error = () => undefined
+  const failed = await status(post(brief), broken)
+  console.error = quiet
+  report.check('If the email cannot be sent, the form is told it failed', failed === 502)
+  report.check('Other addresses under /api/ are not found', (await status(new Request('https://praamix.com/api/else'))) === 404)
+
+  /* The form itself: the hidden field is out of sight and out of the tab order, and travels with the brief. */
+  const { context, page } = await open({ width: 1024, height: 768 })
+  await page.goto(base + '/contact', { waitUntil: 'networkidle' })
+  const trap = page.locator('.brief__trap input')
+  const box = await trap.boundingBox()
+  report.check('The field for robots is out of sight', Boolean(box && box.x + box.width < 0))
+  report.check('It is skipped by the keyboard and by screen readers', (await trap.getAttribute('tabindex')) === '-1' && (await page.locator('.brief__trap').getAttribute('aria-hidden')) === 'true')
   await context.close()
 })
 

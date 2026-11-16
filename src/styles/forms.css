@@ -110,6 +110,15 @@
   max-width: none;
 }
 
+/* A field for robots only. It is taken right out of view and out of the tab order. */
+.brief__trap {
+  position: absolute;
+  left: -200vw;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 /* One numbered card of the brief. */
 .brief__group {
   display: grid;

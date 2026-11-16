@@ -71,10 +71,17 @@ export function asText(brief: Brief): string {
 }
 
 /**
+ * Two things sent with a brief that help the receiving end tell a person from
+ * a robot: the hidden field, which a person never sees and so leaves empty,
+ * and how long the form was open.
+ */
+export type BriefProof = { website: string; elapsed: number }
+
+/**
  * Delivers a brief that has already passed validation, and reports what
  * really happened. It never reports a delivery that did not take place.
  */
-export async function deliver(brief: Brief): Promise<BriefStatus> {
+export async function deliver(brief: Brief, proof: BriefProof): Promise<BriefStatus> {
   const mode = inquiryMode()
 
   if (mode === 'draft') return 'checked'
@@ -94,6 +101,7 @@ export async function deliver(brief: Brief): Promise<BriefStatus> {
         ...brief,
         platforms: brief.platforms.join(', '),
         message: asText(brief),
+        ...proof,
       }),
     })
     return response.ok ? 'sent' : 'failed'
