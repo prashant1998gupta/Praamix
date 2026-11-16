@@ -84,12 +84,14 @@ The models and textures in `public/models/` are the game's own, and anyone who v
 
 ## The homepage opening
 
-The homepage opens like the game's title screen. Its pictures fill the opening one after another: the in-game capture first, then the twelve posters, listed in `marquee` in `src/content/game.ts`.
+The homepage opens on the in-game picture of the precinct, with the Sheriff Town VR logo and the way in on the left. That part never changes.
 
-- **The drum is the control.** The round button is the revolver drum from the logo. Pressing it turns it one chamber and brings the next picture, and the ring around it fills as the current picture's time runs out. There are also previous and pause buttons, and a swipe works on a phone.
+The twelve key-art posters, listed in `marquee` in `src/content/game.ts`, are dealt onto it one at a time, like posters thrown down on a desk. Each flies in, lands a little crooked on top of the last, and tilts under the mouse. While posters are out, the precinct behind them goes dark and out of focus. After the last one the pile is swept away and the precinct is clear again. The posters are kept to a card so they do not compete with the logo and the words.
+
+- **The drum is the control.** The round button is the revolver drum from the logo. Pressing it turns it one chamber and deals the next poster, and the ring around it fills as the current one's time runs out. Pressing the top poster does the same. There are also previous and pause buttons, and a swipe works on a phone.
 - **It waits when it should.** The show stops while it is off screen, while the pointer or keyboard is on its controls, and when paused. With reduced motion requested it never moves by itself.
-- **Pictures load as needed.** Only the first picture is fetched with the page. Each of the others is fetched shortly before its turn.
-- **The logo.** The capture has no logo of its own, so the site lays the Sheriff Town VR logo over it. The posters carry theirs, so the site's own steps back. On the game page the logo is the title. Screen readers and search engines are given the name in text.
+- **Posters load as needed.** None is fetched with the page. Each is fetched shortly before its turn.
+- **The logo.** The Sheriff Town VR logo is the title here and on the game page. Screen readers and search engines are given the name in text. On a phone the posters land where the logo sits, and each carries the logo, so the site's own steps back while one is out.
 - **The logo's reveal.** On wide screens the logo arrives with its own animation, `stv-logo-reveal.webm`: bullets load into the drum and it spins. That file has a see-through background, which Safari and iPhones cannot play, so they get the still logo landing with a spin of its drum. So do phones, slow or metered connections, and reduced motion.
 
 The drum turns because it is a second picture, cut out of the logo and laid back over the same place. Where it sits is `DRUM` in `scripts/stage-game-brand.mjs` and `src/components/GameLogo.tsx`; the two must agree.

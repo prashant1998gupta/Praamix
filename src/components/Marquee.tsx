@@ -22,6 +22,35 @@ const SWIPE = 44
 /* How long after a picture arrives the one after it starts loading. */
 const WARM_UP = 2200
 
+/*
+ * How each poster lies once it has landed: a few degrees off straight and a
+ * little off centre, so the pile looks dealt by hand and the ones underneath
+ * show at the corners.
+ */
+const LIE = [
+  [-4, 0, 0],
+  [3, 1.2, -1],
+  [-2.5, -1, 1.2],
+  [4.5, 0.6, -0.6],
+  [-3.5, -1.4, 0.8],
+  [2, 1, -1.2],
+  [-5, 0, 0.6],
+  [3.5, -0.8, -0.8],
+  [-2, 1.4, 1],
+  [4, -0.4, -0.4],
+  [-3, 0.8, 1.2],
+  [2.5, -1.2, 0],
+]
+
+/** Where a poster is: on top of the pile, just under it, deep in it, or not dealt yet. */
+function placeOf(depth: number, dealing: boolean) {
+  if (!dealing || depth < 0) return 'waiting'
+  if (depth === 0) return 'top'
+  if (depth === 1) return 'under'
+  if (depth === 2) return 'deeper'
+  return 'buried'
+}
+
 const two = (value: number) => String(value).padStart(2, '0')
 
 type Props = {
@@ -35,20 +64,23 @@ type Props = {
 }
 
 /**
- * The opening of the homepage, built like the game's title screen: its
- * pictures fill the opening one after another, each opening out of a circle
- * the way an old western closes in on one, with the logo and the way in at
- * the foot.
+ * The opening of the homepage. The in-game picture of the precinct fills it,
+ * with the game's logo and the way in on the left. That never changes.
  *
- * The slideshow is a revolver. The round button is the drum from the logo:
- * pressing it turns it one chamber and brings the next picture, and the ring
- * around it fills as the current picture's time runs out. The show waits
- * while it is off screen, while the pointer or keyboard is on its controls,
- * and when paused. With reduced motion requested it never moves by itself.
+ * The key art is dealt onto it like posters thrown down on a desk: each one
+ * flies in, lands a little crooked on top of the last, and tilts under the
+ * mouse. While posters are out, the precinct behind them falls out of focus.
+ * When the pile has been through, it is swept away and the precinct is clear
+ * again.
+ *
+ * The show is a revolver. The round button is the drum from the logo:
+ * pressing it turns it one chamber and deals the next poster, and the ring
+ * around it fills as the current one's time runs out. The show waits while it
+ * is off screen, while the pointer or keyboard is on its controls, and when
+ * paused. With reduced motion requested it never moves by itself.
  */
 export function Marquee({ id, eyebrow, title, children }: Props) {
   const [index, setIndex] = useState(0)
-  const [last, setLast] = useState<number | null>(null)
   /* Counts every change, so the drum always turns forwards. */
   const [turns, setTurns] = useState(0)
   /* Pictures are fetched as they are needed, not all at once. */
@@ -66,7 +98,6 @@ export function Marquee({ id, eyebrow, title, children }: Props) {
   const show = (next: number) => {
     const target = (next + count) % count
     if (target === index) return
-    setLast(index)
     setIndex(target)
     setTurns((value) => value + 1)
     setLoaded((seen) => new Set(seen).add(target))
@@ -120,25 +151,33 @@ export function Marquee({ id, eyebrow, title, children }: Props) {
       aria-labelledby={id}
       data-kind={slide.kind}
       data-running={running ? '' : undefined}
-      data-moved={last === null ? undefined : ''}
     >
       <div className="marquee__art" onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
-        {SLIDES.map((item, itemIndex) => (
-          <div
-            className="marquee__slide"
-            key={item.id}
-            data-kind={item.kind}
-            data-state={itemIndex === index ? 'on' : itemIndex === last ? 'under' : undefined}
-            style={{ '--tone': item.image.tone } as CSSProperties}
-          >
-            {/* The label beside the controls says what each picture is, so the pictures stay silent. */}
-            {loaded.has(itemIndex) && (
-              <Picture image={{ ...item.image, alt: '' }} sizes={SIZES.marquee} priority={itemIndex === 0} />
-            )}
-          </div>
-        ))}
-        <div className="marquee__shade marquee__shade--capture" aria-hidden="true" />
-        <div className="marquee__shade marquee__shade--poster" aria-hidden="true" />
+        {/* The label beside the controls says what each picture is, so the pictures stay silent. */}
+        <div className="marquee__backdrop">
+          <Picture image={{ ...game.heroImage, alt: '' }} sizes={SIZES.marquee} priority />
+        </div>
+        <div className="marquee__shade" aria-hidden="true" />
+        <div className="marquee__pile" aria-hidden="true">
+          {game.marquee.posters.map((poster, posterIndex) => {
+            /* The capture is picture 0, so this poster is picture posterIndex + 1. */
+            const own = posterIndex + 1
+            const place = placeOf(index - own, index > 0)
+            const [angle, x, y] = LIE[posterIndex % LIE.length]
+            return (
+              <div
+                className="marquee__card"
+                key={poster.id}
+                data-place={place}
+                data-tilt={place === 'top' ? '' : undefined}
+                style={{ '--r': `${angle}deg`, '--x': x, '--y': y } as CSSProperties}
+                onClick={place === 'top' ? () => show(index + 1) : undefined}
+              >
+                {loaded.has(own) && <Picture image={{ ...poster.image, alt: '' }} sizes={SIZES.poster} />}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <div className="wrap marquee__content">

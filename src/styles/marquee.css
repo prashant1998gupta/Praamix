@@ -1,7 +1,7 @@
 /*
- * The opening of the homepage: the game's pictures one after another, the
- * logo, and the revolver drum that moves the show on. Also the logo itself,
- * wherever it is used. Movement is in the reduced-motion block at the end.
+ * The opening of the homepage: the precinct, the logo, the posters dealt onto
+ * it, and the revolver drum that deals them. Also the logo itself, wherever it
+ * is used. Movement is in the reduced-motion block at the end.
  */
 
 /* ---------- The Sheriff Town VR logo ---------- */
@@ -60,10 +60,14 @@
   color: #f3f5f7;
 }
 
-/* On a phone the pictures have a frame of their own at the top, and the words follow. */
+/*
+ * On a phone the pictures have a frame of their own at the top, and the words
+ * follow. The frame is a container, so the posters can be sized from it.
+ */
 .marquee__art {
   position: relative;
   isolation: isolate;
+  container-type: size;
   width: 100%;
   aspect-ratio: 1 / 1;
   max-height: 62svh;
@@ -72,68 +76,120 @@
   touch-action: pan-y;
 }
 
-.marquee__slide {
-  --ox: 50%;
-  --oy: 20%;
+/* The precinct, always there behind everything. */
+.marquee__backdrop {
   position: absolute;
   inset: 0;
-  visibility: hidden;
-  /* The picture's own colour shows while it loads. */
-  background: var(--tone, #0b0e12);
 }
 
-/* The picture showing, and the one before it, which stays underneath while the new one opens over it. */
-.marquee__slide[data-state='under'] {
-  z-index: 1;
-  visibility: visible;
-}
-
-.marquee__slide[data-state='on'] {
-  z-index: 2;
-  visibility: visible;
-}
-
-.marquee__slide picture {
+.marquee__backdrop picture {
   display: block;
   height: 100%;
 }
 
-.marquee__slide img {
+.marquee__backdrop img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* The posters carry the logo at the top, so the top is what must stay in the frame. */
-  object-position: 50% 0;
-}
-
-.marquee__slide[data-kind='capture'] img {
   object-position: 62% 40%;
 }
 
-/* Shade, so the words read and the picture melts into the page below. One for each kind of picture. */
+/* While posters are out, the precinct falls back: darker and out of focus. */
+.marquee[data-kind='poster'] .marquee__backdrop {
+  filter: blur(6px) brightness(0.45) saturate(0.85);
+}
+
+/* Shade, so the words read and the picture melts into the page below. */
 .marquee__shade {
   position: absolute;
   inset: 0;
-  z-index: 3;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.8s ease;
-}
-
-.marquee[data-kind='capture'] .marquee__shade--capture,
-.marquee[data-kind='poster'] .marquee__shade--poster {
-  opacity: 1;
-}
-
-.marquee__shade--capture {
+  z-index: 1;
   background:
     linear-gradient(0deg, #0b0e12 0%, transparent 30%),
     linear-gradient(180deg, rgb(11 14 18 / 0.55) 0%, transparent 45%);
+  pointer-events: none;
 }
 
-.marquee__shade--poster {
-  background: linear-gradient(0deg, #0b0e12 0%, transparent 26%);
+/* ---------- The posters ---------- */
+
+.marquee__pile {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
 }
+
+/*
+ * One poster: a print with a paper edge. --r, --x and --y say how it lies once
+ * it has landed. Where it is in the pile comes from data-place.
+ */
+.marquee__card {
+  --w: min(88cqw, 138cqh);
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  width: var(--w);
+  aspect-ratio: 16 / 9;
+  margin: calc(var(--w) * -9 / 32) 0 0 calc(var(--w) / -2);
+  padding: clamp(0.2rem, 0.6cqw, 0.4rem);
+  border-radius: 0.3rem;
+  background: #f1ece2;
+  box-shadow:
+    0 1.75rem 3rem -1rem rgb(0 0 0 / 0.75),
+    0 0.2rem 0.6rem rgb(0 0 0 / 0.4);
+  translate: calc(var(--x, 0) * var(--spread, 1) * 1cqw) calc(var(--y, 0) * var(--spread, 1) * 1cqh);
+  rotate: var(--r, 0deg);
+}
+
+.marquee__card picture,
+.marquee__card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.marquee__card img {
+  border-radius: 0.15rem;
+  /* The poster's own colour shows while it loads. */
+  background: #27467c;
+  object-fit: cover;
+}
+
+/* Not dealt yet, or swept away: off to the side, turned, waiting to be thrown. */
+.marquee__card[data-place='waiting'] {
+  visibility: hidden;
+  opacity: 0;
+  translate: 115cqw -18cqh;
+  rotate: 32deg;
+}
+
+.marquee__card[data-place='top'] {
+  z-index: 4;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* The ones underneath dim and shrink a little, so the top one stands off them. */
+.marquee__card[data-place='under'] {
+  z-index: 3;
+  scale: 0.97;
+  filter: brightness(0.6);
+}
+
+.marquee__card[data-place='deeper'] {
+  z-index: 2;
+  scale: 0.94;
+  filter: brightness(0.4);
+}
+
+.marquee__card[data-place='buried'] {
+  z-index: 1;
+  visibility: hidden;
+  opacity: 0;
+  scale: 0.92;
+}
+
+/* ---------- The words ---------- */
 
 .marquee__content {
   display: grid;
@@ -148,15 +204,7 @@
   max-width: 40rem;
 }
 
-/* The posters are bright and busy, so the words carry a soft shadow of their own as well as the shade. */
-.marquee__text > p:not(.showcase__motto),
-.marquee__now {
-  text-shadow:
-    0 1px 2px rgb(0 0 0 / 0.6),
-    0 0 1.25rem rgb(0 0 0 / 0.75);
-}
-
-/* On a phone the logo sits over the top of the picture, where the posters have theirs. */
+/* On a phone the logo sits over the top of the picture. */
 .marquee__logo {
   --logo: min(66vw, 18rem);
   position: absolute;
@@ -166,10 +214,13 @@
   width: var(--logo);
   translate: -50% 0;
   pointer-events: none;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.5s ease;
 }
 
-/* A poster has the logo painted in, so the site's own steps back. It stays there for screen readers. */
+/*
+ * On a phone the posters land where the logo is, and each one carries the
+ * logo, so the site's own steps back. It stays there for screen readers.
+ */
 .marquee[data-kind='poster'] .marquee__logo {
   opacity: 0;
 }
@@ -193,6 +244,9 @@
   display: grid;
   gap: 0.1rem;
   min-width: 0;
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 0.6),
+    0 0 1.25rem rgb(0 0 0 / 0.75);
 }
 
 .marquee__kind {
@@ -250,7 +304,7 @@
   height: 1.2rem;
 }
 
-/* The drum from the logo, as the button that brings the next picture. */
+/* The drum from the logo, as the button that deals the next poster. */
 .marquee__drum {
   position: relative;
   flex: none;
@@ -314,7 +368,7 @@
   }
 }
 
-/* ---------- Wide screens: the pictures fill the opening, with the words at its foot ---------- */
+/* ---------- Wide screens: the precinct fills the opening, words left, posters right ---------- */
 
 @media (min-width: 56em) {
   .marquee {
@@ -329,21 +383,11 @@
     aspect-ratio: auto;
   }
 
-  .marquee__slide {
-    --oy: 17%;
-  }
-
-  .marquee__slide[data-kind='capture'] {
-    --ox: 24%;
-    --oy: 48%;
-    background: #0b0e12;
-  }
-
   /*
-   * The capture is moved to the right, so the precinct stands clear of the
+   * The picture is moved to the right, so the precinct stands clear of the
    * words, and its left edge fades out under the shade.
    */
-  .marquee__slide[data-kind='capture'] picture {
+  .marquee__backdrop picture {
     position: absolute;
     inset: 0 -12% 0 16%;
     height: auto;
@@ -352,7 +396,7 @@
   }
 
   /* Dark on the left for the words, with the picture clear on the right. */
-  .marquee__shade--capture {
+  .marquee__shade {
     background:
       linear-gradient(
         90deg,
@@ -365,14 +409,18 @@
       linear-gradient(180deg, rgb(11 14 18 / 0.5) 0%, transparent 16%);
   }
 
-  /* A poster is seen whole: dark only at the foot, and behind the words in its corner. */
-  .marquee__shade--poster {
-    background:
-      linear-gradient(0deg, var(--bg, #0f1318) 0%, rgb(11 14 18 / 0.9) 16%, rgb(11 14 18 / 0.5) 36%, transparent 58%),
-      radial-gradient(60% 82% at 6% 92%, rgb(11 14 18 / 0.94) 0%, rgb(11 14 18 / 0.8) 48%, transparent 80%),
-      linear-gradient(180deg, rgb(11 14 18 / 0.3) 0%, transparent 10%);
+  /* The posters land on the right, in line with the edge of the page. */
+  .marquee__card {
+    --w: min(46cqw, 44rem, 108cqh);
+    /* With room to spare, the pile is looser and more of each poster underneath shows. */
+    --spread: 1.9;
+    top: 44%;
+    right: max(var(--gutter), (100cqw - var(--page)) / 2);
+    left: auto;
+    margin: calc(var(--w) * -9 / 32) 0 0;
   }
 
+  /* The content covers the whole opening, so it lets the pointer through to the posters. */
   .marquee__content {
     position: relative;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -380,13 +428,26 @@
     align-content: end;
     gap: 2rem;
     padding-block: clamp(4rem, 9vh, 7rem) clamp(2.25rem, 6vh, 4rem);
+    pointer-events: none;
   }
 
-  /* The logo joins the words. The artwork has an empty margin, so it is pulled out to line up with them. */
-  .marquee__logo {
+  .marquee__text,
+  .marquee__deck {
+    pointer-events: auto;
+  }
+
+  /* The words keep to their side, clear of the posters. */
+  .marquee__text {
+    max-width: min(40rem, 40vw);
+  }
+
+  /* The logo joins the words, and stays. The artwork has an empty margin, so it is pulled out to line up with them. */
+  .marquee__logo,
+  .marquee[data-kind='poster'] .marquee__logo {
     --logo: clamp(15rem, 27vw, 25rem);
     position: static;
     margin: calc(var(--logo) * -0.05) 0 calc(var(--logo) * -0.045) calc(var(--logo) * -0.07);
+    opacity: 1;
     translate: none;
   }
 
@@ -406,14 +467,40 @@
 /* ---------- Motion ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
-  /* A new picture opens out of a circle, from where the drum of its logo is. */
-  .marquee[data-moved] .marquee__slide[data-state='on'] {
-    animation: iris-in 1.15s cubic-bezier(0.65, 0, 0.35, 1);
+  .marquee__backdrop {
+    transition: filter 0.9s ease;
   }
 
-  /* Each picture moves in very slowly while it is showing. */
-  .marquee__slide[data-state='on'] img {
-    animation: slow-push 9s ease-out forwards;
+  /*
+   * A poster is thrown in, overshoots a touch and settles. The same
+   * movement backwards sweeps it away. The tilt under the mouse is quicker.
+   */
+  .marquee__card {
+    transition:
+      translate 0.95s cubic-bezier(0.2, 1.12, 0.32, 1),
+      rotate 0.95s cubic-bezier(0.2, 1.12, 0.32, 1),
+      scale 0.6s ease,
+      filter 0.6s ease,
+      opacity 0.35s ease,
+      visibility 0s,
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.6s ease;
+  }
+
+  /* Leaving, it stays visible until it is gone. */
+  .marquee__card[data-place='waiting'],
+  .marquee__card[data-place='buried'] {
+    transition:
+      translate 0.7s cubic-bezier(0.6, 0, 0.8, 0.4),
+      rotate 0.7s cubic-bezier(0.6, 0, 0.8, 0.4),
+      scale 0.6s ease,
+      filter 0.6s ease,
+      opacity 0.45s ease 0.2s,
+      visibility 0s 0.7s;
+  }
+
+  .marquee__card[data-tilting] {
+    transition-duration: 0.95s, 0.95s, 0.6s, 0.6s, 0.35s, 0s, 0.15s, 0.6s;
   }
 
   .marquee__ring-fill {
@@ -487,22 +574,6 @@
 @media (prefers-reduced-motion: reduce) {
   .marquee__step[aria-pressed] {
     display: none;
-  }
-}
-
-@keyframes iris-in {
-  from {
-    clip-path: circle(0% at var(--ox) var(--oy));
-  }
-
-  to {
-    clip-path: circle(150% at var(--ox) var(--oy));
-  }
-}
-
-@keyframes slow-push {
-  to {
-    scale: 1.07;
   }
 }
 

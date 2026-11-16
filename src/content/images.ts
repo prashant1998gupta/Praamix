@@ -262,8 +262,10 @@ export type ImageName = keyof typeof images
 export const SIZES = {
   /** The picture at the top of a page. */
   hero: '(min-width: 120em) 860px, (min-width: 86em) 700px, (min-width: 56em) 54vw, 94vw',
-  /** The pictures in the homepage slideshow, which always fill their frame: square on a phone, the whole opening on wide screens. */
+  /** The picture behind the homepage's opening, which always fills its frame: square on a phone, the whole opening on wide screens. */
   marquee: '(max-width: 55.99em) 178vw, (min-aspect-ratio: 16/9) 100vw, 178vh',
+  /** A poster dealt onto the homepage's opening. */
+  poster: '(min-width: 56em) min(46vw, 44rem), 92vw',
   /** The game's logo in an opening. */
   logo: '(min-width: 56em) 26vw, 64vw',
   /** The full-width game picture at the top of the homepage and the game page. */
