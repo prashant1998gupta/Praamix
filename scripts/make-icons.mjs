@@ -16,7 +16,7 @@ const WHITE = '#ffffff'
 const ORANGE = '#f26b38'
 
 /* One piece, 26 wide and 30 tall. */
-const piece = (fill) => `<g fill="${fill}"><circle cx="13" cy="6.6" r="6.6"/><path d="M0.6 30 8.2 11.8h9.6L25.4 30z"/></g>`
+const piece = (fill) => `<g fill="${fill}"><circle cx="13" cy="6.6" r="6.6"/><path d="M0.6 30 8.94 11.8h8.12L25.4 30z"/></g>`
 
 /**
  * An icon on a 100 by 100 grid.

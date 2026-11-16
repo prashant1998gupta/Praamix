@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000" role="img" aria-label="Praamix">
+  <title>Praamix</title>
+  <rect width="1000" height="1000" rx="0" fill="#0f1318"/>
+  <g transform="translate(200 334.46) scale(2.18)">
+  <circle cx="65.87" cy="33.44" r="33.44" fill="#ffffff"/><path d="M3.04 152L45.3 59.79L86.44 59.79L128.69 152Z" fill="#ffffff"/>
+  <circle cx="209.6" cy="33.44" r="33.44" fill="#f26b38"/><path d="M146.77 152L189.03 59.79L230.17 59.79L272.43 152Z" fill="#f26b38"/>
+  </g>
+</svg>

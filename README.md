@@ -111,7 +111,9 @@ The logo in the header is alive:
 
 None of it moves when reduced motion is requested. Wherever the logo appears it is decoration: the link or heading around it carries the name in words.
 
-The same piece is drawn in two other places, which must be kept in step with `Logo.tsx`: the loader in `index.html`, and the browser tab and app icons, made by `node scripts/make-icons.mjs` (also run by `npm run media`). The logo that was first supplied is still in `media-source/praamix-logo.png`.
+**Logo files for use elsewhere** are in `brand/`: the logo and the two pieces alone, for dark and for light backgrounds, plus ready-made versions on a background and a profile picture, each as SVG and PNG. The SVGs are pure shapes with no font inside. `node scripts/export-logo.mjs` writes them again.
+
+The same piece is drawn in three other places, which must be kept in step with `Logo.tsx`: `scripts/export-logo.mjs`, the loader in `index.html`, and the browser tab and app icons, made by `node scripts/make-icons.mjs` (also run by `npm run media`). The logo that was first supplied is still in `media-source/praamix-logo.png`.
 
 ## Dark throughout
 

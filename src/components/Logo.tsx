@@ -16,7 +16,7 @@ import type { PieceIndex } from '../hooks/pieces.ts'
 
 /* A game piece: a round head on a body that widens to the base, like an A with no bar. */
 const HEAD = { cx: 13, cy: 6.6, r: 6.6 }
-const BODY = 'M0.6 30 8.2 11.8h9.6L25.4 30z'
+const BODY = 'M0.6 30 8.94 11.8h8.12L25.4 30z'
 
 /** One piece by itself, for use beside a person or in a badge. */
 export function Piece({ index, className }: { index: PieceIndex; className?: string }) {
