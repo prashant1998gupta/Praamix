@@ -55,7 +55,7 @@ export function Header() {
           aria-label={`${site.name} home`}
           onClick={() => setOpen(false)}
         >
-          <Logo />
+          <Logo live />
         </Link>
         <button
           ref={button}

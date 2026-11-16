@@ -5,14 +5,15 @@
  *
  * Reads the originals in media-source/ and the list in scripts/media.config.mjs.
  * For each picture it writes AVIF and WebP copies at several widths, plus one
- * JPEG for older browsers, into public/media/. It also writes the logo, the
- * browser tab icons, and src/content/media.generated.ts, which tells the site
+ * JPEG for older browsers, into public/media/. It also writes the supplied
+ * logo, the browser tab icons (see make-icons.mjs), and src/content/media.generated.ts, which tells the site
  * which files exist.
  */
 import { copyFile, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
+import { makeIcons } from './make-icons.mjs'
 import { FILES, IMAGES, LOGO } from './media.config.mjs'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
@@ -22,7 +23,6 @@ const outDir = join(publicDir, 'media')
 
 /* The JPEG for older browsers is saved at the largest listed width up to this. */
 const FALLBACK_MAX = 1080
-const WHITE = '#ffffff'
 
 await rm(outDir, { recursive: true, force: true })
 await mkdir(outDir, { recursive: true })
@@ -118,22 +118,8 @@ entries[LOGO.name] = {
   fallback: logoFallback,
 }
 
-/* Browser tab and home-screen icons: the P mark from the logo on a white tile. */
-const mark = await sharp(logoInput).extract(LOGO.mark).png().toBuffer()
-const tile = (size, inner) => {
-  const pad = Math.round((size - inner) / 2)
-  return sharp(mark)
-    .resize({ width: inner, height: inner, fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
-    .extend({ top: pad, bottom: size - inner - pad, left: pad, right: size - inner - pad, background: WHITE })
-    .flatten({ background: WHITE })
-    .png({ compressionLevel: 9 })
-}
-await tile(64, 48).toFile(join(publicDir, 'favicon.png'))
-await tile(180, 124).toFile(join(publicDir, 'apple-touch-icon.png'))
-/* For installing the site as an app. The "maskable" one leaves room for the device to round its corners. */
-await tile(192, 136).toFile(join(publicDir, 'icon-192.png'))
-await tile(512, 360).toFile(join(publicDir, 'icon-512.png'))
-await tile(512, 260).toFile(join(publicDir, 'icon-maskable-512.png'))
+/* Browser tab and home-screen icons: the two game pieces from the logo. */
+await makeIcons(publicDir)
 
 const generated = `/* Written by \`npm run media\`. Do not edit by hand: change scripts/media.config.mjs and run it again. */
 import type { ImageFile } from './types.ts'

@@ -22,12 +22,7 @@
   display: inline-flex;
   align-items: center;
   min-height: var(--target);
-}
-
-/* The supplied logo, always at its own proportions. */
-.logo {
-  width: auto;
-  height: clamp(1.625rem, 1.4rem + 0.9vw, 2.125rem);
+  text-decoration: none;
 }
 
 .menu-button {
@@ -240,10 +235,6 @@
 .site-footer__base {
   padding-top: 0.5rem;
   color: var(--fg-soft);
-}
-
-.site-footer .logo {
-  height: 1.625rem;
 }
 
 .site-footer__nav,

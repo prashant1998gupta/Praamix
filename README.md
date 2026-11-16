@@ -96,9 +96,26 @@ The twelve key-art posters, listed in `marquee` in `src/content/game.ts`, are de
 
 The drum turns because it is a second picture, cut out of the logo and laid back over the same place. Where it sits is `DRUM` in `scripts/stage-game-brand.mjs` and `src/components/GameLogo.tsx`; the two must agree.
 
+## The Praamix logo
+
+The logo is the name with its two A's drawn as two game pieces, one white and one orange: two players, side by side. It is drawn by the site itself, in `src/components/Logo.tsx` and `src/styles/logo.css`. The letters are real text in the site's typeface and the pieces are small drawings sized to match them, so the logo is set by its font size alone and stays sharp at any size.
+
+The logo in the header is alive:
+
+- **Arrival.** When the site opens, the two pieces are set down one after the other.
+- **Taking turns.** Every page a visitor opens is a move, and the pieces take turns to jump.
+- **They watch the pointer.** The pieces lean a little towards the mouse.
+- **The people.** On the studio page each person's profile carries one of the pieces, and pointing at a profile makes that piece jump in the header.
+- **A cheat code.** Up, up, down, down, left, right, left, right, B, A.
+- **Not found.** On the page for an address that does not exist, one piece has been knocked over.
+
+None of it moves when reduced motion is requested. Wherever the logo appears it is decoration: the link or heading around it carries the name in words.
+
+The same piece is drawn in two other places, which must be kept in step with `Logo.tsx`: the loader in `index.html`, and the browser tab and app icons, made by `node scripts/make-icons.mjs` (also run by `npm run media`). The logo that was first supplied is still in `media-source/praamix-logo.png`.
+
 ## Dark throughout
 
-Every page uses the dark theme, the project brief and the legal pages included. The colours are in `src/styles/theme.css`. The switch is kept in `isNight` in `src/content/routes.ts`, with `night` on each page's entry, so a page can be made light again in one place. The light logo used in the header is made from the supplied logo by `npm run media`: its charcoal is turned white and its orange is left as supplied.
+Every page uses the dark theme, the project brief and the legal pages included. The colours are in `src/styles/theme.css`. The switch is kept in `isNight` in `src/content/routes.ts`, with `night` on each page's entry, so a page can be made light again in one place.
 
 ## Hosting
 
@@ -128,7 +145,7 @@ The site's address is `site.url` in `src/content/site.ts`. The build uses it for
 
 ## Slow connections and offline
 
-- **A loader in the page itself.** `index.html` carries a small loader that shows before any code arrives: the Sheriff Town VR logo with its drum spinning. It stays hidden for the first third of a second, so a fast load never flashes it. After six seconds it says the connection looks slow, and if the code cannot be fetched it offers to try again.
+- **A loader in the page itself.** `index.html` carries a small loader that shows before any code arrives: the Sheriff Town VR logo with its drum spinning, and the Praamix logo under it with its two pieces hopping in turn. It stays hidden for the first third of a second, so a fast load never flashes it. After six seconds it says the connection looks slow, and if the code cannot be fetched it offers to try again.
 - **Each page's code loads when needed.** A visitor downloads only the page they open. Pointing at or touching a link starts fetching that page early. A page that fails to arrive shows a retry screen, not a blank one.
 - **Offline.** On the built site, `public/sw.js` saves the site's core files on the first visit. Pages then open instantly on the next visit and keep working with no connection. It does not run under `npm run dev`. The build stamps it with a new version each time, which replaces what the last build saved.
 - **Data saver.** When a device asks to save data, or the connection is very slow, the 3D models are fetched only when the visitor asks for them.

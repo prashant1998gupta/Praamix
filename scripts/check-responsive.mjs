@@ -8,7 +8,7 @@
  * Every page is opened at the screen widths in the brief, plus a short
  * landscape phone. Each one is checked for sideways scrolling, broken
  * pictures, empty or "#" links, missing alt text and console errors. Then the
- * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the key art, the homepage slideshow and logo, the trailer and the game’s channels, the project brief, reduced motion, direct loading of
+ * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the key art, the homepage slideshow and logo, the Praamix logo, the trailer and the game’s channels, the project brief, reduced motion, direct loading of
  * every address and the not-found page are exercised.
  *
  * This is emulation inside desktop Chrome or Edge. It does not replace trying
@@ -298,6 +298,65 @@ await run('The homepage slideshow and the logo', async () => {
   const logo = await fetch(base + '/media/stv-logo-480.webp')
   const film = await fetch(base + '/media/stv-logo-reveal.webm', { method: 'HEAD' })
   report.check('The logo and its reveal animation are published', logo.ok && film.ok)
+})
+
+await run('The Praamix logo', async () => {
+  const { context, page, errors } = await open({ width: 1440, height: 900 })
+  await page.goto(base + '/services', { waitUntil: 'networkidle' })
+  const home = page.locator('.site-header__home')
+  const mark = home.locator('.wordmark')
+  report.check('The header logo is the name with two game pieces', (await mark.textContent()) === 'PRMIX' && (await mark.locator('.piece').count()) === 2)
+  report.check('The link around it is named in words', (await home.getAttribute('aria-label')) === 'Praamix home' && (await mark.getAttribute('aria-hidden')) === 'true')
+  const colours = await mark.locator('.piece').evaluateAll((items) => items.map((item) => getComputedStyle(item).fill))
+  report.check('One piece is white and one orange', colours[0] === 'rgb(243, 245, 247)' && colours[1] === 'rgb(242, 107, 56)', colours.join(' / '))
+  const heights = await mark.evaluate((el) => {
+    const piece = el.querySelector('.piece').getBoundingClientRect()
+    const range = document.createRange()
+    range.selectNodeContents(el.querySelector('span'))
+    return { piece: piece.height, line: range.getBoundingClientRect().bottom, foot: piece.bottom, size: parseFloat(getComputedStyle(el).fontSize) }
+  })
+  report.check('The pieces stand about as tall as the capitals', Math.abs(heights.piece / heights.size - 0.76) < 0.03, `${(heights.piece / heights.size).toFixed(2)} of the type size`)
+  report.check('The letters are not underlined', (await home.evaluate((el) => getComputedStyle(el).textDecorationLine)) === 'none')
+
+  /* Each page opened is a move: a piece jumps. */
+  await page.waitForTimeout(1600)
+  await page.locator('.site-nav__link', { hasText: 'Studio' }).click()
+  await page.waitForURL('**/studio')
+  const moving = await page.waitForFunction(() => document.querySelector('.site-header__home .piece')?.getAnimations().length > 0, null, { timeout: 2000 }).then(() => true, () => false)
+  report.check('Opening another page makes a piece jump', moving)
+
+  /* Each person has a piece, and pointing at a profile makes theirs jump. */
+  const pieces = page.locator('.profile .profile__piece .piece')
+  report.check('Each profile carries a piece', (await pieces.count()) === 2 && (await pieces.nth(0).getAttribute('class'))?.includes('piece--1') === true && (await pieces.nth(1).getAttribute('class'))?.includes('piece--2') === true)
+  await page.waitForTimeout(1200)
+  await page.locator('.profile').nth(1).scrollIntoViewIfNeeded()
+  await page.locator('.profile').nth(1).hover()
+  const nudged = await page.waitForFunction(() => document.querySelectorAll('.site-header__home .piece')[1]?.getAnimations().length > 0, null, { timeout: 2000 }).then(() => true, () => false)
+  report.check('Pointing at the second profile makes the orange piece jump', nudged)
+
+  /* The cheat code. */
+  const message = page.locator('.cheat')
+  report.check('The cheat message is empty until earned', (await message.textContent()) === '')
+  for (const key of ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']) await page.keyboard.press(key)
+  report.check('The old cheat code is answered', /Cheat code accepted/.test((await message.textContent()) ?? ''))
+
+  await page.goto(base + '/no-such-page', { waitUntil: 'networkidle' })
+  report.check('On the not-found page a piece is knocked over', (await page.locator('main .wordmark[data-fallen]').count()) === 1)
+  report.check('No errors', errors.length === 0, errors.join(' | '))
+  await context.close()
+
+  const still = await open({ width: 1440, height: 900 }, { reducedMotion: 'reduce' })
+  await still.page.goto(base + '/services', { waitUntil: 'networkidle' })
+  await still.page.locator('.site-nav__link', { hasText: 'Studio' }).click()
+  await still.page.waitForURL('**/studio')
+  await still.page.waitForTimeout(300)
+  report.check('With reduced motion the pieces stay still', (await still.page.evaluate(() => [...document.querySelectorAll('.site-header__home .piece')].every((piece) => piece.getAnimations().length === 0))))
+  await still.context.close()
+
+  const html = await (await fetch(base + '/')).text()
+  report.check('The loader carries the Praamix logo', html.includes('class="boot__name" aria-label="Praamix"'))
+  const icon = await fetch(base + '/favicon.png')
+  report.check('The browser tab icon is published', icon.ok)
 })
 
 await run('3D showroom and multiplayer', async () => {
