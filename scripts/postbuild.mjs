@@ -56,10 +56,11 @@ function page(meta) {
 
   /* The picture shown when a page is shared in a chat or on social media. */
   if (site.url) {
-    const { file } = images.stvArrival
+    const shared = images.posterArrest
+    const { file } = shared
     const picture = `${site.url.replace(/\/$/, '')}${file.base}-${file.fallback}.jpg`
     tags.push(`<meta property="og:image" content="${esc(picture)}" />`)
-    tags.push(`<meta property="og:image:alt" content="${esc(images.stvArrival.alt)}" />`)
+    tags.push(`<meta property="og:image:alt" content="${esc(shared.alt)}" />`)
     tags.push('<meta name="twitter:card" content="summary_large_image" />')
   }
 
@@ -78,12 +79,12 @@ function page(meta) {
     )
   }
 
-  /* Dark pages carry the dark class and browser colour from the first byte, so nothing flashes white. */
+  /* The page is dark from the first byte, so nothing flashes white. A light page has the dark class taken off. */
   const themed = meta.night
     ? shell
-        .replace('<html', '<html class="night"')
-        .replace('<meta name="theme-color" content="#ffffff" />', '<meta name="theme-color" content="#0f1318" />')
     : shell
+        .replace('<html lang="en" class="night">', '<html lang="en">')
+        .replace('<meta name="theme-color" content="#0f1318" />', '<meta name="theme-color" content="#ffffff" />')
 
   return themed
     .replace(/<title>[\s\S]*?<\/title>/, () => `<title>${esc(meta.title)}</title>`)

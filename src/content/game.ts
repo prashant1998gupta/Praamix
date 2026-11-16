@@ -11,7 +11,7 @@
 import { images } from './images.ts'
 import { media } from './media.generated.ts'
 import { channels } from './site.ts'
-import type { Channel, ExternalLink, Faq, SiteImage, StoreEntry, Trailer } from './types.ts'
+import type { Channel, ExternalLink, Faq, Poster, SiteImage, StoreEntry, Trailer } from './types.ts'
 
 type Fact = { term: string; detail: string }
 
@@ -364,6 +364,22 @@ const faq: Faq[] = [
   },
 ]
 
+/* Key art made for the game. The names and places are the ones the artwork was made under. */
+const posters: Poster[] = [
+  { id: 'bubbles', title: 'Bubbles', place: 'Police Station', image: images.posterBubbles },
+  { id: 'bottles', title: 'Bottles', place: 'Police Station', image: images.posterBottles },
+  { id: 'builds', title: 'Builds', place: 'The street', image: images.posterBuilds },
+  { id: 'giant-animals', title: 'Giant animals', place: 'The street', image: images.posterGiantAnimals },
+  { id: 'weapons', title: 'Weapons', place: 'The station wall', image: images.posterWeapons },
+  { id: 'chaos', title: 'Chaos', place: 'The street', image: images.posterChaos },
+  { id: 'arrest', title: 'Arrest', place: 'Police Station', image: images.posterArrest },
+  { id: 'explosion', title: 'Explosion', place: 'The gas station', image: images.posterExplosion },
+  { id: 'animals', title: 'Animals', place: 'Fountain park', image: images.posterAnimals },
+  { id: 'party', title: 'Party', place: 'The rooftop', image: images.posterParty },
+  { id: 'gravity-gun', title: 'Gravity Gun', place: 'Grocery Store', image: images.posterGravityGun },
+  { id: 'lake', title: 'Lake', place: 'Fun Ranch', image: images.posterLake },
+]
+
 export const sheriffTownVr = {
   slug: 'sheriff-town-vr',
   title: 'Sheriff Town VR',
@@ -373,6 +389,22 @@ export const sheriffTownVr = {
   summary:
     'A VR sandbox where you are the sheriff of a town that talks back. Hear out its people, untangle its mysteries, bend its physics, and bring everyone in alive.',
   heroImage: images.stvArrival,
+  logo: images.stvLogo,
+  drum: images.stvDrum,
+
+  /*
+   * The slideshow that opens the homepage: the in-game capture first, then
+   * the key art. The capture has no logo of its own, so the site lays the
+   * logo over it. The posters carry theirs.
+   */
+  marquee: {
+    label: 'Sheriff Town VR in pictures',
+    capture: { title: 'The precinct', place: 'In-game capture' },
+    posterKind: 'Key art',
+    posters,
+  },
+  keyArtHeading: 'Key art.',
+  keyArtLede: 'Posters made for the game. They are artwork, not captures from it. Select one to see it larger.',
 
   glanceHeading: 'At a glance.',
   glance,

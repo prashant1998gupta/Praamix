@@ -1,7 +1,6 @@
 /*
- * The night theme: the game's pages (the homepage and the game page) are dark.
- * The class sits on <html>, put there by the build for those pages and kept in
- * step by App as the visitor moves around. The client pages stay light.
+ * The night theme. Every page uses it. The class sits on <html>, put there by
+ * the build and kept in step by App as the visitor moves around.
  *
  * Most of the site reads its colours from the role tokens, so changing the
  * tokens re-colours it. The rest of this file is the handful of places that
@@ -21,6 +20,9 @@ html.night {
   --accent-text: var(--orange); /* 5.6:1 on the dark page */
   --orange-text: var(--orange);
   --orange-soft: rgb(242 107 56 / 0.16);
+  --line-strong: rgb(255 255 255 / 0.34); /* edges of inputs, over 3:1 on the dark cards */
+  --error: #ff9a8b; /* 7:1 on the dark cards */
+  --error-soft: rgb(255 110 90 / 0.14);
   --focus: #ffffff;
 }
 

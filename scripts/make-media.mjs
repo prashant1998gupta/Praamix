@@ -9,11 +9,11 @@
  * browser tab icons, and src/content/media.generated.ts, which tells the site
  * which files exist.
  */
-import { mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import sharp from 'sharp'
-import { IMAGES, LOGO } from './media.config.mjs'
+import { FILES, IMAGES, LOGO } from './media.config.mjs'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
 const sourceDir = join(root, 'media-source')
@@ -58,6 +58,9 @@ for (const image of IMAGES) {
     ...(image.alpha ? { fallbackType: 'png' } : {}),
   }
 }
+
+/* Files that need no resizing, such as the logo's reveal animation. */
+for (const item of FILES) await copyFile(join(sourceDir, item.source), join(outDir, item.name))
 
 /* The logo: the empty margin around the artwork is trimmed off. The artwork itself is not altered. */
 const logoInput = join(sourceDir, LOGO.source)

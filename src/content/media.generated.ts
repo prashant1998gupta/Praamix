@@ -513,6 +513,187 @@ export const media = {
     "fallback": 480,
     "fallbackType": "png"
   },
+  "poster-bubbles": {
+    "base": "/media/poster-bubbles",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-bottles": {
+    "base": "/media/poster-bottles",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-builds": {
+    "base": "/media/poster-builds",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-giant-animals": {
+    "base": "/media/poster-giant-animals",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-weapons": {
+    "base": "/media/poster-weapons",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-chaos": {
+    "base": "/media/poster-chaos",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-arrest": {
+    "base": "/media/poster-arrest",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-explosion": {
+    "base": "/media/poster-explosion",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-animals": {
+    "base": "/media/poster-animals",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-party": {
+    "base": "/media/poster-party",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-gravity-gun": {
+    "base": "/media/poster-gravity-gun",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "poster-lake": {
+    "base": "/media/poster-lake",
+    "widths": [
+      480,
+      768,
+      1080,
+      1440,
+      1920
+    ],
+    "width": 1920,
+    "height": 1080,
+    "fallback": 1080
+  },
+  "stv-logo": {
+    "base": "/media/stv-logo",
+    "widths": [
+      320,
+      480,
+      720,
+      1200
+    ],
+    "width": 1200,
+    "height": 900,
+    "fallback": 720,
+    "fallbackType": "png"
+  },
+  "stv-drum": {
+    "base": "/media/stv-drum",
+    "widths": [
+      96,
+      160,
+      274
+    ],
+    "width": 274,
+    "height": 274,
+    "fallback": 274,
+    "fallbackType": "png"
+  },
   "praamix-logo-light": {
     "base": "/media/praamix-logo-light",
     "widths": [

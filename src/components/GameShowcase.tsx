@@ -1,11 +1,12 @@
 import { useId, useRef, useState } from 'react'
-import type { CSSProperties, KeyboardEvent, ReactNode } from 'react'
+import type { KeyboardEvent, ReactNode } from 'react'
 import { Link } from 'react-router'
 import { gamePath, sheriffTownVr } from '../content/game.ts'
 import type { GameMap, Mode } from '../content/game.ts'
 import { SIZES } from '../content/images.ts'
 import { useDrift } from '../hooks/useDrift.ts'
 import { Arrow } from './Arrow.tsx'
+import { GameLogo } from './GameLogo.tsx'
 import { Motes, StarBadge, TypedLine } from './Motion.tsx'
 import { Art, Picture } from './Picture.tsx'
 
@@ -17,15 +18,15 @@ type StageProps = {
   /** Ties the section to its heading. */
   id: string
   eyebrow: string
-  /** The page's main heading. */
+  /** The page's main heading. Shown as the game's logo, and read out as these words. */
   title: string
   /** Text and actions under the heading. */
   children: ReactNode
 }
 
 /**
- * The top of the homepage and the game page: the in-game picture from edge to
- * edge with the heading over it. The picture, the light and the words sit on
+ * The top of the game page: the in-game picture from edge to edge with the
+ * game's logo and the way in over it. The picture, the light and the words sit on
  * separate layers that move apart with the pointer and as the page scrolls.
  */
 export function GameStage({ id, eyebrow, title, children }: StageProps) {
@@ -45,13 +46,9 @@ export function GameStage({ id, eyebrow, title, children }: StageProps) {
       <div className="wrap showcase__content">
         <div className="showcase__text">
           <p className="eyebrow">{eyebrow}</p>
-          <h1 className="showcase__title" id={id}>
-            {title.split(' ').flatMap((word, index) => [
-              index > 0 ? ' ' : '',
-              <span className="word" key={`${word}-${index}`} style={{ '--w': index } as CSSProperties}>
-                {word}
-              </span>,
-            ])}
+          <h1 className="showcase__logo" id={id}>
+            <span className="visually-hidden">{title}</span>
+            <GameLogo reveal priority />
           </h1>
           {children}
         </div>

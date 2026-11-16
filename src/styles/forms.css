@@ -422,3 +422,63 @@ textarea.input {
 .file__rows > div[data-filled] dd {
   color: var(--fg);
 }
+
+/* ---------- The brief on the dark page ---------- */
+
+html.night .contact-hero {
+  border-bottom: 1px solid var(--rule);
+  background:
+    radial-gradient(45% 80% at 12% 20%, rgb(242 107 56 / 0.22), transparent 70%),
+    radial-gradient(40% 80% at 92% 80%, rgb(90 150 235 / 0.2), transparent 70%), #0b0e12;
+}
+
+/* Cards are a raised surface with an edge, not white paper. */
+html.night .brief__group,
+html.night .brief__send,
+html.night .contact__notes,
+html.night .brief__status:not(:empty) {
+  background: #1b212a;
+  box-shadow: none;
+}
+
+html.night .brief__status[data-kind='failed'] {
+  background: var(--error-soft);
+}
+
+/* Fields are wells cut into the card. */
+html.night .input {
+  background: #0f1318;
+  color: var(--fg);
+}
+
+html.night .input::placeholder {
+  color: #8e97a2;
+}
+
+html.night .input:hover,
+html.night .input:focus-visible {
+  border-color: var(--white);
+}
+
+html.night .choice {
+  background: transparent;
+}
+
+@media (hover: hover) {
+  html.night .choice:hover {
+    border-color: var(--white);
+  }
+}
+
+/* A chosen chip lights up orange. */
+html.night .choice:has(input:checked) {
+  border-color: var(--orange);
+  background: rgb(242 107 56 / 0.18);
+  color: var(--white);
+}
+
+html.night .file {
+  background:
+    radial-gradient(80% 60% at 100% 0%, rgb(242 107 56 / 0.2), transparent 70%), #0b0e12;
+  box-shadow: none;
+}

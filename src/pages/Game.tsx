@@ -73,6 +73,13 @@ function GamePage({ game }: { game: GameContent }) {
       <DispatchBoard band />
       <ComingNext />
       <Gallery id="gallery" heading={game.galleryHeading} lede={game.galleryLede} images={game.gallery} />
+      <Gallery
+        id="key-art"
+        heading={game.keyArtHeading}
+        lede={game.keyArtLede}
+        images={game.marquee.posters.map((poster) => poster.image)}
+        ruled
+      />
       <GameStatus game={game} />
       <Extras />
       <Community />

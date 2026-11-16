@@ -1,0 +1,526 @@
+/*
+ * The opening of the homepage: the game's pictures one after another, the
+ * logo, and the revolver drum that moves the show on. Also the logo itself,
+ * wherever it is used. Movement is in the reduced-motion block at the end.
+ */
+
+/* ---------- The Sheriff Town VR logo ---------- */
+
+.game-logo {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  filter: drop-shadow(0 0.9rem 1.6rem rgb(0 0 0 / 0.55));
+}
+
+.game-logo__still,
+.game-logo__film {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.game-logo picture,
+.game-logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The drum, laid back over the place it was cut from, so it can turn there. */
+.game-logo__drum {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  rotate: calc(var(--spin, 0) * 360deg);
+}
+
+/* While the reveal plays, the finished logo waits underneath it. */
+.game-logo[data-filming] .game-logo__still {
+  opacity: 0;
+}
+
+.game-logo__film {
+  object-fit: contain;
+}
+
+/* ---------- The opening ---------- */
+
+.marquee {
+  --slide-time: 6.5s;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  /* "clip", not "hidden", so the scroll effect below follows the page and not this box. */
+  overflow: clip;
+  background: #0b0e12;
+  color: #f3f5f7;
+}
+
+/* On a phone the pictures have a frame of their own at the top, and the words follow. */
+.marquee__art {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 62svh;
+  overflow: hidden;
+  /* A sideways swipe changes the picture; up and down still scrolls the page. */
+  touch-action: pan-y;
+}
+
+.marquee__slide {
+  --ox: 50%;
+  --oy: 20%;
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  /* The picture's own colour shows while it loads. */
+  background: var(--tone, #0b0e12);
+}
+
+/* The picture showing, and the one before it, which stays underneath while the new one opens over it. */
+.marquee__slide[data-state='under'] {
+  z-index: 1;
+  visibility: visible;
+}
+
+.marquee__slide[data-state='on'] {
+  z-index: 2;
+  visibility: visible;
+}
+
+.marquee__slide picture {
+  display: block;
+  height: 100%;
+}
+
+.marquee__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The posters carry the logo at the top, so the top is what must stay in the frame. */
+  object-position: 50% 0;
+}
+
+.marquee__slide[data-kind='capture'] img {
+  object-position: 62% 40%;
+}
+
+/* Shade, so the words read and the picture melts into the page below. One for each kind of picture. */
+.marquee__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.marquee[data-kind='capture'] .marquee__shade--capture,
+.marquee[data-kind='poster'] .marquee__shade--poster {
+  opacity: 1;
+}
+
+.marquee__shade--capture {
+  background:
+    linear-gradient(0deg, #0b0e12 0%, transparent 30%),
+    linear-gradient(180deg, rgb(11 14 18 / 0.55) 0%, transparent 45%);
+}
+
+.marquee__shade--poster {
+  background: linear-gradient(0deg, #0b0e12 0%, transparent 26%);
+}
+
+.marquee__content {
+  display: grid;
+  gap: 1.5rem;
+  padding-block: 0.25rem clamp(2.25rem, 6vh, 4rem);
+}
+
+.marquee__text {
+  display: grid;
+  gap: 1.1rem;
+  justify-items: start;
+  max-width: 40rem;
+}
+
+/* The posters are bright and busy, so the words carry a soft shadow of their own as well as the shade. */
+.marquee__text > p:not(.showcase__motto),
+.marquee__now {
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 0.6),
+    0 0 1.25rem rgb(0 0 0 / 0.75);
+}
+
+/* On a phone the logo sits over the top of the picture, where the posters have theirs. */
+.marquee__logo {
+  --logo: min(66vw, 18rem);
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  z-index: 1;
+  width: var(--logo);
+  translate: -50% 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+/* A poster has the logo painted in, so the site's own steps back. It stays there for screen readers. */
+.marquee[data-kind='poster'] .marquee__logo {
+  opacity: 0;
+}
+
+.marquee__text .actions {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* ---------- The controls ---------- */
+
+.marquee__deck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  order: -1;
+}
+
+.marquee__now {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.marquee__kind {
+  color: var(--orange);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.marquee__name {
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.marquee__count {
+  color: rgb(255 255 255 / 0.72);
+  font-size: var(--text-s);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.marquee__controls {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.marquee__step {
+  display: grid;
+  place-items: center;
+  width: var(--target);
+  height: var(--target);
+  padding: 0;
+  border: 1.5px solid rgb(255 255 255 / 0.4);
+  border-radius: 50%;
+  background: rgb(11 14 18 / 0.55);
+  color: #fff;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.marquee__step .arrow {
+  width: 1.2rem;
+}
+
+.marquee__step .icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* The drum from the logo, as the button that brings the next picture. */
+.marquee__drum {
+  position: relative;
+  flex: none;
+  width: 4.75rem;
+  height: 4.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.marquee__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  rotate: -90deg;
+}
+
+.marquee__ring-track {
+  fill: rgb(11 14 18 / 0.6);
+  stroke: rgb(255 255 255 / 0.28);
+  stroke-width: 3;
+}
+
+/* Fills as the current picture's time runs out. Empty when nothing moves by itself. */
+.marquee__ring-fill {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+.marquee__chambers {
+  position: absolute;
+  inset: 9%;
+  display: block;
+  border-radius: 50%;
+  /* One chamber for each picture that has gone by. */
+  rotate: calc(var(--turns, 0) * 60deg);
+}
+
+.marquee__chambers picture,
+.marquee__chambers img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (hover: hover) {
+  .marquee__step:hover {
+    border-color: #fff;
+    background: rgb(11 14 18 / 0.8);
+  }
+
+  .marquee__drum:hover .marquee__ring-track {
+    stroke: rgb(255 255 255 / 0.6);
+  }
+}
+
+/* ---------- Wide screens: the pictures fill the opening, with the words at its foot ---------- */
+
+@media (min-width: 56em) {
+  .marquee {
+    min-height: min(92svh, 60rem);
+  }
+
+  .marquee__art {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  .marquee__slide {
+    --oy: 17%;
+  }
+
+  .marquee__slide[data-kind='capture'] {
+    --ox: 24%;
+    --oy: 48%;
+    background: #0b0e12;
+  }
+
+  /*
+   * The capture is moved to the right, so the precinct stands clear of the
+   * words, and its left edge fades out under the shade.
+   */
+  .marquee__slide[data-kind='capture'] picture {
+    position: absolute;
+    inset: 0 -12% 0 16%;
+    height: auto;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 24%);
+    mask-image: linear-gradient(90deg, transparent, #000 24%);
+  }
+
+  /* Dark on the left for the words, with the picture clear on the right. */
+  .marquee__shade--capture {
+    background:
+      linear-gradient(
+        90deg,
+        rgb(11 14 18 / 0.94) 0%,
+        rgb(11 14 18 / 0.8) 28%,
+        rgb(11 14 18 / 0.2) 60%,
+        transparent 80%
+      ),
+      linear-gradient(0deg, var(--bg, #0f1318) 0%, rgb(11 14 18 / 0.5) 20%, transparent 42%),
+      linear-gradient(180deg, rgb(11 14 18 / 0.5) 0%, transparent 16%);
+  }
+
+  /* A poster is seen whole: dark only at the foot, and behind the words in its corner. */
+  .marquee__shade--poster {
+    background:
+      linear-gradient(0deg, var(--bg, #0f1318) 0%, rgb(11 14 18 / 0.9) 16%, rgb(11 14 18 / 0.5) 36%, transparent 58%),
+      radial-gradient(60% 82% at 6% 92%, rgb(11 14 18 / 0.94) 0%, rgb(11 14 18 / 0.8) 48%, transparent 80%),
+      linear-gradient(180deg, rgb(11 14 18 / 0.3) 0%, transparent 10%);
+  }
+
+  .marquee__content {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    align-content: end;
+    gap: 2rem;
+    padding-block: clamp(4rem, 9vh, 7rem) clamp(2.25rem, 6vh, 4rem);
+  }
+
+  /* The logo joins the words. The artwork has an empty margin, so it is pulled out to line up with them. */
+  .marquee__logo {
+    --logo: clamp(15rem, 27vw, 25rem);
+    position: static;
+    margin: calc(var(--logo) * -0.05) 0 calc(var(--logo) * -0.045) calc(var(--logo) * -0.07);
+    translate: none;
+  }
+
+  .marquee__text .actions {
+    width: auto;
+  }
+
+  .marquee__deck {
+    display: grid;
+    justify-items: end;
+    gap: 0.9rem;
+    order: 0;
+    text-align: right;
+  }
+}
+
+/* ---------- Motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* A new picture opens out of a circle, from where the drum of its logo is. */
+  .marquee[data-moved] .marquee__slide[data-state='on'] {
+    animation: iris-in 1.15s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  /* Each picture moves in very slowly while it is showing. */
+  .marquee__slide[data-state='on'] img {
+    animation: slow-push 9s ease-out forwards;
+  }
+
+  .marquee__ring-fill {
+    animation: ring-fill var(--slide-time) linear forwards paused;
+  }
+
+  .marquee[data-running] .marquee__ring-fill {
+    animation-play-state: running;
+  }
+
+  .marquee__chambers {
+    transition: rotate 0.75s cubic-bezier(0.3, 1.55, 0.5, 1);
+  }
+
+  .marquee__name {
+    animation: rise-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* The logo arrives its own way, below. */
+  .marquee__text > :not(.marquee__logo) {
+    animation: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  .marquee__text > :nth-child(2) {
+    animation-delay: 0.3s;
+  }
+
+  .marquee__text > :nth-child(3) {
+    animation-delay: 0.42s;
+  }
+
+  .marquee__text > :nth-child(4) {
+    animation-delay: 0.54s;
+  }
+
+  .marquee__text > :nth-child(n + 5) {
+    animation-delay: 0.66s;
+  }
+
+  .marquee__deck {
+    animation: rise-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.9s backwards;
+  }
+
+  /* The logo's drum spins once each time the picture changes. */
+  .game-logo__drum {
+    transition: rotate 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* Where the reveal animation cannot play, the logo lands and its drum spins to a stop. */
+  .game-logo[data-arrive] .game-logo__still {
+    animation: logo-land 0.75s cubic-bezier(0.2, 1.35, 0.4, 1) 0.3s backwards;
+  }
+
+  .game-logo[data-arrive] .game-logo__drum {
+    animation: drum-settle 1.9s cubic-bezier(0.15, 0.75, 0.2, 1) 0.6s backwards;
+  }
+
+  /* As the opening scrolls away on a wide screen, the words lift off. */
+  @supports (animation-timeline: view()) {
+    @media (min-width: 56em) {
+      .marquee__content {
+        animation: hero-lift linear both;
+        animation-timeline: view();
+        animation-range: exit 30% exit 100%;
+      }
+    }
+  }
+}
+
+/* With nothing moving by itself there is nothing to pause. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee__step[aria-pressed] {
+    display: none;
+  }
+}
+
+@keyframes iris-in {
+  from {
+    clip-path: circle(0% at var(--ox) var(--oy));
+  }
+
+  to {
+    clip-path: circle(150% at var(--ox) var(--oy));
+  }
+}
+
+@keyframes slow-push {
+  to {
+    scale: 1.07;
+  }
+}
+
+@keyframes ring-fill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes logo-land {
+  from {
+    opacity: 0;
+    scale: 1.5;
+  }
+}
+
+@keyframes drum-settle {
+  from {
+    rotate: -900deg;
+  }
+}

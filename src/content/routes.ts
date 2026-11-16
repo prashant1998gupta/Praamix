@@ -14,7 +14,7 @@ export type RouteMeta = {
   description: string
   /** Keeps unfinished pages out of search results. */
   noindex?: boolean
-  /** True for the pages that use the dark theme. Keep in step with isNight below. */
+  /** True for a page that uses the dark theme, which is all of them. Keep in step with isNight below. */
   night?: boolean
   /** The main picture at the top of the page. The browser fetches it early. */
   preload?: { file: ImageFile; sizes: string }
@@ -31,7 +31,7 @@ export const routes: RouteMeta[] = [
     title: `${site.name} · ${site.descriptor}`,
     description: site.description,
     night: true,
-    preload: { file: images.stvArrival.file, sizes: SIZES.stage },
+    preload: { file: images.stvArrival.file, sizes: SIZES.marquee },
   },
   {
     path: gamePath(sheriffTownVr),
@@ -63,6 +63,7 @@ export const routes: RouteMeta[] = [
     title: titled('Start a project'),
     description: 'Send Praamix a short brief about the game you want to build.',
     noindex: inquiryMode() === 'draft',
+    night: true,
   },
   {
     path: '/terms-and-conditions',
@@ -70,6 +71,7 @@ export const routes: RouteMeta[] = [
     title: titled('Terms & Conditions'),
     description: 'The terms that apply to using the Praamix website.',
     noindex: legalIsDraft(),
+    night: true,
   },
   {
     path: '/privacy-policy',
@@ -77,6 +79,7 @@ export const routes: RouteMeta[] = [
     title: titled('Privacy Policy'),
     description: 'What the Praamix website does with information about its visitors.',
     noindex: legalIsDraft(),
+    night: true,
   },
 ]
 
@@ -85,16 +88,15 @@ export const notFound: RouteMeta = {
   title: titled('Page not found'),
   description: site.description,
   noindex: true,
+  night: true,
 }
 
-/** Every main page is dark. The brief form and the legal pages stay light, for reading and typing. */
-export function isNight(pathname: string): boolean {
-  return (
-    pathname === '/' ||
-    pathname.startsWith('/games') ||
-    pathname.startsWith('/services') ||
-    pathname.startsWith('/studio')
-  )
+/**
+ * Every page is dark. The switch is kept, so one page can be made light again
+ * here and with `night` in its entry above.
+ */
+export function isNight(_pathname: string): boolean {
+  return true
 }
 
 export function metaFor(path: string): RouteMeta {

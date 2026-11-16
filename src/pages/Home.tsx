@@ -2,8 +2,9 @@ import { Action } from '../components/Action.tsx'
 import { Band } from '../components/Band.tsx'
 import { FaqSection } from '../components/Faq.tsx'
 import { Community, TrailerButton, TrailerSection } from '../components/GameFollow.tsx'
-import { DispatchBoard, GameStage, Overheard, Pillars } from '../components/GameShowcase.tsx'
+import { DispatchBoard, Overheard, Pillars } from '../components/GameShowcase.tsx'
 import { ComingNext, Kinetic } from '../components/GameStory.tsx'
+import { Marquee } from '../components/Marquee.tsx'
 import { PipelineIntro, StudioIntro, StudioLine } from '../components/HomeSections.tsx'
 import { Stats, Ticker } from '../components/Motion.tsx'
 import { Showroom } from '../components/Showroom.tsx'
@@ -13,8 +14,8 @@ import { metaFor } from '../content/routes.ts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
 
 /**
- * The studio's own game comes first: the opening, what you do in it, the town's
- * voices and its maps. Then the studio and the people, then client services.
+ * The studio's own game comes first: its pictures and logo in the opening, what
+ * you do in it, the town's voices and its maps. Then the studio and the people, then client services.
  */
 export function Home() {
   useDocumentMeta(metaFor('/'))
@@ -23,7 +24,7 @@ export function Home() {
 
   return (
     <main id="main" tabIndex={-1}>
-      <GameStage id="hero-title" eyebrow={hero.eyebrow} title={sheriffTownVr.title}>
+      <Marquee id="hero-title" eyebrow={hero.eyebrow} title={sheriffTownVr.title}>
         <p className="showcase__motto">{sheriffTownVr.motto}</p>
         <p className="showcase__lede">{sheriffTownVr.summary}</p>
         <div className="actions">
@@ -35,7 +36,7 @@ export function Home() {
           </Action>
         </div>
         {sheriffTownVr.trailer && <TrailerButton trailer={sheriffTownVr.trailer} />}
-      </GameStage>
+      </Marquee>
       <Ticker words={sheriffTownVr.ticker} />
       <Stats items={sheriffTownVr.stats} label="Sheriff Town VR in numbers" />
       {sheriffTownVr.trailer && <TrailerSection trailer={sheriffTownVr.trailer} />}

@@ -8,7 +8,7 @@
  * Every page is opened at the screen widths in the brief, plus a short
  * landscape phone. Each one is checked for sideways scrolling, broken
  * pictures, empty or "#" links, missing alt text and console errors. Then the
- * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the trailer and the game’s channels, the project brief, reduced motion, direct loading of
+ * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the key art, the homepage slideshow and logo, the trailer and the game’s channels, the project brief, reduced motion, direct loading of
  * every address and the not-found page are exercised.
  *
  * This is emulation inside desktop Chrome or Edge. It does not replace trying
@@ -196,18 +196,92 @@ await run('Voiced lines and gallery viewer', async () => {
   report.check('Hear another shows a different line', (await line.textContent()) !== before)
 
   await page.goto(base + '/games/sheriff-town-vr', { waitUntil: 'networkidle' })
-  const shots = page.locator('.shot')
+  const shots = page.locator('#gallery .shot')
   report.check('The gallery has pictures', (await shots.count()) >= 6, `${await shots.count()} found`)
   await shots.nth(1).click()
-  const viewer = page.locator('dialog.viewer')
+  const viewer = page.locator('#gallery dialog.viewer')
   report.check('Selecting a picture opens the viewer', await viewer.evaluate((el) => el.open))
-  const count = page.locator('.viewer__count')
+  const count = viewer.locator('.viewer__count')
   await page.keyboard.press('ArrowRight')
   report.check('Right arrow moves to the next picture', (await count.textContent())?.startsWith('3 of') === true)
   await page.keyboard.press('Escape')
   report.check('Escape closes the viewer', !(await viewer.evaluate((el) => el.open)))
   report.check('Focus returns to the picture that opened it', await shots.nth(1).evaluate((el) => el === document.activeElement))
+
+  const posters = page.locator('#key-art .shot')
+  report.check('The key art has twelve posters', (await posters.count()) === 12, `${await posters.count()} found`)
+  await posters.first().click()
+  const art = page.locator('#key-art dialog.viewer')
+  report.check('Selecting a poster opens it large', await art.evaluate((el) => el.open))
+  report.check('It is labelled as key art, not a capture', /Key art/.test((await art.locator('.viewer__kind').textContent()) ?? ''))
+  await page.keyboard.press('Escape')
   await context.close()
+})
+
+await run('The homepage slideshow and the logo', async () => {
+  const { context, page, errors } = await open({ width: 1440, height: 900 })
+  await page.goto(base + '/', { waitUntil: 'networkidle' })
+  const show = page.locator('.marquee')
+  const count = show.locator('.marquee__count')
+  const number = async () => Number(((await count.textContent()) ?? '').match(/\d+/)?.[0])
+  const heading = page.getByRole('heading', { level: 1 })
+  report.check('The main heading reads Sheriff Town VR, shown as the logo', (await heading.textContent())?.trim() === 'Sheriff Town VR' && (await heading.locator('.game-logo img').count()) > 0)
+  report.check('It opens on the in-game capture', (await show.getAttribute('data-kind')) === 'capture' && (await number()) === 1)
+  report.check('Thirteen pictures: the capture and twelve posters', /13/.test((await count.textContent()) ?? ''), (await count.textContent()) ?? '')
+  const pictures = () => show.locator('.marquee__slide img').count()
+  report.check('Only the pictures needed so far are fetched', (await pictures()) <= 2, `${await pictures()} loaded`)
+
+  const drum = show.getByRole('button', { name: 'Next picture' })
+  await drum.click()
+  report.check('The drum brings the next picture', (await number()) === 2 && (await show.getAttribute('data-kind')) === 'poster')
+  report.check('A poster is named as key art', /Key art/i.test((await show.locator('.marquee__kind').textContent()) ?? ''))
+  await page.waitForTimeout(900)
+  report.check('On a poster the site’s own logo steps back', (await show.locator('.marquee__logo').evaluate((el) => getComputedStyle(el).opacity)) === '0')
+  await show.getByRole('button', { name: 'Previous picture' }).click()
+  report.check('Previous goes back', (await number()) === 1)
+
+  /* Left alone, with the pointer away from the controls, it moves on by itself. */
+  await page.mouse.move(600, 300)
+  await show.getByRole('button', { name: 'Previous picture' }).blur()
+  const moved = await page.waitForFunction(() => /02/.test(document.querySelector('.marquee__count')?.textContent ?? ''), null, { timeout: 9000 }).then(() => true, () => false)
+  report.check('Left alone, it moves to the next picture', moved)
+
+  await show.getByRole('button', { name: 'Pause the slideshow' }).click()
+  await page.mouse.move(600, 300)
+  const held = await number()
+  await page.waitForTimeout(7500)
+  report.check('Paused, it stays where it is', (await number()) === held, `${held} then ${await number()}`)
+  report.check('No errors', errors.length === 0, errors.join(' | '))
+  await context.close()
+
+  /* With reduced motion requested it never moves by itself, and the pause button has nothing to do. */
+  const still = await open({ width: 1440, height: 900 }, { reducedMotion: 'reduce' })
+  await still.page.goto(base + '/', { waitUntil: 'networkidle' })
+  await still.page.waitForTimeout(7500)
+  report.check('With reduced motion it does not move by itself', /01/.test((await still.page.locator('.marquee__count').textContent()) ?? ''))
+  report.check('Its pictures can still be changed by hand', await still.page.getByRole('button', { name: 'Next picture' }).isVisible())
+  report.check('No video plays for the logo', (await still.page.locator('.game-logo video').count()) === 0)
+  await still.context.close()
+
+  /* A phone: the picture has its own frame, a swipe changes it, and no video is fetched for the logo. */
+  const phone = await open({ width: 375, height: 812 }, { hasTouch: true, isMobile: true })
+  const films = []
+  phone.page.on('request', (request) => request.url().endsWith('.webm') && films.push(request.url()))
+  await phone.page.goto(base + '/', { waitUntil: 'networkidle' })
+  const frame = await phone.page.locator('.marquee__art').boundingBox()
+  const words = await phone.page.locator('.showcase__motto').boundingBox()
+  report.check('On a phone the words sit below the picture', Boolean(frame && words && words.y >= frame.y + frame.height - 40))
+  report.check('On a phone the logo is a still picture', films.length === 0, films.join(', '))
+  await phone.page.locator('.marquee__drum').tap()
+  report.check('Tapping the drum changes the picture', /02/.test((await phone.page.locator('.marquee__count').textContent()) ?? ''))
+  await phone.context.close()
+
+  /* The loader shows the game's logo. */
+  const html = await (await fetch(base + '/')).text()
+  report.check('The loader shows the Sheriff Town VR logo', html.includes('boot__logo') && html.includes('/media/stv-logo-480.webp'))
+  const logo = await fetch(base + '/media/stv-logo-480.webp')
+  const film = await fetch(base + '/media/stv-logo-reveal.webm', { method: 'HEAD' })
+  report.check('The logo and its reveal animation are published', logo.ok && film.ok)
 })
 
 await run('3D showroom and multiplayer', async () => {
@@ -252,13 +326,14 @@ await run('Night theme', async () => {
   await page.goto(base + '/studio', { waitUntil: 'networkidle' })
   report.check('The studio page is dark', await dark())
   await page.goto(base + '/contact', { waitUntil: 'networkidle' })
-  report.check('The contact page is light', !(await dark()))
+  report.check('The contact page is dark', await dark())
+  const field = await page.locator('#brief-name').evaluate((el) => getComputedStyle(el).backgroundColor)
+  report.check('Its form fields are dark too', field !== 'rgb(255, 255, 255)', field)
+  await page.goto(base + '/privacy-policy', { waitUntil: 'networkidle' })
+  report.check('The legal pages are dark', await dark())
   await page.locator('.site-nav__link', { hasText: 'Games' }).click()
   await page.waitForURL('**/games/**')
-  const switched = await page
-    .waitForFunction(() => document.documentElement.classList.contains('night'), null, { timeout: 3000 })
-    .then(() => true, () => false)
-  report.check('Moving to a game page switches to dark', switched)
+  report.check('Moving between pages stays dark', await dark())
   await context.close()
 })
 
@@ -333,7 +408,7 @@ await run('Trailer and the game’s channels', async () => {
     report.check(`${path} closing it takes the player off the page`, (await page.locator('iframe').count()) === 0)
     report.check(`${path} focus returns to the play button`, await play.evaluate((el) => el === document.activeElement))
 
-    const hero = page.locator('.showcase .play-link')
+    const hero = page.locator('.marquee .play-link, .showcase .play-link')
     await hero.scrollIntoViewIfNeeded()
     await hero.click()
     await player.waitFor({ state: 'visible', timeout: 5000 }).catch(() => undefined)
@@ -372,7 +447,7 @@ await run('Loading, slow connections and offline', async () => {
   /* The loader is in the page's own HTML, so it needs no code to show. */
   const html = await (await fetch(base + '/')).text()
   report.check('The loader is part of the page before any code runs', html.includes('id="boot"'))
-  report.check('Dark pages are dark from the first byte', html.includes('<html class="night"') || html.includes('class="night"'))
+  report.check('Pages are dark from the first byte', html.includes('<html lang="en" class="night"'))
 
   /* A slow connection: hold the site's main code back for two seconds. */
   {

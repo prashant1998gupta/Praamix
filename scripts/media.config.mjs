@@ -44,6 +44,21 @@ const TOOLS = ['thruster', 'motor', 'piston', 'propeller', 'stabilizer', 'balloo
 const cutout = (name) => ({ name, source: `game/cutouts/${name}.png`, widths: [320, 480, 640], alpha: true })
 IMAGES.push(...GUNS.map((gun) => cutout(`gun-${gun}`)), ...TOOLS.map((tool) => cutout(`tool-${tool}`)))
 
+/*
+ * Sheriff Town VR key art and logo. scripts/stage-game-brand.mjs prepares these sources.
+ * The posters are artwork made for the game, not captures from it.
+ */
+const POSTERS = ['bubbles', 'bottles', 'builds', 'giant-animals', 'weapons', 'chaos', 'arrest', 'explosion', 'animals', 'party', 'gravity-gun', 'lake']
+IMAGES.push(...POSTERS.map((name) => ({ name: `poster-${name}`, source: `game/posters/${name}.jpg`, widths: [480, 768, 1080, 1440, 1920] })))
+IMAGES.push(
+  { name: 'stv-logo', source: 'game/sheriff-town-logo.png', widths: [320, 480, 720, 1200], alpha: true },
+  /* The revolver drum cut out of the logo, laid back over it so it can turn. */
+  { name: 'stv-drum', source: 'game/sheriff-town-drum.png', widths: [96, 160, 274], alpha: true },
+)
+
+/* Files copied into public/media/ as they are. */
+export const FILES = [{ name: 'stv-logo-reveal.webm', source: 'game/sheriff-town-logo-reveal.webm' }]
+
 export const LOGO = {
   name: 'praamix-logo',
   source: 'praamix-logo.png',

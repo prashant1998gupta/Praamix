@@ -65,6 +65,16 @@ export type Trailer = {
   poster: SiteImage
 }
 
+/** One poster of a game's key art, as shown in the homepage slideshow. */
+export type Poster = {
+  id: string
+  /** What the poster shows, in a word or two. */
+  title: string
+  /** Where in the game it is set. */
+  place: string
+  image: SiteImage
+}
+
 /** A real place to follow a game, such as a community server or a video channel. */
 export type Channel = {
   /** The service's name, e.g. 'Discord'. */

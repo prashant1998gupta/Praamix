@@ -15,6 +15,10 @@ const CAPTURE = 'In-game capture · in development'
 const MAP = 'The game’s Dispatch board picture of this map'
 const RENDER = 'In-engine render of in-game models, set on a studio backdrop · in development'
 
+/* Posters made for the game. They are artwork, and the caption says so. */
+const KEY_ART = 'Key art · artwork, not an in-game capture'
+const LOGO_ART = 'The Sheriff Town VR logo'
+
 export const images = {
   /* ---------- Studio illustrations ---------- */
   worldBuilding: {
@@ -116,6 +120,93 @@ export const images = {
     tone: '#222c3a',
   },
 
+  /* ---------- Sheriff Town VR: key art and logo ---------- */
+  posterBubbles: {
+    file: media['poster-bubbles'],
+    alt: 'Townspeople, a chicken and a sheep float in giant soap bubbles in front of the Sheriff Town police station, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterBottles: {
+    file: media['poster-bottles'],
+    alt: 'Two police officers stand at the station entrance behind people and a sheep shut inside giant glass bottles, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterBuilds: {
+    file: media['poster-builds'],
+    alt: 'A wooden jail cage with stairs and a lookout built in the street, a man locked inside it, a sofa flying past and red balloons overhead, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterGiantAnimals: {
+    file: media['poster-giant-animals'],
+    alt: 'A giant sheep towers over a street while a dolphin leaps across the sky and people run, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterWeapons: {
+    file: media['poster-weapons'],
+    alt: 'Five townspeople line up against the police station wall beneath rifles and launchers hanging in the air, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterChaos: {
+    file: media['poster-chaos'],
+    alt: 'Cars, barrels and people fly through the air around a glass dome in the street outside the police station, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterArrest: {
+    file: media['poster-arrest'],
+    alt: 'A man in black kneels with his hands on his head in front of a patrol car, with four officers standing around him outside the station, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterExplosion: {
+    file: media['poster-explosion'],
+    alt: 'An explosion at a gas station throws a yellow taxi and a person into the air while people run, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterAnimals: {
+    file: media['poster-animals'],
+    alt: 'Sheep, chickens, a cat and a husky wander a park around a fountain with a dolphin leaping above it, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterParty: {
+    file: media['poster-party'],
+    alt: 'People dance on a rooftop at sunset while a man floats in a bubble and another rides a sofa lifted by red balloons, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterGravityGun: {
+    file: media['poster-gravity-gun'],
+    alt: 'In a grocery store aisle, a tool gun lifts boxes and bottles into the air around a boy standing in a shopping trolley, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  posterLake: {
+    file: media['poster-lake'],
+    alt: 'A lake at sunset with a jet ski, leaping dolphins, a pier and a floating obstacle course below a cliff, under the Sheriff Town VR logo.',
+    caption: KEY_ART,
+    tone: '#27467c',
+  },
+  stvLogo: {
+    file: media['stv-logo'],
+    alt: 'Sheriff Town VR',
+    caption: LOGO_ART,
+    tone: 'transparent',
+  },
+  /* The revolver drum from the logo, cut out so it can turn. */
+  stvDrum: {
+    file: media['stv-drum'],
+    alt: '',
+    caption: LOGO_ART,
+    tone: 'transparent',
+  },
+
   gunPortal: {
     file: media['gun-portal'],
     alt: 'The Portal Gun: a dark tool gun with an orange and blue ring at its front.',
@@ -171,6 +262,10 @@ export type ImageName = keyof typeof images
 export const SIZES = {
   /** The picture at the top of a page. */
   hero: '(min-width: 120em) 860px, (min-width: 86em) 700px, (min-width: 56em) 54vw, 94vw',
+  /** The pictures in the homepage slideshow, which always fill their frame: square on a phone, the whole opening on wide screens. */
+  marquee: '(max-width: 55.99em) 178vw, (min-aspect-ratio: 16/9) 100vw, 178vh',
+  /** The game's logo in an opening. */
+  logo: '(min-width: 56em) 26vw, 64vw',
   /** The full-width game picture at the top of the homepage and the game page. */
   stage: '(min-width: 86em) 1280px, 96vw',
   /** A picture beside text further down a page. */

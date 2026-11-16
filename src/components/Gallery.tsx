@@ -5,14 +5,21 @@ import type { SiteImage } from '../content/types.ts'
 import { Arrow } from './Arrow.tsx'
 import { Picture } from './Picture.tsx'
 
-type Props = { id: string; heading: string; lede: string; images: SiteImage[] }
+type Props = {
+  id: string
+  heading: string
+  lede: string
+  images: SiteImage[]
+  /** For a gallery that follows another: a line above it instead of a full gap. */
+  ruled?: boolean
+}
 
 /**
  * A grid of pictures. Selecting one opens it large in a dialog, where the
  * arrow keys or the buttons move to the next and previous picture and Escape
  * closes it. Focus goes back to the picture that opened it.
  */
-export function Gallery({ id, heading, lede, images }: Props) {
+export function Gallery({ id, heading, lede, images, ruled = false }: Props) {
   const dialog = useRef<HTMLDialogElement>(null)
   const opener = useRef<HTMLButtonElement | null>(null)
   const [index, setIndex] = useState(0)
@@ -35,7 +42,7 @@ export function Gallery({ id, heading, lede, images }: Props) {
   }
 
   return (
-    <section className="section" id={id} aria-labelledby={titleId} tabIndex={-1}>
+    <section className={ruled ? 'section section--ruled' : 'section'} id={id} aria-labelledby={titleId} tabIndex={-1}>
       <div className="wrap">
         <div className="section-head">
           <h2 className="h-section" id={titleId}>

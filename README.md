@@ -31,9 +31,10 @@ Needs Node.js 22.18 or newer. The build and the checks run TypeScript files dire
 | `npm run build` | Type-checks, builds `dist/`, and writes an HTML file for every page |
 | `npm run preview` | Serves `dist/` at http://localhost:4173/ |
 | `npm run lint` | Checks the code for mistakes |
-| `npm run check:responsive` | Renders the built site at many screen sizes and exercises the menu, the Dispatch board, the gallery, the trailer, the form and legal links |
+| `npm run check:responsive` | Renders the built site at many screen sizes and exercises the menu, the homepage slideshow, the Dispatch board, the galleries, the trailer, the form and legal links |
 | `npm run media` | Rebuilds the responsive images in `public/media/` from `media-source/` |
 | `node scripts/stage-game-art.mjs <exports> <unity project>` | Prepares the Sheriff Town VR pictures in `media-source/game/` from the game's own art exports |
+| `node scripts/stage-game-brand.mjs <posters folder> <logo kit folder>` | Prepares the Sheriff Town VR key-art posters, the logo, its revolver drum and its reveal animation in `media-source/game/`. The animation is made smaller with ffmpeg when it is installed |
 | `node scripts/stage-game-models.mjs <unity project>` | Converts the game's tool gun models and textures for the 3D viewer, into `public/models/`. Needs Blender |
 
 ## Edit the content
@@ -69,10 +70,11 @@ Both pages show "Draft — business details pending review" until every business
 
 ## Images
 
-The originals are in `media-source/`. Two kinds:
+The originals are in `media-source/`. Three kinds:
 
 - **Studio illustrations** in the folder itself. They are generated artwork, not gameplay or client work, and the captions say so.
 - **Sheriff Town VR** in `media-source/game/`: in-game captures, the Dispatch board's map pictures, and in-engine renders of in-game models. `scripts/stage-game-art.mjs` prepares them from the game's own art exports. Captures get a gentle sharpen and grade. Renders are lifted off their flat background and set on a studio backdrop. Nothing is repainted, and the captions say what each picture is. The sizes each image is saved at are listed in `scripts/media.config.mjs`. Run `npm run media` after changing either.
+- **Sheriff Town VR key art and logo** in `media-source/game/posters/` and `media-source/game/sheriff-town-*`: twelve posters, the logo, and the logo's reveal animation, prepared by `scripts/stage-game-brand.mjs`. The posters are artwork made for the game, not captures from it, and every caption says "Key art".
 
 ## Real-time 3D
 
@@ -80,9 +82,21 @@ The showroom on the home and game pages, and the asset at the top of the service
 
 The models and textures in `public/models/` are the game's own, and anyone who visits the site can download them. Publish only models you are happy to share: the list is at the top of `scripts/stage-game-models.mjs`.
 
-## Light and dark
+## The homepage opening
 
-The home, game, services and studio pages are dark. The contact and legal pages are light, for typing and reading. The list is `isNight` in `src/content/routes.ts`, and the colours are in `src/styles/theme.css`. The light logo used on dark pages is made from the supplied logo by `npm run media`: its charcoal is turned white and its orange is left as supplied.
+The homepage opens like the game's title screen. Its pictures fill the opening one after another: the in-game capture first, then the twelve posters, listed in `marquee` in `src/content/game.ts`.
+
+- **The drum is the control.** The round button is the revolver drum from the logo. Pressing it turns it one chamber and brings the next picture, and the ring around it fills as the current picture's time runs out. There are also previous and pause buttons, and a swipe works on a phone.
+- **It waits when it should.** The show stops while it is off screen, while the pointer or keyboard is on its controls, and when paused. With reduced motion requested it never moves by itself.
+- **Pictures load as needed.** Only the first picture is fetched with the page. Each of the others is fetched shortly before its turn.
+- **The logo.** The capture has no logo of its own, so the site lays the Sheriff Town VR logo over it. The posters carry theirs, so the site's own steps back. On the game page the logo is the title. Screen readers and search engines are given the name in text.
+- **The logo's reveal.** On wide screens the logo arrives with its own animation, `stv-logo-reveal.webm`: bullets load into the drum and it spins. That file has a see-through background, which Safari and iPhones cannot play, so they get the still logo landing with a spin of its drum. So do phones, slow or metered connections, and reduced motion.
+
+The drum turns because it is a second picture, cut out of the logo and laid back over the same place. Where it sits is `DRUM` in `scripts/stage-game-brand.mjs` and `src/components/GameLogo.tsx`; the two must agree.
+
+## Dark throughout
+
+Every page uses the dark theme, the project brief and the legal pages included. The colours are in `src/styles/theme.css`. The switch is kept in `isNight` in `src/content/routes.ts`, with `night` on each page's entry, so a page can be made light again in one place. The light logo used in the header is made from the supplied logo by `npm run media`: its charcoal is turned white and its orange is left as supplied.
 
 ## Hosting
 
@@ -112,7 +126,7 @@ The site's address is `site.url` in `src/content/site.ts`. The build uses it for
 
 ## Slow connections and offline
 
-- **A loader in the page itself.** `index.html` carries a small loader that shows before any code arrives. It stays hidden for the first third of a second, so a fast load never flashes it. After six seconds it says the connection looks slow, and if the code cannot be fetched it offers to try again.
+- **A loader in the page itself.** `index.html` carries a small loader that shows before any code arrives: the Sheriff Town VR logo with its drum spinning. It stays hidden for the first third of a second, so a fast load never flashes it. After six seconds it says the connection looks slow, and if the code cannot be fetched it offers to try again.
 - **Each page's code loads when needed.** A visitor downloads only the page they open. Pointing at or touching a link starts fetching that page early. A page that fails to arrive shows a retry screen, not a blank one.
 - **Offline.** On the built site, `public/sw.js` saves the site's core files on the first visit. Pages then open instantly on the next visit and keep working with no connection. It does not run under `npm run dev`. The build stamps it with a new version each time, which replaces what the last build saved.
 - **Data saver.** When a device asks to save data, or the connection is very slow, the 3D models are fetched only when the visitor asks for them.
