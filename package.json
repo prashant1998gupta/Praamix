@@ -30,5 +30,8 @@
     "typescript": "~7.0.2",
     "vite": "^8.3.6"
   },
-  "description": "PRAAMIX game studio website"
+  "description": "PRAAMIX game studio website",
+  "engines": {
+    "node": ">=22.18"
+  }
 }

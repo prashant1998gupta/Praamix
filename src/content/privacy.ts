@@ -65,6 +65,12 @@ export function privacySections(): LegalSection[] {
             'serves its fonts and images from the same site, not from an outside service',
           ],
         },
+        {
+          p: 'To load quickly and keep working without a connection, the site saves a copy of its own pages, pictures and code on your device. That copy holds nothing about you. Clearing this site’s data in your browser removes it.',
+        },
+        {
+          p: 'The personal portfolio pages at /prashant and /aman are their owners’ own pages, not part of the studio site, and work differently. They load fonts from Google, and their small browser games use Google Firebase for scoreboards and your browser’s storage to remember settings and scores.',
+        },
       ],
     },
     {

@@ -44,7 +44,7 @@ export const people: Person[] = [
     bio: 'Prashant builds games with Unity and C#, focusing on gameplay systems, multiplayer, performance, and modular architecture. His portfolio spans mobile, PC, WebGL, and VR projects.',
     areas: ['Unity and C#', 'Gameplay systems', 'Multiplayer', 'Performance optimization'],
     portrait: null,
-    links: [{ label: 'View portfolio', url: 'https://prashant-portfolio-black-sigma.vercel.app/' }],
+    links: [{ label: 'View portfolio', url: '/prashant/' }],
   },
   {
     id: 'aman-yadav',
@@ -55,6 +55,6 @@ export const people: Person[] = [
     bio: 'Aman develops games and immersive experiences with Unity and C#, with a focus on gameplay, VR interaction, and AR. His portfolio covers mobile and headset experiences, including work with AR Foundation.',
     areas: ['Unity and C#', 'VR interaction', 'AR Foundation', 'Mobile gameplay'],
     portrait: null,
-    links: [{ label: 'View portfolio', url: 'https://prashant1998gupta.github.io/Aman_portfolio/' }],
+    links: [{ label: 'View portfolio', url: '/aman/' }],
   },
 ]

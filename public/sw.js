@@ -94,6 +94,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
+  /* The personal portfolio pages are separate sites in their own folders. They go straight to the network. */
+  if (/^\/(prashant|aman)(\/|$)/.test(url.pathname)) return
 
   if (request.mode === 'navigate') {
     event.respondWith(pageFirstFromNetwork(request))

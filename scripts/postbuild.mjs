@@ -10,8 +10,9 @@
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { images } from '../src/content/images.ts'
 import { notFound, routes } from '../src/content/routes.ts'
-import { site } from '../src/content/site.ts'
+import { portfolios, site } from '../src/content/site.ts'
 
 const dist = fileURLToPath(new URL('../dist/', import.meta.url))
 const shell = await readFile(join(dist, 'index.html'), 'utf8')
@@ -53,6 +54,15 @@ function page(meta) {
     tags.push(`<meta property="og:url" content="${esc(address)}" />`)
   }
 
+  /* The picture shown when a page is shared in a chat or on social media. */
+  if (site.url) {
+    const { file } = images.stvArrival
+    const picture = `${site.url.replace(/\/$/, '')}${file.base}-${file.fallback}.jpg`
+    tags.push(`<meta property="og:image" content="${esc(picture)}" />`)
+    tags.push(`<meta property="og:image:alt" content="${esc(images.stvArrival.alt)}" />`)
+    tags.push('<meta name="twitter:card" content="summary_large_image" />')
+  }
+
   if (meta.noindex) tags.push('<meta name="robots" content="noindex" />')
 
   if (meta.source) {
@@ -86,8 +96,13 @@ function page(meta) {
 
 const written = []
 
+/*
+ * Each page is written as <address>.html, for example services.html. Hosts
+ * serve that file at /services with no trailing slash and no redirect, which
+ * matches the address the site itself uses and the one given to search engines.
+ */
 for (const meta of routes) {
-  const file = meta.path === '/' ? join(dist, 'index.html') : join(dist, meta.path, 'index.html')
+  const file = meta.path === '/' ? join(dist, 'index.html') : join(dist, `${meta.path}.html`)
   await mkdir(dirname(file), { recursive: true })
   await writeFile(file, page(meta))
   written.push(meta.path)
@@ -95,6 +110,30 @@ for (const meta of routes) {
 
 await writeFile(join(dist, '404.html'), page(notFound))
 written.push('/404.html')
+
+/*
+ * For search engines: the list of pages, and where to find it. Draft pages
+ * are left out. The personal portfolio pages are listed too.
+ */
+if (site.url) {
+  const origin = site.url.replace(/\/$/, '')
+  const addresses = routes.filter((meta) => !meta.noindex).map((meta) => origin + meta.path)
+  for (const folder of portfolios) {
+    const files = (await readdir(join(dist, folder))).filter((name) => name.endsWith('.html')).sort()
+    for (const name of files) {
+      addresses.push(name === 'index.html' ? `${origin}/${folder}/` : `${origin}/${folder}/${name.replace(/\.html$/, '')}`)
+    }
+  }
+  const sitemap = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...addresses.map((address) => `  <url><loc>${esc(address)}</loc></url>`),
+    '</urlset>',
+    '',
+  ].join('\n')
+  await writeFile(join(dist, 'sitemap.xml'), sitemap)
+  await writeFile(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`)
+}
 
 /* The list of built files has done its job. */
 await rm(join(dist, '.vite'), { recursive: true, force: true })

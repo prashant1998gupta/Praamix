@@ -78,6 +78,33 @@ The models and textures in `public/models/` are the game's own, and anyone who v
 
 The home, game, services and studio pages are dark. The contact and legal pages are light, for typing and reading. The list is `isNight` in `src/content/routes.ts`, and the colours are in `src/styles/theme.css`. The light logo used on dark pages is made from the supplied logo by `npm run media`: its charcoal is turned white and its orange is left as supplied.
 
+## Hosting
+
+The site is plain files after `npm run build`, so any static host can serve it. It is set up for **Cloudflare Pages**, which is free, allows business sites and serves from a worldwide network. Vercel's free plan is for non-commercial use only, so it does not fit a studio that sells services.
+
+One deployment serves three things from `dist/`:
+
+| Address | What it is | Where it lives |
+| --- | --- | --- |
+| `praamix.com` | The studio site | this project |
+| `praamix.com/prashant/` | Prashant's portfolio | `public/prashant/` |
+| `praamix.com/aman/` | Aman's portfolio | `public/aman/` |
+
+The portfolios are plain folders of their own files. To change one, edit it in its folder here and push.
+
+**To put it online, once:**
+
+1. In Cloudflare, open Workers & Pages, create a Pages project and connect this GitHub repository.
+2. Build command `npm run build`, output directory `dist`. The Node version comes from `.node-version`, the one the build was tested on.
+3. Deploy. Cloudflare gives a `*.pages.dev` address to check first.
+4. In the project, open Custom domains and add `praamix.com` and `www.praamix.com`. Cloudflare shows what to change at the place the domain was bought. HTTPS is set up automatically.
+
+After that, every push to `main` rebuilds and publishes the site.
+
+Nothing needs uploading to a CDN by hand. Everything in `dist/`, the 3D models in `public/models/` included, is served from Cloudflare's network. `public/_headers` tells browsers how long to keep each kind of file.
+
+The site's address is `site.url` in `src/content/site.ts`. The build uses it for link previews, `sitemap.xml` and `robots.txt`. Once the site is live, put the host's name in `business.hostingProvider` there, because the Privacy Policy names it.
+
 ## Slow connections and offline
 
 - **A loader in the page itself.** `index.html` carries a small loader that shows before any code arrives. It stays hidden for the first third of a second, so a fast load never flashes it. After six seconds it says the connection looks slow, and if the code cannot be fetched it offers to try again.

@@ -11,9 +11,16 @@ export const site = {
   descriptor: 'Original games and game development',
   description:
     'Praamix is an independent game studio making Sheriff Town VR, a VR sandbox where you bring them in alive. We also develop games for clients with Unity and Unreal Engine.',
-  /** The site's public address once it has one, e.g. 'https://example.com'. Empty until then. */
-  url: '',
+  /** The site's public address. Used for link previews, the sitemap and search engines. */
+  url: 'https://praamix.com',
 }
+
+/*
+ * Personal portfolio pages hosted on the same address. Each is a folder of
+ * plain files in public/, separate from the studio site: public/prashant is
+ * served at /prashant/. They are their owners' own pages, not studio pages.
+ */
+export const portfolios = ['prashant', 'aman']
 
 export const nav = [
   { label: 'Games', to: '/games/sheriff-town-vr', match: '/games' },

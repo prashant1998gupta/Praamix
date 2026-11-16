@@ -408,6 +408,37 @@ await run('Loading, slow connections and offline', async () => {
   }
 })
 
+await run('Portfolios on the same address', async () => {
+  /* The saved offline copies are switched off, so every answer here comes from the server. */
+  const { context, page } = await open({ width: 1440, height: 900 }, { serviceWorkers: 'block' })
+  const failed = []
+  page.on('requestfailed', (request) => request.url().startsWith(base) && failed.push(request.url().replace(base, '')))
+  page.on('response', (response) => response.url().startsWith(base) && response.status() >= 400 && failed.push(`${response.status()} ${response.url().replace(base, '')}`))
+
+  await page.goto(base + '/prashant', { waitUntil: 'load' })
+  report.check('/prashant goes to /prashant/', new URL(page.url()).pathname === '/prashant/', new URL(page.url()).pathname)
+  report.check('It shows Prashant\u2019s own page, not the studio site', /Prashant Gupta/.test(await page.title()), await page.title())
+  await page.waitForLoadState('networkidle').catch(() => undefined)
+  report.check('Its own files all load', failed.length === 0, failed.slice(0, 4).join(', '))
+
+  failed.length = 0
+  await page.goto(base + '/aman/', { waitUntil: 'load' })
+  report.check('/aman/ shows Aman\u2019s own page', /Aman Yadav/.test(await page.title()), await page.title())
+  await page.waitForLoadState('networkidle').catch(() => undefined)
+  report.check('Its own files all load', failed.length === 0, failed.slice(0, 4).join(', '))
+
+  const cv = await page.goto(base + '/aman/cv', { waitUntil: 'load' })
+  report.check('/aman/cv opens without .html', cv?.ok() === true && new URL(page.url()).pathname.startsWith('/aman/cv'))
+
+  await page.goto(base + '/studio', { waitUntil: 'networkidle' })
+  const links = await page.locator('.profile a[target="_blank"]').evaluateAll((items) => items.map((item) => item.getAttribute('href')))
+  report.check('The studio page links to both', links.includes('/prashant/') && links.includes('/aman/'), links.join(', '))
+
+  const sitemap = await (await fetch(base + '/sitemap.xml')).text()
+  report.check('The sitemap lists the studio pages and both portfolios', sitemap.includes('/services<') && sitemap.includes('/prashant/<') && sitemap.includes('/aman/<'))
+  await context.close()
+})
+
 await run('Project brief', async () => {
   const { context, page } = await open({ width: 375, height: 812 })
   await page.goto(base + '/contact', { waitUntil: 'networkidle' })
