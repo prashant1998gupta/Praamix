@@ -34,6 +34,8 @@ const REVEAL = [
   '.showroom__grid',
   '.showroom__tool-list > li',
   '.cta__item',
+  '.trailer__stage',
+  '.channels > li',
 ].join(', ')
 
 /**

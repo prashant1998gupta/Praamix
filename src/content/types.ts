@@ -36,10 +36,46 @@ export type IconName =
   | 'headset'
   | 'layers'
   | 'external'
+  | 'play'
+  | 'chat'
 
 export type Faq = { question: string; answer: string }
 
 export type ExternalLink = { label: string; url: string }
+
+/**
+ * A real trailer on YouTube. Nothing is loaded from YouTube with the page: the
+ * player is fetched only when a visitor presses play. The Privacy Policy says so.
+ */
+export type Trailer = {
+  /** The part after `v=` in the video's address. */
+  youtubeId: string
+  /** The video's own page, for people who would rather watch it there. */
+  url: string
+  /** The video's name. Read out by screen readers. */
+  title: string
+  /** The wording on the play buttons. */
+  label: string
+  eyebrow: string
+  heading: string
+  lede: string
+  /** Said under the picture, so visitors know where the video comes from. */
+  note: string
+  /** A picture from the game, shown until the visitor presses play. */
+  poster: SiteImage
+}
+
+/** A real place to follow a game, such as a community server or a video channel. */
+export type Channel = {
+  /** The service's name, e.g. 'Discord'. */
+  name: string
+  url: string
+  icon: IconName
+  title: string
+  text: string
+  /** The wording of the link. */
+  action: string
+}
 
 /** One real store page for a game. */
 export type StoreEntry = {

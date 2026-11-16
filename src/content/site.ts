@@ -51,8 +51,22 @@ export const inquiry = {
 /** A real address for player support. Empty hides it. */
 export const support = { email: '' }
 
-/** Real studio profiles only, e.g. { label: 'YouTube', url: 'https://…' }. */
-export const social: ExternalLink[] = []
+/*
+ * Real profiles only. These belong to Sheriff Town VR, the studio's game.
+ * The Discord address must be an invite that never expires: one made with
+ * Discord's default settings stops working after a while, and the link here
+ * would then lead nowhere.
+ */
+export const channels = {
+  youtube: 'https://www.youtube.com/@SheriffTownVR',
+  discord: 'https://discord.gg/UrMGkUgSn',
+}
+
+/** The links in the footer. */
+export const social: ExternalLink[] = [
+  { label: 'YouTube', url: channels.youtube },
+  { label: 'Discord', url: channels.discord },
+]
 
 /*
  * Business facts for the Terms & Conditions and Privacy Policy. While any of

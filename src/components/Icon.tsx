@@ -34,6 +34,8 @@ const PATHS: Record<IconName, string[]> = {
   ],
   layers: ['M12 4l8 4-8 4-8-4 8-4Z', 'M4 12l8 4 8-4', 'M4 16l8 4 8-4'],
   external: ['M14 5h5v5', 'M19 5l-8 8', 'M11 7H6v11h11v-5'],
+  play: ['M3 7.5a2.5 2.5 0 0 1 2.5-2.5h13A2.5 2.5 0 0 1 21 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 16.5v-9Z', 'M10 9v6l5-3-5-3Z'],
+  chat: ['M4 5h16v11h-9l-5 4v-4H4V5Z', 'M8.5 10.5h.01', 'M12 10.5h.01', 'M15.5 10.5h.01'],
 }
 
 export function Icon({ name }: { name: IconName }) {

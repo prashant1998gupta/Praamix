@@ -1,10 +1,11 @@
 import { useParams } from 'react-router'
-import { Action, ExternalAction } from '../components/Action.tsx'
+import { Action } from '../components/Action.tsx'
 import { Band } from '../components/Band.tsx'
 import { FaqSection } from '../components/Faq.tsx'
 import { Gallery } from '../components/Gallery.tsx'
 import { CaseFiles, DispatchBoard, Extras, GameStage } from '../components/GameShowcase.tsx'
 import { ComingNext, Story } from '../components/GameStory.tsx'
+import { Community, TrailerButton, TrailerSection } from '../components/GameFollow.tsx'
 import { GameStatus, StoreLinks } from '../components/GameParts.tsx'
 import { Stats, Ticker } from '../components/Motion.tsx'
 import { Showroom } from '../components/Showroom.tsx'
@@ -44,14 +45,11 @@ function GamePage({ game }: { game: GameContent }) {
             See the game
           </Action>
         </div>
-        {game.trailer && (
-          <ExternalAction href={game.trailer.url} variant="light">
-            {game.trailer.label}
-          </ExternalAction>
-        )}
+        {game.trailer && <TrailerButton trailer={game.trailer} />}
       </GameStage>
       <Ticker words={game.ticker} />
       <Stats items={game.stats} label={`${game.title} in numbers`} />
+      {game.trailer && <TrailerSection trailer={game.trailer} />}
 
       <section className="section band" aria-labelledby="glance-title">
         <div className="wrap faq-layout">
@@ -77,6 +75,7 @@ function GamePage({ game }: { game: GameContent }) {
       <Gallery id="gallery" heading={game.galleryHeading} lede={game.galleryLede} images={game.gallery} />
       <GameStatus game={game} />
       <Extras />
+      <Community />
       <FaqSection id="faq-title" heading={game.faqHeading} items={game.faq} band />
       <Band
         label="More from Praamix"

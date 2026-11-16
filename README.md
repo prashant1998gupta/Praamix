@@ -31,7 +31,7 @@ Needs Node.js 22.18 or newer. The build and the checks run TypeScript files dire
 | `npm run build` | Type-checks, builds `dist/`, and writes an HTML file for every page |
 | `npm run preview` | Serves `dist/` at http://localhost:4173/ |
 | `npm run lint` | Checks the code for mistakes |
-| `npm run check:responsive` | Renders the built site at many screen sizes and exercises the menu, the Dispatch board, the gallery, the form and legal links |
+| `npm run check:responsive` | Renders the built site at many screen sizes and exercises the menu, the Dispatch board, the gallery, the trailer, the form and legal links |
 | `npm run media` | Rebuilds the responsive images in `public/media/` from `media-source/` |
 | `node scripts/stage-game-art.mjs <exports> <unity project>` | Prepares the Sheriff Town VR pictures in `media-source/game/` from the game's own art exports |
 | `node scripts/stage-game-models.mjs <unity project>` | Converts the game's tool gun models and textures for the 3D viewer, into `public/models/`. Needs Blender |
@@ -56,6 +56,12 @@ The contact form is an unconnected draft until `inquiry` in `site.ts` has a dest
 ### Add a store link
 
 Add an entry to the store list in `game.ts` with the platform, the real store URL, the button wording and its availability. Only real listings belong there.
+
+### Trailer, Discord and YouTube
+
+The game's YouTube channel and Discord server are `channels` in `site.ts`. They feed the footer and the "Join the posse" section. The Discord address must be an invite set to never expire, or the link stops working.
+
+The trailer is `trailer` in `game.ts`: the YouTube video's id, its address and the picture shown before it plays. Nothing is loaded from YouTube until a visitor presses play, and the Privacy Policy says so. If that ever changes, change the policy first.
 
 ### Finish the legal pages
 

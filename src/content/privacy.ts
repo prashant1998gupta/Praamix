@@ -61,12 +61,15 @@ export function privacySections(): LegalSection[] {
             'sets no cookies',
             'stores nothing in your browser’s local or session storage',
             'loads no analytics, advertising or tracking scripts',
-            'embeds no third-party content such as videos, maps or social widgets',
+            'loads nothing from another company’s service as a page opens: no videos, maps or social widgets',
             'serves its fonts and images from the same site, not from an outside service',
           ],
         },
         {
           p: 'To load quickly and keep working without a connection, the site saves a copy of its own pages, pictures and code on your device. That copy holds nothing about you. Clearing this site’s data in your browser removes it.',
+        },
+        {
+          p: 'The Sheriff Town VR trailer is a YouTube video. It is not loaded with the page. If you press play, the player is loaded from YouTube, a Google service, using its privacy-enhanced address (youtube-nocookie.com). YouTube then receives the technical details any website receives when you use it, such as your IP address and browser details, and its own privacy policy applies. Closing the player removes it from the page.',
         },
         {
           p: 'The personal portfolio pages at /prashant and /aman are their owners’ own pages, not part of the studio site, and work differently. They load fonts from Google, and their small browser games use Google Firebase for scoreboards and your browser’s storage to remember settings and scores.',
@@ -132,7 +135,7 @@ export function privacySections(): LegalSection[] {
       id: 'links',
       heading: 'Links to other sites',
       blocks: [
-        { p: 'Links to portfolios, storefronts and other sites take you to services with their own privacy policies.' },
+        { p: 'Links to portfolios, storefronts, YouTube, Discord and other sites take you to services with their own privacy policies.' },
       ],
     },
     {

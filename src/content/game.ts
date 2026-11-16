@@ -10,7 +10,8 @@
  */
 import { images } from './images.ts'
 import { media } from './media.generated.ts'
-import type { ExternalLink, Faq, SiteImage, StoreEntry } from './types.ts'
+import { channels } from './site.ts'
+import type { Channel, ExternalLink, Faq, SiteImage, StoreEntry, Trailer } from './types.ts'
 
 type Fact = { term: string; detail: string }
 
@@ -347,6 +348,11 @@ const faq: Faq[] = [
       'Yes, multiplayer is planned. It is not in the game yet, and we have not announced how it will work or when it will arrive.',
   },
   {
+    question: 'Where can I follow the game?',
+    answer:
+      'On the Sheriff Town VR Discord server and on the game’s YouTube channel, where the trailer is. Both are linked on this page.',
+  },
+  {
     question: 'Where can I buy it?',
     answer:
       'It isn’t on sale yet, and no store listing has been announced. When there is one, this page will link to it.',
@@ -454,9 +460,43 @@ export const sheriffTownVr = {
   /** Real store pages only. See StoreEntry in types.ts. */
   stores: [] as StoreEntry[],
   /** A real page where players can follow the game, such as a community or newsletter. */
-  updates: null as ExternalLink | null,
-  /** A real trailer. It opens on the video site, not inside this page. */
-  trailer: null as ExternalLink | null,
+  updates: { label: 'Follow the game on Discord', url: channels.discord } as ExternalLink | null,
+  /** The real trailer. The player is fetched from YouTube only when a visitor presses play. */
+  trailer: {
+    youtubeId: 'wvhj1mbbsrk',
+    url: 'https://www.youtube.com/watch?v=wvhj1mbbsrk',
+    title: 'Sheriff Town VR – Official Trailer',
+    label: 'Watch the trailer',
+    eyebrow: 'Official trailer',
+    heading: 'See the town in motion.',
+    lede: 'Watch the official Sheriff Town VR trailer.',
+    note: 'The trailer plays from YouTube, and loads only when you press play.',
+    poster: images.stvDistrict,
+  } as Trailer | null,
+
+  /** Real places to follow the game. Leave the list empty and the section is left out. */
+  community: {
+    heading: 'Join the posse.',
+    lede: 'Sheriff Town VR is still being made. Follow it as it comes together, and tell us what you think.',
+    channels: [
+      {
+        name: 'Discord',
+        icon: 'chat',
+        title: 'The Sheriff Town VR server',
+        text: 'The official home of the game. Come and talk about it with us.',
+        action: 'Join the Discord',
+        url: channels.discord,
+      },
+      {
+        name: 'YouTube',
+        icon: 'play',
+        title: '@SheriffTownVR',
+        text: 'The game’s own channel, where the official trailer is.',
+        action: 'Visit the channel',
+        url: channels.youtube,
+      },
+    ] as Channel[],
+  },
 
   galleryHeading: 'From the game.',
   galleryLede: 'In-game captures and in-engine renders, all from Unity. Select a picture to see it larger.',

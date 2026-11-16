@@ -1,6 +1,7 @@
 import { Action } from '../components/Action.tsx'
 import { Band } from '../components/Band.tsx'
 import { FaqSection } from '../components/Faq.tsx'
+import { Community, TrailerButton, TrailerSection } from '../components/GameFollow.tsx'
 import { DispatchBoard, GameStage, Overheard, Pillars } from '../components/GameShowcase.tsx'
 import { ComingNext, Kinetic } from '../components/GameStory.tsx'
 import { PipelineIntro, StudioIntro, StudioLine } from '../components/HomeSections.tsx'
@@ -33,9 +34,11 @@ export function Home() {
             {hero.mapsAction}
           </Action>
         </div>
+        {sheriffTownVr.trailer && <TrailerButton trailer={sheriffTownVr.trailer} />}
       </GameStage>
       <Ticker words={sheriffTownVr.ticker} />
       <Stats items={sheriffTownVr.stats} label="Sheriff Town VR in numbers" />
+      {sheriffTownVr.trailer && <TrailerSection trailer={sheriffTownVr.trailer} />}
       <StudioLine />
       <Pillars heading={home.pillars.heading} action={home.pillars.action} />
       <Kinetic text={sheriffTownVr.motto} />
@@ -43,6 +46,7 @@ export function Home() {
       <ComingNext />
       <DispatchBoard band />
       <Overheard />
+      <Community />
       <StudioIntro />
       <PipelineIntro />
       <FaqSection id="faq-title" heading={home.faq.heading} items={home.faq.items} band />

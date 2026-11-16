@@ -1,0 +1,402 @@
+/* The trailer and the game's own channels. */
+
+/* ---------- The small play button in the opening ---------- */
+
+.play-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: var(--target);
+  padding: 0.25rem 1.1rem 0.25rem 0.3rem;
+  border: 1.5px solid rgb(255 255 255 / 0.35);
+  border-radius: 99rem;
+  background: rgb(11 14 18 / 0.45);
+  color: var(--white);
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.play-link__disc {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--ink);
+}
+
+.play-link__disc svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+@media (hover: hover) {
+  .play-link:hover {
+    border-color: var(--white);
+    background: rgb(11 14 18 / 0.7);
+  }
+}
+
+/* ---------- The trailer as a section ---------- */
+
+.trailer__stage {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  aspect-ratio: 16 / 9;
+  min-height: 24rem;
+  max-height: min(46rem, 82vh);
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  isolation: isolate;
+}
+
+.trailer__poster,
+.trailer__shade,
+.trailer__marks {
+  position: absolute;
+  inset: 0;
+}
+
+.trailer__poster picture {
+  display: block;
+  height: 100%;
+}
+
+.trailer__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: scale 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dark at the foot for the words, and a little all over so the play button stands out. */
+.trailer__shade {
+  background:
+    linear-gradient(0deg, rgb(11 14 18 / 0.94) 0%, rgb(11 14 18 / 0.6) 32%, rgb(11 14 18 / 0.12) 62%),
+    radial-gradient(60% 60% at 50% 42%, rgb(11 14 18 / 0.1), rgb(11 14 18 / 0.5));
+}
+
+/* Four corner marks, like a viewfinder. */
+.trailer__marks span {
+  position: absolute;
+  width: clamp(1.25rem, 3vw, 2.25rem);
+  height: clamp(1.25rem, 3vw, 2.25rem);
+  border: solid rgb(255 255 255 / 0.7);
+  border-width: 2px 0 0 2px;
+}
+
+.trailer__marks span:nth-child(1) {
+  top: clamp(0.75rem, 2vw, 1.5rem);
+  left: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.trailer__marks span:nth-child(2) {
+  top: clamp(0.75rem, 2vw, 1.5rem);
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  rotate: 90deg;
+}
+
+.trailer__marks span:nth-child(3) {
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  bottom: clamp(0.75rem, 2vw, 1.5rem);
+  rotate: 180deg;
+}
+
+.trailer__marks span:nth-child(4) {
+  bottom: clamp(0.75rem, 2vw, 1.5rem);
+  left: clamp(0.75rem, 2vw, 1.5rem);
+  rotate: 270deg;
+}
+
+.trailer__text {
+  position: relative;
+  display: grid;
+  grid-row: 2;
+  gap: 0.6rem;
+  justify-items: start;
+  padding: 0 clamp(1.5rem, 1rem + 3.5vw, 4rem) clamp(1.75rem, 1rem + 3.5vw, 3.75rem);
+  background: none;
+}
+
+.trailer__text .eyebrow {
+  color: var(--orange);
+}
+
+.trailer__lede {
+  max-width: 34rem;
+  color: #d7dce2;
+  font-size: var(--text-l);
+  line-height: 1.5;
+}
+
+/* The play button sits in the open part of the picture. Its hit area is the whole picture. */
+.trailer__play {
+  display: grid;
+  grid-row: 1;
+  gap: 0.9rem;
+  place-self: center;
+  justify-items: center;
+  margin-top: clamp(1.5rem, 4vw, 3rem);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--white);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.trailer__play::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.trailer__play:focus-visible {
+  outline: none;
+}
+
+.trailer__play:focus-visible .trailer__disc {
+  outline: 3px solid var(--white);
+  outline-offset: 4px;
+}
+
+.trailer__disc {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(4.25rem, 3rem + 5vw, 7rem);
+  height: clamp(4.25rem, 3rem + 5vw, 7rem);
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--ink);
+  box-shadow:
+    0 0 0 0.6rem rgb(242 107 56 / 0.22),
+    0 1.5rem 3rem -0.5rem rgb(0 0 0 / 0.7);
+  transition: scale 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.trailer__disc svg {
+  width: 46%;
+  height: 46%;
+  translate: 4% 0;
+}
+
+.trailer__label {
+  position: relative;
+  font-size: var(--text-s);
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.8);
+}
+
+.trailer__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 1.5rem;
+  margin-top: 0.75rem;
+}
+
+.trailer__foot .art__caption {
+  margin: 0;
+}
+
+@media (hover: hover) {
+  .trailer__stage:hover .trailer__poster img {
+    scale: 1.05;
+  }
+
+  .trailer__stage:hover .trailer__disc {
+    scale: 1.08;
+  }
+}
+
+/* On a phone the picture is taller, so the words and the button each have room. */
+@media (max-width: 39.99em) {
+  .trailer__stage {
+    aspect-ratio: 4 / 5;
+    max-height: none;
+  }
+}
+
+/* ---------- The player ---------- */
+
+/* As wide as fits, while the whole 16 by 9 picture stays on screen. */
+.viewer--video {
+  width: min(100% - 1.5rem, 80rem, (100dvh - 11rem) * 16 / 9);
+  min-width: min(100% - 1.5rem, 20rem);
+}
+
+.viewer__frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #000;
+}
+
+.viewer__frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.viewer__offline {
+  max-width: 24rem;
+  padding: 1.5rem;
+  color: var(--fg-soft);
+  text-align: center;
+}
+
+.viewer--video .viewer__count {
+  color: var(--fg);
+}
+
+/* ---------- The game's channels ---------- */
+
+.channels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: clamp(0.9rem, 0.5rem + 1.5vw, 1.5rem);
+}
+
+.channel {
+  --glow: rgb(242 107 56 / 0.22);
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  height: 100%;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  background: radial-gradient(90% 120% at 100% 0%, var(--glow), transparent 65%), var(--bg);
+  color: var(--fg);
+  text-decoration: none;
+  transition:
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 200ms ease;
+}
+
+.channel--chat {
+  --glow: rgb(110 125 255 / 0.3);
+  --tint: #a5b0ff;
+}
+
+.channel--play {
+  --glow: rgb(255 80 70 / 0.26);
+  --tint: #ff9b92;
+}
+
+.channel__icon {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 0.75rem;
+  border: 1.5px solid currentcolor;
+  border-radius: 50%;
+  color: var(--tint, var(--orange));
+}
+
+.channel__icon .icon {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.channel__name {
+  color: var(--tint, var(--accent-text));
+  font-size: var(--text-s);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.channel__title {
+  font-size: var(--h-sub);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+
+.channel__text {
+  max-width: 30rem;
+  color: var(--fg-soft);
+}
+
+.channel__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  min-height: var(--target);
+  margin-top: 0.5rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+.channel__action .icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+@media (hover: hover) {
+  .channel:hover {
+    border-color: var(--tint, var(--orange));
+  }
+}
+
+/* ---------- Motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* A ring that leaves the play button, over and over. */
+  .trailer__disc::before,
+  .play-link__disc::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--orange);
+    border-radius: 50%;
+    animation: play-ring 2.4s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+  }
+
+  .viewer--video[open] {
+    animation: player-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@keyframes play-ring {
+  from {
+    opacity: 0.9;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.9;
+  }
+}
+
+@keyframes player-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+  }
+}

@@ -8,7 +8,7 @@
  * Every page is opened at the screen widths in the brief, plus a short
  * landscape phone. Each one is checked for sideways scrolling, broken
  * pictures, empty or "#" links, missing alt text and console errors. Then the
- * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the project brief, reduced motion, direct loading of
+ * menu, the loader, slow and offline connections, the Dispatch board, the 3D showroom, the services track, the studio doors, the voiced lines, the gallery viewer, the trailer and the game’s channels, the project brief, reduced motion, direct loading of
  * every address and the not-found page are exercised.
  *
  * This is emulation inside desktop Chrome or Edge. It does not replace trying
@@ -303,6 +303,67 @@ await run('Services and studio', async () => {
   const portfolios = page.locator('.profile a[target="_blank"]')
   report.check('Both profiles link to a portfolio', (await portfolios.count()) === 2)
   await context.close()
+})
+
+await run('Trailer and the game’s channels', async () => {
+  const { context, page, errors } = await open({ width: 1440, height: 900 })
+  /* YouTube is stood in for here, so the check needs no connection and plays nothing. */
+  const outside = []
+  await context.route(/youtube|ytimg|googlevideo|doubleclick|discord/, (route) => {
+    outside.push(route.request().url())
+    return route.fulfill({ contentType: 'text/html', body: '<title>stand-in</title>' })
+  })
+
+  for (const path of ['/', '/games/sheriff-town-vr']) {
+    outside.length = 0
+    await page.goto(base + path, { waitUntil: 'networkidle' })
+    await settle(page)
+    report.check(`${path} loads nothing from YouTube or Discord by itself`, outside.length === 0, outside.slice(0, 2).join(', '))
+    report.check(`${path} has no player on the page before play is pressed`, (await page.locator('iframe').count()) === 0)
+
+    const play = page.locator('.trailer__play')
+    await play.scrollIntoViewIfNeeded()
+    await play.click()
+    const player = page.locator('dialog.viewer--video')
+    await player.waitFor({ state: 'visible', timeout: 5000 }).catch(() => undefined)
+    const source = await player.locator('iframe').getAttribute('src').catch(() => null)
+    report.check(`${path} pressing play opens the trailer`, /^https:\/\/www\.youtube-nocookie\.com\/embed\/[\w-]{11}\?/.test(source ?? ''), source ?? 'no player')
+    await page.keyboard.press('Escape')
+    await player.waitFor({ state: 'detached', timeout: 5000 }).catch(() => undefined)
+    report.check(`${path} closing it takes the player off the page`, (await page.locator('iframe').count()) === 0)
+    report.check(`${path} focus returns to the play button`, await play.evaluate((el) => el === document.activeElement))
+
+    const hero = page.locator('.showcase .play-link')
+    await hero.scrollIntoViewIfNeeded()
+    await hero.click()
+    await player.waitFor({ state: 'visible', timeout: 5000 }).catch(() => undefined)
+    report.check(`${path} the opening has a play button too`, await player.isVisible())
+    await player.getByRole('button', { name: 'Close' }).click()
+    await player.waitFor({ state: 'detached', timeout: 5000 }).catch(() => undefined)
+
+    const channels = await page.locator('.channel').evaluateAll((items) => items.map((item) => item.href))
+    report.check(
+      `${path} links to the game’s Discord and YouTube`,
+      channels.some((href) => href.startsWith('https://discord.gg/')) && channels.some((href) => href.startsWith('https://www.youtube.com/@')),
+      channels.join(', '),
+    )
+  }
+
+  const footer = await page.locator('footer a[target="_blank"]').evaluateAll((items) => items.map((item) => item.textContent?.trim().split(' ')[0]))
+  report.check('The footer links to YouTube and Discord', footer.includes('YouTube') && footer.includes('Discord'), footer.join(', '))
+  report.check('No errors', errors.length === 0, errors.join(' | '))
+  await context.close()
+
+  /* On a phone the trailer picture must hold its words and its button without either covering the other. */
+  const phone = await open({ width: 320, height: 640 }, { hasTouch: true, isMobile: true })
+  await phone.page.goto(base + '/', { waitUntil: 'networkidle' })
+  const clear = await phone.page.evaluate(() => {
+    const disc = document.querySelector('.trailer__label').getBoundingClientRect()
+    const text = document.querySelector('.trailer__text').getBoundingClientRect()
+    return disc.bottom <= text.top + 1
+  })
+  report.check('At 320px the play button sits clear of the words', clear)
+  await phone.context.close()
 })
 
 await run('Loading, slow connections and offline', async () => {
