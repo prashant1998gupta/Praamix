@@ -80,24 +80,30 @@ export const social: ExternalLink[] = [
  */
 export const business = {
   /** The registered or trading name of the business that runs the site. */
-  legalName: '',
-  address: '',
+  legalName: 'Praamix Studio',
+  address: 'India',
   /** The country whose law governs the terms, as it should read in a sentence. */
-  governingLaw: '',
-  legalContactEmail: '',
-  privacyContactEmail: '',
+  governingLaw: 'India',
+  legalContactEmail: 'hello@praamix.com',
+  privacyContactEmail: 'hello@praamix.com',
   /** The company that hosts the site, once it is hosted. */
   hostingProvider: 'Cloudflare',
   /** A full sentence on how long server logs and inquiries are kept. */
-  retention: '',
+  retention:
+    'Server logs are kept by Cloudflare under its own retention rules, usually for a short period. Project inquiries are kept in our email only for as long as we need them to discuss the project, and are deleted sooner if you ask.',
   /** A full sentence on children and age limits, if any apply. */
-  childrenNote: '',
+  childrenNote:
+    'This website is meant for adults and businesses looking for game development services. We do not knowingly collect personal information from anyone under 18. If you believe a child has sent us information, write to hello@praamix.com and we will delete it.',
   /** The day the current drafts were written, as YYYY-MM-DD. */
   legalDraftDate: '2026-11-15',
   /** The day the pages take effect, as YYYY-MM-DD. Set at publication. */
-  legalEffectiveDate: '',
-  /** Change to true only after a lawyer has reviewed both pages. */
-  legalReviewed: false,
+  legalEffectiveDate: '2026-11-18',
+  /**
+   * True once the owner has approved both pages for publication. Set by the
+   * owner on 2026-11-18. The text has not had review by a lawyer: arrange one
+   * before relying on it in a dispute.
+   */
+  legalReviewed: true,
 }
 
 export function inquiryMode(): 'endpoint' | 'email' | 'draft' {

@@ -34,11 +34,13 @@ function inquiryBlocks(): LegalBlock[] {
 
   return [
     { p: 'If you send a project inquiry, we receive what you enter: your name, your email address, your company if you give it, and the details of your project.' },
+    { p: 'To keep out automated spam, the form also sends two technical signals that say nothing about you: whether a hidden field was filled in, and how long the form was open. They are used only to decide whether to deliver the inquiry, and are not kept.' },
     inquiry.provider
       ? { p: `The form is delivered by ${inquiry.provider}, which handles that information on our behalf.` }
       : { pending: 'The name of the provider that delivers the inquiry form.' },
     ...(inquiry.inbox ? [{ p: `It reaches us as an email, in an inbox provided by ${inquiry.inbox}.` }] : []),
-    { p: 'We use it to reply to you and to discuss the project.' },
+    { p: 'We use it to reply to you and to discuss the project. We don’t sell it, and we don’t use it for marketing.' },
+    { p: `If you write to us by email instead, at ${business.privacyContactEmail || 'our studio address'}, your message is forwarded by Cloudflare to the same inbox.` },
   ]
 }
 
@@ -56,7 +58,7 @@ export function privacySections(): LegalSection[] {
       id: 'site',
       heading: 'What this website does',
       blocks: [
-        { p: 'The site is a set of static pages. As built, its own code:' },
+        { p: 'The site is a set of pages with one small piece of server code, which delivers the project brief form. As built, the site:' },
         {
           list: [
             'sets no cookies',
@@ -92,8 +94,15 @@ export function privacySections(): LegalSection[] {
       id: 'sharing',
       heading: 'Who else is involved',
       blocks: [
-        { p: 'The site has no advertising or data-broker integrations.' },
-        { p: 'Service providers that keep the site running, such as the web host and any inquiry-form provider, handle information on our behalf.' },
+        { p: 'The site has no advertising or data-broker integrations, and we don’t sell information about anyone.' },
+        { p: 'These service providers handle information on our behalf:' },
+        {
+          list: [
+            'Cloudflare, which hosts the site, delivers the project brief form and forwards email sent to our praamix.com address',
+            'Google, which provides the email inbox inquiries arrive in, and YouTube, which plays the trailer if you press play',
+          ],
+        },
+        { p: 'These providers may process information on servers outside India. They do so under their own privacy and security commitments.' },
         ...(business.hostingProvider ? [] : [{ pending: 'The names of those service providers.' }]),
       ],
     },
@@ -110,7 +119,7 @@ export function privacySections(): LegalSection[] {
       id: 'security',
       heading: 'Security',
       blocks: [
-        { p: 'The site is static and has no accounts or passwords, which limits what can go wrong. No website can promise perfect security.' },
+        { p: 'The site has no accounts or passwords, which limits what can go wrong. Every page and the project brief form use an encrypted (HTTPS) connection. No website can promise perfect security.' },
       ],
     },
     {
@@ -119,7 +128,7 @@ export function privacySections(): LegalSection[] {
       blocks: [
         { p: 'You can browse the site without giving us any information. You decide what to put in an inquiry.' },
         business.privacyContactEmail
-          ? { p: `To ask what information we hold about you, or to have it corrected or deleted, write to ${business.privacyContactEmail}.` }
+          ? { p: `To ask what information we hold about you, or to have it corrected or deleted, write to ${business.privacyContactEmail}. We will reply within 30 days. This address is also where to send any complaint about how we handle your information. Depending on where you live, data protection law may give you further rights, and we will respect them.` }
           : { pending: 'A privacy contact address, and the legal rights that apply. Those depend on the confirmed country of the business and need legal review.' },
       ],
     },

@@ -1,11 +1,11 @@
 /*
  * Website Terms & Conditions.
  *
- * This is a draft for the owner and a legal reviewer. It is written from what
- * the website actually does and from confirmed business facts in site.ts.
- * Where a fact is missing, the page shows a marked "not yet confirmed" note
- * instead of inventing one. It sets no payment terms, refund promises,
- * liability caps or governing law: those need the confirmed business details.
+ * Written from what the website actually does and from the business facts in
+ * site.ts, and approved by the owner for publication on 2026-11-18. It has
+ * not been reviewed by a lawyer. Where a fact is missing, the page shows a
+ * marked "not yet confirmed" note instead of inventing one. It sets no
+ * payment terms or refund promises: those belong in each client agreement.
  */
 import { business } from './site.ts'
 
@@ -54,8 +54,9 @@ export function termsSections(): LegalSection[] {
       id: 'content',
       heading: 'Content and ownership',
       blocks: [
-        { p: 'Unless stated otherwise, the content of this site, including its text, logo, design and illustrations, is provided by Praamix. You may view it and link to it. Please ask before reusing it elsewhere.' },
-        { p: 'The illustrations are studio and concept artwork. They are not screenshots of a game and not examples of client work.' },
+        { p: 'Unless stated otherwise, the content of this site, including its text, logo, design, pictures, videos and 3D models, belongs to Praamix. You may view it and link to it. Please ask before reusing it elsewhere.' },
+        { p: 'Each picture on the site is labelled with what it is: an in-game capture, an in-engine render, key art made for a game, or studio artwork. Studio artwork is illustration, not a screenshot of a game and not an example of client work.' },
+        { p: 'The Sheriff Town VR models shown in the 3D viewer are the game’s own. Your browser downloads them in order to display them, but that does not give you a right to reuse them.' },
         { p: 'The typeface, Manrope, is used under the SIL Open Font License. Product, engine and platform names mentioned on the site are trademarks of their owners. Naming them doesn’t imply a partnership or an endorsement.' },
       ],
     },
@@ -100,16 +101,17 @@ export function termsSections(): LegalSection[] {
       id: 'links',
       heading: 'Links to other sites',
       blocks: [
-        { p: 'The site links to other websites, such as personal portfolios and, in future, storefronts. We don’t control those sites, and their own terms and privacy policies apply.' },
+        { p: 'The site links to other websites and services, such as YouTube, Discord, game stores and the personal portfolios of the people behind Praamix. We don’t control them, and their own terms and privacy policies apply.' },
       ],
     },
     {
       id: 'liability',
       heading: 'Accuracy, liability and governing law',
       blocks: [
-        { p: 'We take care to keep this site accurate, but it may contain errors or be out of date, and it may be unavailable at times.' },
+        { p: 'We take care to keep this site accurate, but it may contain errors or be out of date, and it may be unavailable at times. The site is provided as it is, for general information.' },
+        { p: 'As far as the law allows, we are not responsible for any loss that comes from relying on information on this site or from it being unavailable. Nothing in these terms limits any right you have that the law does not allow to be limited.' },
         business.governingLaw
-          ? { p: `These terms are governed by the law of ${business.governingLaw}.` }
+          ? { p: `These terms are governed by the laws of ${business.governingLaw}, and the courts of ${business.governingLaw} have jurisdiction over any dispute about them.` }
           : { pending: 'Liability terms and governing law. These depend on the confirmed country of the business and need legal review before they are written.' },
       ],
     },

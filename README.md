@@ -80,9 +80,9 @@ The trailer is `trailer` in `game.ts`: the YouTube video's id, its address and t
 
 Sheriff Town VR has its own privacy policy at `/games/sheriff-town-vr/privacy-policy`, linked from the game's Meta Horizon Store page, so that address must not move. Its text is `src/content/gamePrivacy.ts`, written from what the game's code does: no accounts, no network, no analytics, no microphone, and only settings, favourites, best times and saved builds kept on the headset. If the game ever adds multiplayer, online features, analytics or the Meta Platform SDK, update that file before releasing that version, and change its `updated` date.
 
-### Finish the legal pages
+### The legal pages
 
-Both pages show "Draft — business details pending review" until every business field in `site.ts` is filled and `legalReviewed` is set to `true` after legal review.
+The Terms & Conditions and Privacy Policy are published, with the business facts in `business` in `src/content/site.ts`: Praamix Studio, India, contact `hello@praamix.com`, effective 18 November 2026. The owner approved them for publication; they have not been reviewed by a lawyer, so arrange one before relying on them in a dispute. If any business fact is emptied, or `legalReviewed` is set back to `false`, both pages return to showing "Draft" and leave search results. When the text changes, update `legalEffectiveDate`, which is shown as the "Last updated" date.
 
 ## Images
 
