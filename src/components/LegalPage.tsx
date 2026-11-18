@@ -28,21 +28,32 @@ function Block({ block }: { block: LegalBlock }) {
   )
 }
 
-type Props = { title: string; intro: string; sections: LegalSection[] }
+type Props = {
+  title: string
+  intro: string
+  sections: LegalSection[]
+  /** The small line above the title. */
+  eyebrow?: string
+  /**
+   * For a page whose facts are complete: the day it was last changed, as
+   * YYYY-MM-DD. It is then shown as final, with no draft notice.
+   */
+  updated?: string
+}
 
 /**
  * The layout both legal pages share: a heading, the draft notice while
  * business details are missing, a list of contents, then the sections.
  */
-export function LegalPage({ title, intro, sections }: Props) {
-  const draft = legalIsDraft()
+export function LegalPage({ title, intro, sections, eyebrow = 'Legal', updated }: Props) {
+  const draft = !updated && legalIsDraft()
   const effective = business.legalEffectiveDate
 
   return (
     <main id="main" className="legal" tabIndex={-1}>
       <div className="wrap legal__layout">
         <header className="legal__head">
-          <p className="eyebrow">Legal</p>
+          <p className="eyebrow">{eyebrow}</p>
           <h1 className="h-page">{title}</h1>
           {draft && (
             <div className="notice" role="note">
@@ -53,16 +64,25 @@ export function LegalPage({ title, intro, sections }: Props) {
               </p>
             </div>
           )}
-          <dl className="legal__dates">
-            <div>
-              <dt>Draft prepared</dt>
-              <dd>{inWords(business.legalDraftDate)}</dd>
-            </div>
-            <div>
-              <dt>Effective date</dt>
-              <dd>{effective ? inWords(effective) : 'To be set when the page is published'}</dd>
-            </div>
-          </dl>
+          {updated ? (
+            <dl className="legal__dates">
+              <div>
+                <dt>Last updated</dt>
+                <dd>{inWords(updated)}</dd>
+              </div>
+            </dl>
+          ) : (
+            <dl className="legal__dates">
+              <div>
+                <dt>Draft prepared</dt>
+                <dd>{inWords(business.legalDraftDate)}</dd>
+              </div>
+              <div>
+                <dt>Effective date</dt>
+                <dd>{effective ? inWords(effective) : 'To be set when the page is published'}</dd>
+              </div>
+            </dl>
+          )}
           <p className="lede">{intro}</p>
         </header>
 

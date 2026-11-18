@@ -32,6 +32,7 @@ export const nav = [
 export const legalNav = [
   { label: 'Terms & Conditions', to: '/terms-and-conditions' },
   { label: 'Privacy Policy', to: '/privacy-policy' },
+  { label: 'Sheriff Town VR Privacy', to: '/games/sheriff-town-vr/privacy-policy' },
 ]
 
 /*

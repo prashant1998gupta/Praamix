@@ -83,6 +83,17 @@ export const routes: RouteMeta[] = [
   },
 ]
 
+/** The game's own privacy policy. This exact address is given on the game's Meta Horizon Store page: do not move it. */
+export const GAME_PRIVACY_PATH = `${gamePath(sheriffTownVr)}/privacy-policy`
+
+routes.push({
+  path: GAME_PRIVACY_PATH,
+  source: 'src/pages/Legal.tsx',
+  title: `${sheriffTownVr.title} Privacy Policy · ${site.name}`,
+  description: `What ${sheriffTownVr.title} does with information about its players: it collects no personal information, and nothing leaves your headset.`,
+  night: true,
+})
+
 export const notFound: RouteMeta = {
   path: '/404',
   title: titled('Page not found'),

@@ -48,7 +48,7 @@ export function privacySections(): LegalSection[] {
       id: 'scope',
       heading: 'What this policy covers',
       blocks: [
-        { p: 'This policy covers this website only. It doesn’t cover our games. A game would have its own privacy policy, based on what that game actually does.' },
+        { p: 'This policy covers this website only. It doesn’t cover our games, which each have their own privacy policy based on what that game actually does. The Sheriff Town VR privacy policy is at praamix.com/games/sheriff-town-vr/privacy-policy.' },
         operatorBlock(),
       ],
     },

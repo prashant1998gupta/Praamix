@@ -731,7 +731,7 @@ await run('Delivering a project brief', async () => {
 
 await run('Legal pages', async () => {
   const { context, page } = await open({ width: 1440, height: 900 })
-  for (const path of ['/terms-and-conditions', '/privacy-policy']) {
+  for (const path of ['/terms-and-conditions', '/privacy-policy', '/games/sheriff-town-vr/privacy-policy']) {
     await page.goto(base + path, { waitUntil: 'networkidle' })
     const links = page.locator('.legal__contents a')
     const count = await links.count()
@@ -746,8 +746,15 @@ await run('Legal pages', async () => {
     report.check(`${path} contents links all lead somewhere`, count > 0 && broken === 0, `${count} links, ${broken} broken`)
     report.check(`${path} following a contents link moves focus to that section`, focused === target, focused)
   }
+  await page.goto(base + '/games/sheriff-town-vr/privacy-policy', { waitUntil: 'networkidle' })
+  const policy = page.getByRole('heading', { level: 1 })
+  report.check('The game has its own privacy policy page', (await policy.textContent()) === 'Privacy Policy' && /Sheriff Town VR/.test((await page.locator('.legal__head .eyebrow').textContent()) ?? ''))
+  report.check('It is final, not marked as a draft', (await page.locator('.legal__head .notice').count()) === 0 && (await page.locator('.pending').count()) === 0)
+  report.check('It gives a contact address', /hello@praamix\.com/.test((await page.locator('main').textContent()) ?? ''))
+  const direct = await fetch(base + '/games/sheriff-town-vr/privacy-policy')
+  report.check('Its address answers directly, without a redirect', direct.status === 200 && !direct.redirected && /Privacy Policy/.test(await direct.text()))
   await page.goto(base + '/', { waitUntil: 'networkidle' })
-  for (const label of ['Terms & Conditions', 'Privacy Policy']) {
+  for (const label of ['Terms & Conditions', 'Privacy Policy', 'Sheriff Town VR Privacy']) {
     report.check(`Footer links to ${label}`, await page.locator('footer').getByRole('link', { name: label }).isVisible())
   }
   await context.close()

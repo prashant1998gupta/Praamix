@@ -19,6 +19,7 @@ export const pages = {
 /** Which page file an address needs. */
 function pageFor(pathname: string): (() => Promise<unknown>) | undefined {
   if (pathname === '/') return pages.home
+  if (pathname.endsWith('/privacy-policy')) return pages.legal
   if (pathname.startsWith('/games')) return pages.game
   if (pathname.startsWith('/services')) return pages.services
   if (pathname.startsWith('/studio')) return pages.studio
