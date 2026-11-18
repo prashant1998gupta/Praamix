@@ -86,6 +86,15 @@ export const routes: RouteMeta[] = [
 /** The game's own privacy policy. This exact address is given on the game's Meta Horizon Store page: do not move it. */
 export const GAME_PRIVACY_PATH = `${gamePath(sheriffTownVr)}/privacy-policy`
 
+/* Help for the game's players. This exact address is the support link on the game's Meta Horizon Store page: do not move it. */
+routes.push({
+  path: '/support',
+  source: 'src/pages/Support.tsx',
+  title: `${sheriffTownVr.title} player support · ${site.name}`,
+  description: `Help with ${sheriffTownVr.title}: contact the studio, report a bug, and answers about comfort settings, refunds and saved progress.`,
+  night: true,
+})
+
 routes.push({
   path: GAME_PRIVACY_PATH,
   source: 'src/pages/Legal.tsx',

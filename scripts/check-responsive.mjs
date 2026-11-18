@@ -729,6 +729,24 @@ await run('Delivering a project brief', async () => {
   await context.close()
 })
 
+await run('Player support', async () => {
+  const { context, page, errors } = await open({ width: 1440, height: 900 })
+  await page.goto(base + '/support', { waitUntil: 'networkidle' })
+  report.check('The support page has its own heading', (await page.getByRole('heading', { level: 1 }).textContent()) === 'Player support.')
+  const ways = await page.locator('main .channel').evaluateAll((items) => items.map((item) => item.getAttribute('href')))
+  report.check('It offers email and Discord', ways.some((href) => href?.startsWith('mailto:hello@praamix.com')) && ways.some((href) => href?.startsWith('https://discord.gg/')), ways.join(', '))
+  const questions = page.locator('.faq__item')
+  report.check('It answers common questions', (await questions.count()) >= 8, `${await questions.count()} questions`)
+  await questions.first().locator('summary').click()
+  report.check('A question opens to show its answer', await questions.first().evaluate((el) => el.open))
+  report.check('It links to the game’s privacy policy', (await page.locator('main a[href="/games/sheriff-town-vr/privacy-policy"]').count()) === 1)
+  report.check('The footer links to it', await page.locator('footer').getByRole('link', { name: 'Player support' }).isVisible())
+  const direct = await fetch(base + '/support')
+  report.check('Its address answers directly', direct.status === 200 && !direct.redirected)
+  report.check('No errors', errors.length === 0, errors.join(' | '))
+  await context.close()
+})
+
 await run('Legal pages', async () => {
   const { context, page } = await open({ width: 1440, height: 900 })
   for (const path of ['/terms-and-conditions', '/privacy-policy', '/games/sheriff-town-vr/privacy-policy']) {

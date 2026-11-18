@@ -38,6 +38,7 @@ export type IconName =
   | 'external'
   | 'play'
   | 'chat'
+  | 'mail'
 
 export type Faq = { question: string; answer: string }
 

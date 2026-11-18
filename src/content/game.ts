@@ -358,9 +358,9 @@ const faq: Faq[] = [
       'It isn’t on sale yet, and no store listing has been announced. When there is one, this page will link to it.',
   },
   {
-    question: 'How will I install it and get support?',
+    question: 'Where do I get help with the game?',
     answer:
-      'That depends on the store the game is released through, so those details will be added here once the store is known.',
+      'On the player support page, praamix.com/support. It has comfort settings, answers to common questions, and how to reach us by email or on Discord.',
   },
 ]
 

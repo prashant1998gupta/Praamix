@@ -298,6 +298,11 @@
   --tint: #a5b0ff;
 }
 
+.channel--mail {
+  --glow: rgb(242 107 56 / 0.24);
+  --tint: #ffab86;
+}
+
 .channel--play {
   --glow: rgb(255 80 70 / 0.26);
   --tint: #ff9b92;

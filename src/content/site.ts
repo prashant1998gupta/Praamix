@@ -33,6 +33,7 @@ export const legalNav = [
   { label: 'Terms & Conditions', to: '/terms-and-conditions' },
   { label: 'Privacy Policy', to: '/privacy-policy' },
   { label: 'Sheriff Town VR Privacy', to: '/games/sheriff-town-vr/privacy-policy' },
+  { label: 'Player support', to: '/support' },
 ]
 
 /*
@@ -54,7 +55,7 @@ export const inquiry = {
 }
 
 /** A real address for player support. Empty hides it. */
-export const support = { email: '' }
+export const support = { email: 'hello@praamix.com' }
 
 /*
  * Real profiles only. These belong to Sheriff Town VR, the studio's game.

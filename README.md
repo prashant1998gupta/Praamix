@@ -76,6 +76,10 @@ The game's YouTube channel and Discord server are `channels` in `site.ts`. They 
 
 The trailer is `trailer` in `game.ts`: the YouTube video's id, its address and the picture shown before it plays. Nothing is loaded from YouTube until a visitor presses play, and the Privacy Policy says so. If that ever changes, change the policy first.
 
+### Player support
+
+`/support` is the help page for Sheriff Town VR's players, and the support link on the game's Meta Horizon Store page, so that address must not move. Its text is `src/content/support.ts`. The comfort and accessibility settings it names are the game's real ones; if the game's settings change, change that file too.
+
 ### The game's privacy policy
 
 Sheriff Town VR has its own privacy policy at `/games/sheriff-town-vr/privacy-policy`, linked from the game's Meta Horizon Store page, so that address must not move. Its text is `src/content/gamePrivacy.ts`, written from what the game's code does: no accounts, no network, no analytics, no microphone, and only settings, favourites, best times and saved builds kept on the headset. If the game ever adds multiplayer, online features, analytics or the Meta Platform SDK, update that file before releasing that version, and change its `updated` date.

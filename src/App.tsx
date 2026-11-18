@@ -22,6 +22,7 @@ const Contact = lazy(() => pages.contact().then((file) => ({ default: file.Conta
 const Terms = lazy(() => pages.legal().then((file) => ({ default: file.Terms })))
 const Privacy = lazy(() => pages.legal().then((file) => ({ default: file.Privacy })))
 const GamePrivacy = lazy(() => pages.legal().then((file) => ({ default: file.GamePrivacy })))
+const Support = lazy(() => pages.support().then((file) => ({ default: file.Support })))
 
 /** The main pages are dark. The class sits on <html> so the whole window follows. */
 function Theme() {
@@ -133,6 +134,7 @@ export default function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/studio" element={<Studio />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/support" element={<Support />} />
             <Route path="/terms-and-conditions" element={<Terms />} />
             <Route path="/privacy-policy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />
