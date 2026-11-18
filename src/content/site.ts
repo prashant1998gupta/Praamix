@@ -45,11 +45,12 @@ export const legalNav = [
  * While both are empty the form is shown as an unconnected draft and sends nothing.
  */
 export const inquiry = {
-  endpoint: '',
-  provider: '',
+  /* The site's own server code (worker/), which emails each brief to the inbox set as BRIEF_TO in Cloudflare. */
+  endpoint: '/api/brief',
+  provider: 'Cloudflare',
   email: '',
   /** The company whose email service the briefs arrive in, e.g. 'Google'. The Privacy Policy names it. */
-  inbox: '',
+  inbox: 'Google',
 }
 
 /** A real address for player support. Empty hides it. */
@@ -63,7 +64,7 @@ export const support = { email: '' }
  */
 export const channels = {
   youtube: 'https://www.youtube.com/@SheriffTownVR',
-  discord: 'https://discord.gg/UrMGkUgSn',
+  discord: 'https://discord.gg/YaxSWmB8G6',
 }
 
 /** The links in the footer. */
