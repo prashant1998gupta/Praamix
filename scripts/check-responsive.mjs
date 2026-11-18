@@ -551,7 +551,18 @@ await run('Loading, slow connections and offline', async () => {
     await page.goto(base + '/', { waitUntil: 'domcontentloaded' })
     const retry = page.locator('#boot-retry')
     await retry.waitFor({ state: 'visible', timeout: 8000 }).catch(() => undefined)
-    report.check('If the code cannot load, the loader says so and offers to try again', await retry.isVisible())
+    report.check('If the code cannot load, even after one retry, the loader says so and offers to try again', await retry.isVisible())
+    await context.close()
+  }
+
+  /* The code is missing once, as can happen while a new version is being published, then arrives. */
+  {
+    const { context, page } = await open({ width: 1440, height: 900 }, { serviceWorkers: 'block' })
+    let refused = 0
+    await page.route('**/assets/index-*.js', (route) => (refused++ === 0 ? route.abort() : route.continue()))
+    await page.goto(base + '/', { waitUntil: 'domcontentloaded' })
+    const loaded = await page.waitForSelector('#boot', { state: 'detached', timeout: 10000 }).then(() => true, () => false)
+    report.check('A one-off failure reloads by itself and the page then opens', loaded && refused >= 2, `${refused} requests for the code`)
     await context.close()
   }
 

@@ -240,9 +240,33 @@
           if (!finished) text.textContent = 'Still loading. Your connection looks slow, but it is on its way.'
         }, 6000)
 
+        /*
+         * While a new version of the site is being published, a visitor can
+         * briefly get the new page but not yet its code. So the first failure
+         * reloads once by itself, quietly. Only a second failure in a row, or
+         * no connection at all, is shown as an error.
+         */
+        function retriedAlready() {
+          try {
+            return sessionStorage.getItem('boot-retried') === '1'
+          } catch (error) {
+            return true
+          }
+        }
+
         function fail() {
           if (finished) return
           clearTimeout(slow)
+          if (navigator.onLine && !retriedAlready()) {
+            try {
+              sessionStorage.setItem('boot-retried', '1')
+            } catch (error) {}
+            finished = true
+            setTimeout(function () {
+              location.reload()
+            }, 800)
+            return
+          }
           text.textContent = 'The site could not load. Check your connection and try again.'
           retry.hidden = false
         }
@@ -264,6 +288,10 @@
         window.__bootDone = function () {
           if (finished) return
           finished = true
+          /* It loaded, so a later failure may retry once again. */
+          try {
+            sessionStorage.removeItem('boot-retried')
+          } catch (error) {}
           clearTimeout(slow)
           boot.setAttribute('data-done', '')
           setTimeout(function () {
