@@ -555,6 +555,35 @@ await run('Loading, slow connections and offline', async () => {
     await context.close()
   }
 
+  /*
+   * The browser has kept a "not found" for a code file, as happened once
+   * while a new version was being published. A plain reload would reuse that
+   * saved answer, so the loader must fetch the failed file past the browser's
+   * saved copy before reloading. (The browser's own cache cannot be staged
+   * here, so this checks that the loader asks for the file that way.)
+   */
+  {
+    const { context, page } = await open({ width: 1440, height: 900 }, { serviceWorkers: 'block' })
+    await page.addInitScript(() => {
+      const original = window.fetch
+      window.fetch = (input, init) => {
+        if (init?.cache === 'reload') sessionStorage.setItem('fresh-fetch', String(input))
+        return original(input, init)
+      }
+    })
+    let first = true
+    await page.route('**/assets/index-*.js', (route) => {
+      if (!first) return route.continue()
+      first = false
+      return route.fulfill({ status: 404, contentType: 'text/html', body: 'not found' })
+    })
+    await page.goto(base + '/', { waitUntil: 'domcontentloaded' })
+    const loaded = await page.waitForSelector('#boot', { state: 'detached', timeout: 10000 }).then(() => true, () => false)
+    const fresh = await page.evaluate(() => sessionStorage.getItem('fresh-fetch') ?? '')
+    report.check('A missing code file is fetched again past the browser’s saved copy, and the page then opens', loaded && /\/assets\/index-/.test(fresh), fresh || 'no fresh fetch')
+    await context.close()
+  }
+
   /* The code is missing once, as can happen while a new version is being published, then arrives. */
   {
     const { context, page } = await open({ width: 1440, height: 900 }, { serviceWorkers: 'block' })

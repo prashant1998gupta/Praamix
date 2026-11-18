@@ -72,7 +72,13 @@ async function savedFirst(request) {
   const cache = await caches.open(FILES)
   const saved = await cache.match(request, BY_ADDRESS)
   if (saved) return saved
-  const fresh = await fetch(request)
+  let fresh = await fetch(request)
+  /*
+   * A code file is only ever missing for a moment, while a new version is
+   * being published, but the browser may have kept that "not found". Ask the
+   * server again, past the browser's saved copy, before giving up.
+   */
+  if (!fresh.ok) fresh = await fetch(request, { cache: 'reload' }).catch(() => fresh)
   if (fresh.ok) cache.put(request, fresh.clone())
   return fresh
 }

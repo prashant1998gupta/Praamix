@@ -242,45 +242,64 @@
 
         /*
          * While a new version of the site is being published, a visitor can
-         * briefly get the new page but not yet its code. So the first failure
-         * reloads once by itself, quietly. Only a second failure in a row, or
-         * no connection at all, is shown as an error.
+         * briefly get the new page but not yet its code, and the browser may
+         * then keep that "not found" answer. So when a file fails, the loader
+         * fetches every failed file again straight from the server, which
+         * replaces the browser's saved answer, and reloads once, quietly.
+         * Only a second failure within a minute, or no connection at all, is
+         * shown as an error. The Try again button does the same repair.
          */
-        function retriedAlready() {
+        var failedFiles = []
+
+        function retriedRecently() {
           try {
-            return sessionStorage.getItem('boot-retried') === '1'
+            return Date.now() - Number(sessionStorage.getItem('boot-retried') || 0) < 60000
           } catch (error) {
             return true
           }
         }
 
+        function repairAndReload() {
+          try {
+            sessionStorage.setItem('boot-retried', String(Date.now()))
+          } catch (error) {}
+          var refetch = window.fetch
+            ? Promise.all(
+                failedFiles.map(function (file) {
+                  return fetch(file, { cache: 'reload' }).catch(function () {})
+                }),
+              )
+            : Promise.resolve()
+          refetch.then(function () {
+            location.reload()
+          })
+        }
+
         function fail() {
           if (finished) return
-          clearTimeout(slow)
-          if (navigator.onLine && !retriedAlready()) {
-            try {
-              sessionStorage.setItem('boot-retried', '1')
-            } catch (error) {}
+          if (navigator.onLine && !retriedRecently()) {
             finished = true
-            setTimeout(function () {
-              location.reload()
-            }, 800)
+            clearTimeout(slow)
+            /* A moment's wait gathers every file that failed with this one. */
+            setTimeout(repairAndReload, 300)
             return
           }
+          clearTimeout(slow)
           text.textContent = 'The site could not load. Check your connection and try again.'
           retry.hidden = false
         }
 
-        retry.addEventListener('click', function () {
-          location.reload()
-        })
+        retry.addEventListener('click', repairAndReload)
 
         /* A script or stylesheet that fails to arrive reports an error on itself. */
         window.addEventListener(
           'error',
           function (event) {
             var target = event.target
-            if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK')) fail()
+            if (!target || (target.tagName !== 'SCRIPT' && target.tagName !== 'LINK')) return
+            var file = target.src || target.href
+            if (file && failedFiles.indexOf(file) < 0) failedFiles.push(file)
+            fail()
           },
           true,
         )
