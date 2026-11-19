@@ -1,5 +1,6 @@
 import { useParams } from 'react-router'
 import { Action } from '../components/Action.tsx'
+import { BadgeScene } from '../components/BadgeScene.tsx'
 import { Band } from '../components/Band.tsx'
 import { FaqSection } from '../components/Faq.tsx'
 import { Gallery } from '../components/Gallery.tsx'
@@ -50,6 +51,7 @@ function GamePage({ game }: { game: GameContent }) {
       <Ticker words={game.ticker} />
       <Stats items={game.stats} label={`${game.title} in numbers`} />
       {game.trailer && <TrailerSection trailer={game.trailer} />}
+      <BadgeScene />
 
       <section className="section band" aria-labelledby="glance-title">
         <div className="wrap faq-layout">

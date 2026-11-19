@@ -516,6 +516,61 @@ await run('Trailer and the game’s channels', async () => {
   await phone.context.close()
 })
 
+await run('The badge scene on the game page', async () => {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 375, height: 812 }]) {
+    /* The service worker saves every code file in the background for offline use; this asks what the page itself needs. */
+    const { context, page, errors } = await open(viewport, { serviceWorkers: 'block' })
+    const gsap = []
+    page.on('request', (request) => /\/(gsap|ScrollTrigger)-/.test(request.url()) && gsap.push(request.url()))
+    await page.goto(base + '/games/sheriff-town-vr', { waitUntil: 'networkidle' })
+    report.check(`${viewport.width}px: GSAP is not downloaded with the opening`, gsap.length === 0, gsap.join(', '))
+    const scene = page.locator('.badge-scene')
+    const top = await scene.evaluate((el) => el.getBoundingClientRect().top + scrollY)
+    await page.evaluate((y) => scrollTo(0, y - 300), top)
+    await page.waitForFunction(() => document.querySelector('.badge-scene--live'), null, { timeout: 8000 })
+    const area = async () =>
+      page.evaluate(() => {
+        const box = document.querySelector('.badge-scene__window').getBoundingClientRect()
+        const clip = getComputedStyle(document.querySelector('.badge-scene__window')).clipPath
+        const xs = [...clip.matchAll(/(-?[\d.]+)px (-?[\d.]+)px/g)].map((m) => [Number(m[1]), Number(m[2])])
+        let sum = 0
+        for (let i = 0; i < xs.length; i++) {
+          const [a, b] = xs[i]
+          const [c, d] = xs[(i + 1) % xs.length]
+          sum += a * d - c * b
+        }
+        return Math.abs(sum / 2) / (box.width * box.height)
+      })
+    await page.evaluate((y) => scrollTo(0, y + 10), top)
+    await page.waitForTimeout(900)
+    const stage = await page.locator('.badge-scene__stage').boundingBox()
+    const closed = await area()
+    report.check(`${viewport.width}px: the scene holds still while it plays`, Boolean(stage && Math.abs(stage.y) < 2), stage ? `stage at ${Math.round(stage.y)}px` : 'not found')
+    report.check(`${viewport.width}px: the town starts as a small star`, closed > 0.02 && closed < 0.3, `${Math.round(closed * 100)}% of the screen`)
+    await page.evaluate(([y, h]) => scrollTo(0, y + h * 2.35), [top, viewport.height])
+    await page.waitForTimeout(1200)
+    const open_ = await area()
+    report.check(`${viewport.width}px: the star opens past the edges of the screen`, open_ > 1, `${Math.round(open_ * 100)}% of the screen`)
+    const words = await page.locator('.badge-scene__word').evaluateAll((items) => items.map((item) => getComputedStyle(item).opacity))
+    report.check(`${viewport.width}px: every word of the motto is showing at the end`, words.every((value) => value === '1'), words.join(', '))
+    const wide = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)
+    report.check(`${viewport.width}px: no sideways scrolling`, !wide)
+    report.check(`${viewport.width}px: no errors`, errors.length === 0, errors.join(' | '))
+    await context.close()
+  }
+
+  const { context, page } = await open({ width: 1440, height: 900 }, { reducedMotion: 'reduce' })
+  await page.goto(base + '/games/sheriff-town-vr', { waitUntil: 'networkidle' })
+  await page.locator('.badge-scene').scrollIntoViewIfNeeded()
+  await page.waitForTimeout(800)
+  const still = await page.evaluate(() => ({
+    live: Boolean(document.querySelector('.badge-scene--live')),
+    clip: getComputedStyle(document.querySelector('.badge-scene__window')).clipPath,
+  }))
+  report.check('With reduced motion the scene does not play: the whole picture and the motto simply show', !still.live && still.clip === 'none', JSON.stringify(still))
+  await context.close()
+})
+
 await run('Loading, slow connections and offline', async () => {
   const pause = (ms) => new Promise((done) => setTimeout(done, ms))
 
@@ -702,6 +757,10 @@ await run('Project brief', async () => {
   await page.fill('#brief-email', 'test@example.com')
   await page.fill('#brief-summary', 'A small physics puzzle game for phones.')
   await page.locator('form.brief button[type="submit"]').click()
+  /* The answer takes a moment; wait for it rather than read the "sending" in between. */
+  await page
+    .waitForFunction(() => document.querySelector('.brief__status')?.getAttribute('data-kind') !== 'sending', null, { timeout: 8000 })
+    .catch(() => undefined)
   const status = await page.locator('.brief__status').getAttribute('data-kind')
   report.check('A complete brief gives a truthful result', ['checked', 'sent', 'mail', 'failed'].includes(status ?? ''), status ?? 'none')
   report.check('Answers stay in the form afterwards', (await page.inputValue('#brief-email')) === 'test@example.com')
@@ -800,6 +859,7 @@ await run('Legal pages', async () => {
     )
     await links.last().click()
     const target = new URL(await links.last().evaluate((a) => a.href)).hash.slice(1)
+    await page.waitForFunction((id) => document.activeElement?.id === id, target, { timeout: 3000 }).catch(() => undefined)
     const focused = await page.evaluate(() => document.activeElement?.id ?? '')
     report.check(`${path} contents links all lead somewhere`, count > 0 && broken === 0, `${count} links, ${broken} broken`)
     report.check(`${path} following a contents link moves focus to that section`, focused === target, focused)
