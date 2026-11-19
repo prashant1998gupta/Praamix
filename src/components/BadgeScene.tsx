@@ -4,9 +4,10 @@ import { images, SIZES } from '../content/images.ts'
 import { Picture } from './Picture.tsx'
 
 const game = sheriffTownVr
-const picture = images.stvDistrict
-/* Key art that flashes inside the star, one poster for each word of the motto. */
-const flashes = [images.posterBubbles, images.posterChaos, images.posterExplosion, images.posterGravityGun]
+/* The key art the star opens onto. It is also the poster that lands with the last word. */
+const picture = images.posterChaos
+/* Key art that flashes inside the star with the first words of the motto. */
+const flashes = [images.posterBubbles, images.posterExplosion, images.posterGravityGun]
 
 /** How far in a star's inner corners sit, as a share of its points. */
 const INNER = 0.46
@@ -23,12 +24,12 @@ function starPoints(cx: number, cy: number, radius: number, turn: number) {
 }
 
 /**
- * The motto, then the town seen through a sheriff's star.
+ * The motto, then the game's key art seen through a sheriff's star.
  *
  * As the page scrolls, the scene holds still: the words of the motto are
  * stamped in one by one over a small star-shaped window, with a poster of
  * the game's key art flashing up inside it for each word, then the star opens
- * onto the precinct district until the picture fills the screen. GSAP
+ * onto a poster of the game's key art until the picture fills the screen. GSAP
  * drives it, and is only downloaded when the scene is near.
  *
  * Without scripts, or with reduced motion requested, nothing is held or
@@ -106,13 +107,14 @@ export function BadgeScene() {
           .to(words, { yPercent: 0, opacity: 1, scale: 1, duration: 0.25, stagger: 0.18, ease: 'back.out(2)' }, 0.15)
           /* With each word, another poster flashes up inside the star. */
           .to(posters, { opacity: 1, scale: 1, duration: 0.12, stagger: 0.18, ease: 'power2.out' }, 0.15)
-          /* Then the posters give way to the town itself. */
-          .to(posters, { opacity: 0, duration: 0.25 }, 1.05)
-          /* The star opens onto the town. */
+          /* With the last word they give way to the poster the star opens onto. */
+          .to(posters, { opacity: 0, duration: 0.12 }, 0.15 + flashes.length * 0.18)
+          /* The star opens onto the poster. */
           .to(star, { open: 1, duration: 1.1, ease: 'power2.in', onUpdate: draw }, 1.1)
           .to(edgeSvg, { opacity: 0, duration: 0.3 }, 1.8)
           .to(img, { scale: 1, duration: 1.4, ease: 'power1.out' }, 1.1)
-          .to(title, { scale: 0.62, yPercent: -95, duration: 0.8, ease: 'power2.inOut' }, 1.6)
+          /* The motto steps aside, so the poster and its logo show whole. */
+          .to(title, { scale: 1.15, opacity: 0, duration: 0.5, ease: 'power2.in' }, 1.45)
           .to(shade, { opacity: 1, duration: 0.6 }, 1.7)
           /* What the picture is, and where every shift starts. */
           .to(after, { y: 0, opacity: 1, duration: 0.35, stagger: 0.12 }, 2.2)

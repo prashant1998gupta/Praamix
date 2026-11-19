@@ -545,14 +545,21 @@ await run('The badge scene on the game page', async () => {
     await page.waitForTimeout(900)
     const stage = await page.locator('.badge-scene__stage').boundingBox()
     const closed = await area()
+    await page.evaluate(([y, h]) => scrollTo(0, y + h * 1.0), [top, viewport.height])
+    await page.waitForTimeout(900)
+    const words = await page.locator('.badge-scene__word').evaluateAll((items) => items.map((item) => getComputedStyle(item).opacity))
+    report.check(`${viewport.width}px: every word of the motto is stamped in before the star opens`, words.every((value) => value === '1'), words.join(', '))
     report.check(`${viewport.width}px: the scene holds still while it plays`, Boolean(stage && Math.abs(stage.y) < 2), stage ? `stage at ${Math.round(stage.y)}px` : 'not found')
     report.check(`${viewport.width}px: the town starts as a small star`, closed > 0.02 && closed < 0.3, `${Math.round(closed * 100)}% of the screen`)
     await page.evaluate(([y, h]) => scrollTo(0, y + h * 2.35), [top, viewport.height])
     await page.waitForTimeout(1200)
     const open_ = await area()
     report.check(`${viewport.width}px: the star opens past the edges of the screen`, open_ > 1, `${Math.round(open_ * 100)}% of the screen`)
-    const words = await page.locator('.badge-scene__word').evaluateAll((items) => items.map((item) => getComputedStyle(item).opacity))
-    report.check(`${viewport.width}px: every word of the motto is showing at the end`, words.every((value) => value === '1'), words.join(', '))
+    const end = await page.evaluate(() => ({
+      title: getComputedStyle(document.querySelector('.badge-scene__title')).opacity,
+      line: getComputedStyle(document.querySelector('.badge-scene__line')).opacity,
+    }))
+    report.check(`${viewport.width}px: at the end the motto steps aside so the poster shows whole, and the closing line shows`, Number(end.title) < 0.05 && end.line === '1', JSON.stringify(end))
     const wide = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)
     report.check(`${viewport.width}px: no sideways scrolling`, !wide)
     report.check(`${viewport.width}px: no errors`, errors.length === 0, errors.join(' | '))

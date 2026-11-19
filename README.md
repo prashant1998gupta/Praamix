@@ -177,7 +177,7 @@ The site's address is `site.url` in `src/content/site.ts`. The build uses it for
 
 Everything that moves is switched off when the visitor's device asks for reduced motion. The page is then still and complete.
 
-On the game page, after the trailer, a scroll scene holds still while the motto is stamped in a word at a time over a sheriff's star, and the star then opens onto the precinct district (`src/components/BadgeScene.tsx`, `src/styles/badge-scene.css`). It is driven by [GSAP](https://gsap.com) and its ScrollTrigger plugin, which are free. They are downloaded only when the scene comes near, never with the opening. With reduced motion, or without scripts, the whole picture and the motto simply show.
+On the game page, after the trailer, a scroll scene holds still while the motto is stamped in a word at a time over a sheriff's star, with a poster of the key art flashing up inside it for each word, and the star then opens onto the Chaos poster (`src/components/BadgeScene.tsx`, `src/styles/badge-scene.css`). It is driven by [GSAP](https://gsap.com) and its ScrollTrigger plugin, which are free. They are downloaded only when the scene comes near, never with the opening. With reduced motion, or without scripts, the whole picture and the motto simply show.
 
 ## Responsive checks
 
