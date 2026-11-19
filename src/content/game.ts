@@ -503,7 +503,8 @@ export const sheriffTownVr = {
     heading: 'See the town in motion.',
     lede: 'Watch the official Sheriff Town VR trailer.',
     note: 'The trailer plays from YouTube, and loads only when you press play.',
-    poster: images.stvDistrict,
+    /* Key art: the arrest, which is what the game is about. */
+    poster: images.posterArrest,
   } as Trailer | null,
 
   /** Real places to follow the game. Leave the list empty and the section is left out. */

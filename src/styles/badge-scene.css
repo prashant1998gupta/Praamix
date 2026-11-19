@@ -25,9 +25,29 @@
   inset: 0;
 }
 
+.badge-scene__town {
+  position: absolute;
+  inset: 0;
+}
+
+/* A square around the small star, so the whole middle of the poster, logo and all, shows inside it. */
+.badge-scene__poster {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(62vw, 62svh);
+  height: min(62vw, 62svh);
+  translate: -50% -50%;
+}
+
 .badge-scene__window picture {
   display: block;
   height: 100%;
+}
+
+/* The posters only flash while the scene plays. */
+.badge-scene:not(.badge-scene--live) .badge-scene__poster {
+  display: none;
 }
 
 .badge-scene__window img {

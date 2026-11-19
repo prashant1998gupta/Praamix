@@ -5,6 +5,8 @@ import { Picture } from './Picture.tsx'
 
 const game = sheriffTownVr
 const picture = images.stvDistrict
+/* Key art that flashes inside the star, one poster for each word of the motto. */
+const flashes = [images.posterBubbles, images.posterChaos, images.posterExplosion, images.posterGravityGun]
 
 /** How far in a star's inner corners sit, as a share of its points. */
 const INNER = 0.46
@@ -24,8 +26,9 @@ function starPoints(cx: number, cy: number, radius: number, turn: number) {
  * The motto, then the town seen through a sheriff's star.
  *
  * As the page scrolls, the scene holds still: the words of the motto are
- * stamped in one by one over a small star-shaped window onto the precinct
- * district, then the star opens until the picture fills the screen. GSAP
+ * stamped in one by one over a small star-shaped window, with a poster of
+ * the game's key art flashing up inside it for each word, then the star opens
+ * onto the precinct district until the picture fills the screen. GSAP
  * drives it, and is only downloaded when the scene is near.
  *
  * Without scripts, or with reduced motion requested, nothing is held or
@@ -51,7 +54,8 @@ export function BadgeScene() {
       const window_ = section.querySelector<HTMLElement>('.badge-scene__window')!
       const edge = section.querySelector<SVGPolygonElement>('.badge-scene__edge polygon')!
       const edgeSvg = section.querySelector<SVGSVGElement>('.badge-scene__edge')!
-      const img = section.querySelector<HTMLElement>('.badge-scene__window img')!
+      const img = section.querySelector<HTMLElement>('.badge-scene__town img')!
+      const posters = section.querySelectorAll<HTMLElement>('.badge-scene__poster')
       const words = section.querySelectorAll<HTMLElement>('.badge-scene__word')
       const title = section.querySelector<HTMLElement>('.badge-scene__title')!
       const after = section.querySelectorAll<HTMLElement>('.badge-scene__after')
@@ -78,6 +82,7 @@ export function BadgeScene() {
         gsap.set(after, { y: 24, opacity: 0 })
         gsap.set(img, { scale: 1.45 })
         gsap.set(shade, { opacity: 0 })
+        gsap.set(posters, { opacity: 0, scale: 1.25 })
         gsap.set(edge, { strokeDasharray: 1, strokeDashoffset: 1 })
         draw()
 
@@ -99,6 +104,10 @@ export function BadgeScene() {
           .to(edge, { strokeDashoffset: 0, duration: 0.6, ease: 'power1.inOut' }, 0)
           .to(star, { turn: 0, duration: 1, onUpdate: draw }, 0)
           .to(words, { yPercent: 0, opacity: 1, scale: 1, duration: 0.25, stagger: 0.18, ease: 'back.out(2)' }, 0.15)
+          /* With each word, another poster flashes up inside the star. */
+          .to(posters, { opacity: 1, scale: 1, duration: 0.12, stagger: 0.18, ease: 'power2.out' }, 0.15)
+          /* Then the posters give way to the town itself. */
+          .to(posters, { opacity: 0, duration: 0.25 }, 1.05)
           /* The star opens onto the town. */
           .to(star, { open: 1, duration: 1.1, ease: 'power2.in', onUpdate: draw }, 1.1)
           .to(edgeSvg, { opacity: 0, duration: 0.3 }, 1.8)
@@ -141,7 +150,14 @@ export function BadgeScene() {
     <section className="badge-scene" ref={root} aria-labelledby="badge-scene-title">
       <div className="badge-scene__stage">
         <div className="badge-scene__window">
-          <Picture image={picture} sizes={SIZES.marquee} />
+          <div className="badge-scene__town">
+            <Picture image={picture} sizes={SIZES.marquee} />
+          </div>
+          {flashes.map((poster) => (
+            <div className="badge-scene__poster" key={poster.file.base} aria-hidden="true">
+              <Picture image={{ ...poster, alt: '' }} sizes="62vmin" />
+            </div>
+          ))}
         </div>
         <div className="badge-scene__shade" />
         <svg className="badge-scene__edge" aria-hidden="true" preserveAspectRatio="none">
