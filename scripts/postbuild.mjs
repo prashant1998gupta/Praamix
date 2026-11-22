@@ -12,7 +12,8 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { images } from '../src/content/images.ts'
 import { notFound, routes } from '../src/content/routes.ts'
-import { portfolios, site } from '../src/content/site.ts'
+import { channels, portfolios, site } from '../src/content/site.ts'
+import { gamePath, sheriffTownVr } from '../src/content/game.ts'
 
 const dist = fileURLToPath(new URL('../dist/', import.meta.url))
 const shell = await readFile(join(dist, 'index.html'), 'utf8')
@@ -34,6 +35,50 @@ function codeFor(source) {
   }
   visit(source)
   return [...files]
+}
+
+/*
+ * Structured data: labels search engines read, in the schema.org vocabulary.
+ * They say the site's name is Praamix, that Praamix is a game studio with
+ * this logo and these channels, and what Sheriff Town VR is. Only facts the
+ * site already states; nothing about prices, dates or platforms.
+ */
+function structured(meta) {
+  if (!site.url || meta === notFound || meta.noindex) return []
+  const root = site.url.replace(/\/$/, '')
+  const studio = {
+    '@type': 'Organization',
+    '@id': `${root}/#studio`,
+    name: site.name,
+    url: `${root}/`,
+    logo: `${root}/icon-512.png`,
+    description: site.description,
+    sameAs: Object.values(channels).filter(Boolean),
+  }
+  const graph = []
+  if (meta.path === '/') {
+    graph.push(
+      { '@type': 'WebSite', '@id': `${root}/#website`, name: site.name, url: `${root}/`, publisher: { '@id': `${root}/#studio` } },
+      studio,
+    )
+  }
+  if (meta.path === gamePath(sheriffTownVr)) {
+    const art = images.posterArrest.file
+    graph.push({
+      '@type': 'VideoGame',
+      name: sheriffTownVr.title,
+      url: `${root}${meta.path}`,
+      description: sheriffTownVr.summary,
+      image: `${root}${art.base}-${art.fallback}.jpg`,
+      genre: ['Sandbox', 'Virtual reality'],
+      author: studio,
+      publisher: { '@id': `${root}/#studio` },
+      ...(sheriffTownVr.trailer ? { trailer: { '@type': 'VideoObject', name: sheriffTownVr.trailer.title, embedUrl: `https://www.youtube.com/embed/${sheriffTownVr.trailer.youtubeId}`, url: sheriffTownVr.trailer.url, thumbnailUrl: `${root}${art.base}-${art.fallback}.jpg` } } : {}),
+    })
+  }
+  if (graph.length === 0) return []
+  const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\u003c')
+  return [`<script type="application/ld+json">${json}</script>`]
 }
 
 const esc = (text) =>
@@ -65,6 +110,7 @@ function page(meta) {
   }
 
   if (meta.noindex) tags.push('<meta name="robots" content="noindex" />')
+  tags.push(...structured(meta))
 
   if (meta.source) {
     for (const file of codeFor(meta.source)) tags.push(`<link rel="modulepreload" href="/${file}" />`)

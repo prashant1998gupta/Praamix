@@ -900,6 +900,23 @@ await run('Reduced motion', async () => {
   await context.close()
 })
 
+await run('Structured data for search engines', async () => {
+  const read = async (path) => {
+    const html = await (await fetch(base + path)).text()
+    const found = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)
+    return found ? JSON.parse(found[1])['@graph'] : []
+  }
+  const home = await read('/')
+  const studio = home.find((item) => item['@type'] === 'Organization')
+  report.check('The homepage names the site Praamix', home.some((item) => item['@type'] === 'WebSite' && item.name === 'Praamix'))
+  report.check('The studio has its logo and channels', Boolean(studio?.logo && studio.sameAs?.length >= 2), studio?.sameAs?.join(', '))
+  const logo = await fetch(studio?.logo?.replace('https://praamix.com', base) ?? '')
+  report.check('The studio logo it names is published', logo.ok)
+  const game = (await read('/games/sheriff-town-vr')).find((item) => item['@type'] === 'VideoGame')
+  report.check('The game page describes Sheriff Town VR as a video game', game?.name === 'Sheriff Town VR')
+  report.check('It claims no price, date or platform', Boolean(game && !game.offers && !game.datePublished && !game.gamePlatform))
+})
+
 await run('Direct loading and the not-found page', async () => {
   const { context, page } = await open({ width: 1024, height: 768 })
   for (const path of paths) {
