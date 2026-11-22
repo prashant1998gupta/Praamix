@@ -77,7 +77,8 @@ function structured(meta) {
     })
   }
   if (graph.length === 0) return []
-  const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\u003c')
+  /* Written as < so no text in the data can close the script tag early. */
+  const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c')
   return [`<script type="application/ld+json">${json}</script>`]
 }
 
