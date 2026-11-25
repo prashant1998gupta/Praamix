@@ -914,6 +914,8 @@ await run('Structured data for search engines', async () => {
   report.check('The studio logo it names is published', logo.ok)
   const game = (await read('/games/sheriff-town-vr')).find((item) => item['@type'] === 'VideoGame')
   report.check('The game page describes Sheriff Town VR as a video game', game?.name === 'Sheriff Town VR')
+  const video = game?.trailer
+  report.check('Its trailer has everything Google requires: name, thumbnail and upload date', Boolean(video?.name && video.thumbnailUrl && /^\d{4}-\d{2}-\d{2}T/.test(video.uploadDate ?? '')), video?.uploadDate)
   report.check('It claims no price, date or platform', Boolean(game && !game.offers && !game.datePublished && !game.gamePlatform))
 })
 

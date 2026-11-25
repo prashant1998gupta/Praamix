@@ -497,6 +497,8 @@ export const sheriffTownVr = {
   trailer: {
     youtubeId: 'wvhj1mbbsrk',
     url: 'https://www.youtube.com/watch?v=wvhj1mbbsrk',
+    /* As listed on the video's YouTube page. */
+    uploadDate: '2026-11-14T09:00:27-08:00',
     title: 'Sheriff Town VR – Official Trailer',
     label: 'Watch the trailer',
     eyebrow: 'Official trailer',

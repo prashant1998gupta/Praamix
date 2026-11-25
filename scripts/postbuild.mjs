@@ -73,7 +73,7 @@ function structured(meta) {
       genre: ['Sandbox', 'Virtual reality'],
       author: studio,
       publisher: { '@id': `${root}/#studio` },
-      ...(sheriffTownVr.trailer ? { trailer: { '@type': 'VideoObject', name: sheriffTownVr.trailer.title, embedUrl: `https://www.youtube.com/embed/${sheriffTownVr.trailer.youtubeId}`, url: sheriffTownVr.trailer.url, thumbnailUrl: `${root}${art.base}-${art.fallback}.jpg` } } : {}),
+      ...(sheriffTownVr.trailer ? { trailer: { '@type': 'VideoObject', name: sheriffTownVr.trailer.title, description: sheriffTownVr.trailer.lede, uploadDate: sheriffTownVr.trailer.uploadDate, embedUrl: `https://www.youtube.com/embed/${sheriffTownVr.trailer.youtubeId}`, url: sheriffTownVr.trailer.url, thumbnailUrl: `${root}${art.base}-${art.fallback}.jpg` } } : {}),
     })
   }
   if (graph.length === 0) return []

@@ -53,6 +53,8 @@ export type Trailer = {
   youtubeId: string
   /** The video's own page, for people who would rather watch it there. */
   url: string
+  /** When the video went up on YouTube, exactly as YouTube lists it. Search engines require it. */
+  uploadDate: string
   /** The video's name. Read out by screen readers. */
   title: string
   /** The wording on the play buttons. */
