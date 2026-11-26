@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Got a frame spike nobody can find?" },
+  { "at": 3.4, "text": "Top: every shot creates a new bullet, then destroys it. Garbage piles up, and the collector freezes your frame." },
+  { "at": 10.6, "text": "Bottom: make the bullets once, keep them in a pool, and reuse them." },
+  { "at": 17.4, "text": "Flat frame times. No spikes." },
+  { "at": 21.9, "text": "Pre-warm. Reuse. Profile." },
+  { "at": 25.4, "text": "Do you pool everything, or only hot paths? Comment below." }
+]

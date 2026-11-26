@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Your multiplayer game is sending way too much data." },
+  { "at": 3.4, "text": "Top: every packet carries every field, every tick. Changed or not." },
+  { "at": 10.6, "text": "Bottom: send only what changed since the last ack, packed into fewer bits." },
+  { "at": 17.4, "text": "Same game. A fraction of the bandwidth." },
+  { "at": 21.9, "text": "Delta. Quantise. Prioritise." },
+  { "at": 25.4, "text": "Photon, Netcode, Mirror, or Fish-Net? Comment below." }
+]

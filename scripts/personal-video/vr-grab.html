@@ -1,0 +1,87 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 19: grabbing that feels real. Snap to a fixed grip pose vs hold where you touched. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const LOOP = 6.4
+const PLANK = 260               // the object: a long plank, shown in side view
+const GRABS = [-120, 110, -40]  // where along the plank each cycle grabs it (from its centre)
+
+function plank(cx, x, y, ang, color) {
+  cx.save(); cx.translate(x, y); cx.rotate(ang)
+  cx.fillStyle = color; cx.beginPath(); cx.roundRect(-PLANK / 2, -14, PLANK, 28, 8); cx.fill()
+  cx.fillStyle = 'rgba(0,0,0,.18)'; for (let i = -PLANK / 2 + 30; i < PLANK / 2; i += 46) cx.fillRect(i, -14, 4, 28)
+  cx.beginPath(); cx.arc(0, 0, 6, 0, 7); cx.fillStyle = 'rgba(255,255,255,.55)'; cx.fill()
+  cx.restore()
+}
+function hand(cx, x, y, closed, color) {
+  cx.fillStyle = color; cx.beginPath(); cx.roundRect(x - 26, y - 60, 52, 44, 14); cx.fill()
+  for (let i = 0; i < 4; i++) { cx.beginPath(); cx.roundRect(x - 24 + i * 13, y - 22, 10, closed ? 22 : 34, 5); cx.fill() }
+}
+function state(box, t) {
+  const lt = t % LOOP, cyc = Math.floor(t / LOOP) % GRABS.length, off = GRABS[cyc]
+  const restX = 560, restY = box.top + 420, liftY = box.top + 290
+  const ease = (k) => (k < 0 ? 0 : k > 1 ? 1 : k * k * (3 - 2 * k))
+  let hx, hy, phase
+  if (lt < 1.6) { phase = 'reach'; const k = ease(lt / 1.6); hx = 900 + (restX + off - 900) * k; hy = box.top + 250 + (restY - 14 - box.top - 250) * k }
+  else if (lt < 4.4) { phase = 'hold'; const k = ease((lt - 1.6) / 1.2); hx = restX + off; hy = restY - 14 + (liftY - restY) * k }
+  else { phase = 'drop'; const k = ease((lt - 4.4) / 1.4); hx = restX + off + (900 - restX - off) * k; hy = liftY + (box.top + 250 - liftY) * k }
+  return { lt, off, hx, hy, phase, restX, restY, liftY }
+}
+
+function floor(cx, box) { cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(90, box.top + 434); cx.lineTo(990, box.top + 434); cx.stroke() }
+
+series({
+  day: 19, pillar: 'VR', duration: 30, takeawayAt: 21.6,
+  title: ['Grabbing that', 'feels real'],
+  subtitle: 'Same plank, same hand. Watch the plank when you grab it.',
+  note: 'Side view. White dot is the plank’s grip point.',
+  lanes: [
+    {
+      title: 'Snap to a grip pose', sub: 'The object jumps so its grip point sits in your hand.', accent: '#ff4d5e',
+      readout: ['OBJECT IN HAND', 'Jumps to a fixed pose'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools; floor(cx, box)
+        const s = state(box, t)
+        let px = s.restX, py = s.restY, ang = 0
+        if (s.phase === 'hold' || s.phase === 'drop') {
+          const k = Math.min(1, (s.lt - 1.6) / 0.12)
+          px = s.restX + s.off + (s.restX - (s.restX + s.off)) * (1 - k) - s.off * 0   // slide so the centre sits in the hand
+          px = s.restX + (s.hx - s.restX) * k; py = s.restY + (s.hy + 14 - s.restY) * k; ang = -0.5 * k
+          if (s.phase === 'drop') { const d = Math.min(1, (s.lt - 4.4) / 0.6); px = s.hx * (1 - d) + s.restX * d; py = (s.hy + 14) * (1 - d) + s.restY * d; ang = -0.5 * (1 - d) }
+          if (s.lt - 1.6 < 0.5) { cx.fillStyle = `rgba(255,77,94,${0.6 * (1 - (s.lt - 1.6) / 0.5)})`; cx.font = F(800, 30); cx.textAlign = 'center'; cx.fillText('snap!', s.hx, box.top + 225) }
+        }
+        plank(cx, px, py, ang, '#b07a4a')
+        hand(cx, s.hx, s.hy, s.phase === 'hold', C.red)
+      },
+    },
+    {
+      title: 'Grab where you touched', sub: 'The hand holds the object exactly as it found it.', accent: '#2fe39a',
+      readout: ['OBJECT IN HAND', 'Stays where you grabbed it'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools; floor(cx, box)
+        const s = state(box, t)
+        let px = s.restX, py = s.restY, ang = 0
+        if (s.phase === 'hold') {
+          // keep the offset: the plank hangs from the point you grabbed, tilting gently
+          px = s.hx - s.off; py = s.hy + 14; ang = Math.max(-0.25, Math.min(0.25, -s.off / 900 * Math.min(1, (s.lt - 1.6))))
+          cx.fillStyle = C.green; cx.font = F(800, 20); cx.textAlign = 'center'
+          if (s.lt < 2.6) cx.fillText('held at the contact point', s.hx, box.top + 225)
+        } else if (s.phase === 'drop') {
+          const d = Math.min(1, (s.lt - 4.4) / 0.6); px = (s.restX + s.off - s.off) * d + (s.restX) * (1 - d); py = s.liftY + 14 + (s.restY - s.liftY - 14) * d
+          px = s.restX
+        }
+        plank(cx, px, py, ang, '#b07a4a')
+        hand(cx, s.hx, s.hy, s.phase === 'hold', C.green)
+      },
+    },
+  ],
+  rows: [['Grab at contact', 'Attach at the point you touched.'], ['Keep the offset', 'Hold the object the way you found it.'], ['Snap when it matters', 'Guns and tools still need a grip pose.']],
+  question: ['Snap or free grab: which', 'feels better to you? 👇'],
+})
+</script>

@@ -28,3 +28,7 @@ dist-ssr
 
 # Cloudflare tool working files
 .wrangler
+
+# Generated LinkedIn explainer videos (rebuild with scripts/personal-video)
+brand/linkedin/personal-series/*.mp4
+brand/linkedin/personal-series/*-cover.png

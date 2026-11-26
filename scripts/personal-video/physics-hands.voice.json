@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Why do VR hands go straight through tables?" },
+  { "at": 3.4, "text": "Top: the hand is locked to your controller. Your real hand has no table, so the virtual one goes right through." },
+  { "at": 10.6, "text": "Bottom: a physics hand. A spring pulls it toward the controller, and the table stops it." },
+  { "at": 17.4, "text": "The hand rests. Your controller doesn't." },
+  { "at": 21.9, "text": "Separate. Simulate. Show the gap." },
+  { "at": 25.4, "text": "Physics hands: worth the extra work? Comment below." }
+]

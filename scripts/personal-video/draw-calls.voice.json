@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Here's what a draw call actually looks like." },
+  { "at": 3.4, "text": "Top: every crate has its own material, so the CPU sets up a separate draw for each one." },
+  { "at": 10.6, "text": "Bottom: one shared material and mesh. The whole stack goes in one batch." },
+  { "at": 17.4, "text": "Same crates. Way less CPU." },
+  { "at": 21.9, "text": "Share. Batch. Instance." },
+  { "at": 25.4, "text": "SRP Batcher, or static batching? Comment below." }
+]

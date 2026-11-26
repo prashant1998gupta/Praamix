@@ -1,0 +1,26 @@
+[
+  {
+    "at": 0.3,
+    "text": "Why does grabbing in some VR games feel fake?"
+  },
+  {
+    "at": 3.4,
+    "text": "Top: the object snaps to a fixed grip pose. You grab the end, and it jumps into your palm."
+  },
+  {
+    "at": 10.6,
+    "text": "Bottom: you hold it exactly where you touched it, at the angle you found it."
+  },
+  {
+    "at": 17.4,
+    "text": "That's what feels real."
+  },
+  {
+    "at": 21.7,
+    "text": "Grab at contact. Keep the offset. Snap when needed."
+  },
+  {
+    "at": 25.4,
+    "text": "Snap or free grab: which feels better to you? Comment below."
+  }
+]

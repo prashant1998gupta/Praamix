@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Why does your Quest build stutter?" },
+  { "at": 3.4, "text": "Top: real-time shadows and post effects. The frame blows past its thirteen point nine milliseconds." },
+  { "at": 10.6, "text": "Bottom: bake the lighting ahead of time, and light moving things with probes." },
+  { "at": 17.4, "text": "Under budget. Smooth." },
+  { "at": 21.9, "text": "Bake. Probes. Trim." },
+  { "at": 25.4, "text": "Seventy-two, or ninety hertz? Comment below." }
+]

@@ -1,0 +1,76 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 23: if/else soup of bools vs a clear state machine. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+/* The same sequence of player actions drives both lanes. */
+const SEQ = [[0, 'Idle'], [2.6, 'Run'], [4.8, 'Jump'], [6.2, 'Run'], [7.6, 'Attack'], [9.0, 'Idle'], [10.8, 'Run'], [12.4, 'Jump'], [13.0, 'Attack'], [14.4, 'Idle'], [16.4, 'Run'], [18.2, 'Jump'], [19.6, 'Idle']]
+const at = (t) => { let s = SEQ[0]; for (const e of SEQ) if (t >= e[0]) s = e; return s }
+
+function pose(cx, x, y, state, t, color) {
+  const lift = state === 'Jump' ? 60 : 0
+  figure(cx, x, y - lift, color, t, 1, state === 'Run', 1.0)
+  if (state === 'Attack') { cx.strokeStyle = color; cx.lineWidth = 6; cx.beginPath(); cx.arc(x + 20, y - 110, 50, -1.1, 0.4); cx.stroke() }
+}
+
+series({
+  day: 23, pillar: 'Architecture', duration: 30, takeawayAt: 21.6,
+  title: ['State machines vs', 'if/else soup'],
+  subtitle: 'Same player, same buttons. Two ways to decide what he is doing.',
+  lanes: [
+    {
+      title: 'A pile of booleans', sub: 'isJumping, isAttacking, isGrounded… checked everywhere.', accent: '#ff4d5e',
+      readout: ['CHARACTER LOGIC', 'Flags and if/else'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools
+        const [t0, s] = at(t)
+        // flags, with one getting stuck: the classic bug
+        const stuck = (s === 'Attack' && t > 13.0 && t < 14.4) || (s === 'Idle' && t > 9.0 && t < 9.9)
+        const flags = [['isGrounded', s !== 'Jump'], ['isRunning', s === 'Run'], ['isJumping', s === 'Jump' || (t > 13.0 && t < 14.4)], ['isAttacking', s === 'Attack' || (t > 9.0 && t < 9.9)]]
+        flags.forEach(([n, on], i) => {
+          const x = 470 + (i % 2) * 265, y = box.top + 140 + Math.floor(i / 2) * 52
+          cx.beginPath(); cx.roundRect(x, y, 250, 40, 10); cx.fillStyle = on ? 'rgba(255,77,94,.18)' : 'rgba(255,255,255,.04)'; cx.fill()
+          cx.fillStyle = on ? C.red : C.soft; cx.font = F(800, 18); cx.textAlign = 'left'; cx.fillText(`${n} = ${on}`, x + 14, y + 27)
+        })
+        cx.fillStyle = 'rgba(244,246,248,.5)'; cx.font = F(600, 16)
+        ;['if (isJumping && !isAttacking && isGrounded…)', '  else if (isAttacking || (isRunning && !isJumping))', '    // TODO: why is he stuck?'].forEach((l, i) => cx.fillText(l, 470, box.top + 270 + i * 26))
+        pose(cx, 230, box.top + 440, s, t, C.red)
+        if (stuck) { cx.fillStyle = C.red; cx.font = F(800, 22); cx.textAlign = 'center'; cx.fillText(t > 13 ? 'Jumping AND attacking?!' : 'Still attacking?!', 230, box.top + 245) }
+      },
+    },
+    {
+      title: 'State machine', sub: 'Exactly one state at a time, with clear transitions.', accent: '#2fe39a',
+      readout: ['CHARACTER LOGIC', 'One state at a time'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools
+        const [t0, s] = at(t)
+        const P = { Idle: [520, box.top + 260], Run: [800, box.top + 260], Jump: [800, box.top + 410], Attack: [520, box.top + 410] }
+        const links = [['Idle', 'Run'], ['Run', 'Jump'], ['Run', 'Attack'], ['Jump', 'Idle'], ['Attack', 'Idle'], ['Idle', 'Jump']]
+        cx.strokeStyle = 'rgba(47,227,154,.25)'; cx.lineWidth = 3
+        links.forEach(([a, b]) => { cx.beginPath(); cx.moveTo(...P[a]); cx.lineTo(...P[b]); cx.stroke() })
+        // the transition just taken
+        const prev = (() => { let p = null; for (const e of SEQ) { if (e[0] >= t0) break; p = e } return p })()
+        if (prev && t - t0 < 0.6) {
+          const k = (t - t0) / 0.6, a = P[prev[1]], b = P[s]
+          cx.beginPath(); cx.arc(a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, 9, 0, 7); cx.fillStyle = C.green; cx.fill()
+        }
+        Object.entries(P).forEach(([n, [x, y]]) => {
+          const on = n === s
+          cx.save(); if (on) { cx.shadowColor = C.green; cx.shadowBlur = 26 }
+          cx.beginPath(); cx.roundRect(x - 80, y - 28, 160, 56, 28); cx.fillStyle = on ? C.green : '#16202c'; cx.fill(); cx.restore()
+          cx.lineWidth = 2; cx.strokeStyle = 'rgba(255,255,255,.14)'; cx.beginPath(); cx.roundRect(x - 80, y - 28, 160, 56, 28); cx.stroke()
+          cx.fillStyle = on ? '#0b0e12' : C.text; cx.font = F(800, 22); cx.textAlign = 'center'; cx.fillText(n, x, y + 8)
+        })
+        pose(cx, 230, box.top + 440, s, t, C.green)
+      },
+    },
+  ],
+  rows: [['One state', 'The character is in exactly one state.'], ['Clear transitions', 'Every change has a reason you can read.'], ['Enter and exit', 'Each state sets itself up and cleans up.']],
+  question: ['FSM or behaviour tree', 'for enemy AI? 👇'],
+})
+</script>

@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 10: why your Quest build stutters. Real-time shadows + post FX vs baked lighting. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const BUDGET = 13.9 // ms per frame at 72 Hz (1000 / 72)
+
+function parts(t, baked) {
+  const w = Math.sin(t * 3.1) * 0.8 + Math.sin(t * 7.3) * 0.5
+  return baked
+    ? [['Scene', 7.2 + w * 0.3, '#4cc3ff'], ['Baked light', 1.2, '#2fe39a'], ['Light probes', 0.6, '#a78bfa']]
+    : [['Scene', 7.2 + w * 0.3, '#4cc3ff'], ['Real-time shadows', 4.6 + w, '#ff4d5e'], ['Post FX', 3.4 + w * 0.6, '#ffb02e']]
+}
+
+function scene(t, box, tools, baked) {
+  const { cx, C, F, rr } = tools
+  // little room: a crate and its shadow
+  const rx = 90, ry = box.top + 225
+  rr(rx, ry, 300, 190, 16); cx.fillStyle = '#121925'; cx.fill()
+  const lx = rx + 60 + 40 * Math.sin(t * 0.9), ly = ry + 30
+  cx.beginPath(); cx.arc(lx, ly, 10, 0, 7); cx.fillStyle = C.amber; cx.fill()
+  const bx = rx + 150, by = ry + 110
+  cx.fillStyle = baked ? 'rgba(0,0,0,.45)' : `rgba(0,0,0,${0.35 + 0.15 * Math.sin(t * 9)})`
+  cx.beginPath(); const sh = baked ? 40 : 40 + (bx - lx) * 0.4
+  cx.moveTo(bx, by + 50); cx.lineTo(bx + 50, by + 50); cx.lineTo(bx + 50 + sh, by + 70); cx.lineTo(bx + sh, by + 70); cx.fill()
+  cx.fillStyle = '#c98b52'; cx.fillRect(bx, by, 50, 50)
+  cx.fillStyle = C.soft; cx.font = F(700, 13); cx.textAlign = 'left'
+  cx.fillText(baked ? 'shadow baked into a lightmap' : 'shadow recalculated every frame', rx + 14, ry + 180)
+
+  // frame-time stacked bar
+  const x0 = 460, x1 = 990, y = box.top + 250, scale = (x1 - x0) / 22
+  cx.fillStyle = C.soft; cx.font = F(700, 14); cx.fillText('ONE FRAME ON QUEST', x0, y - 14)
+  let x = x0, total = 0
+  for (const [name, ms, col] of parts(t, baked)) {
+    const w = ms * scale; rr(x, y, w - 3, 44, 6); cx.fillStyle = col; cx.fill()
+    total += ms; x += w
+  }
+  const bxLine = x0 + BUDGET * scale
+  cx.strokeStyle = C.text; cx.lineWidth = 3; cx.setLineDash([6, 5]); cx.beginPath(); cx.moveTo(bxLine, y - 8); cx.lineTo(bxLine, y + 56); cx.stroke(); cx.setLineDash([])
+  cx.fillStyle = C.text; cx.font = F(800, 14); cx.textAlign = 'center'; cx.fillText('13.9 ms = 72 Hz', bxLine, y + 76)
+  // legend
+  cx.textAlign = 'left'; let ly2 = y + 112
+  for (const [name, , col] of parts(t, baked)) { cx.fillStyle = col; cx.fillRect(x0, ly2 - 12, 14, 14); cx.fillStyle = C.soft; cx.font = F(600, 16); cx.fillText(name, x0 + 22, ly2); ly2 += 26 }
+  // result
+  const over = total > BUDGET
+  cx.font = F(800, 26); cx.fillStyle = over ? C.red : C.green; cx.textAlign = 'right'
+  cx.fillText(over ? (t * 2 % 1 < 0.6 ? 'DROPPED FRAMES' : '') : 'SMOOTH', x1, y + 140)
+  cx.textAlign = 'left'
+}
+
+series({
+  day: 10, pillar: 'Performance', duration: 30, takeawayAt: 21.6,
+  title: ['Why your Quest', 'build stutters'],
+  subtitle: 'Same room. The headset has 13.9 ms to draw each frame.',
+  note: 'Illustrative timings; 72 Hz = 13.9 ms per frame',
+  lanes: [
+    { title: 'Real-time shadows + post FX', sub: 'Desktop settings on a mobile chip.', accent: '#ff4d5e',
+      readout: ['FRAME BUDGET (72 Hz)', 'Over budget'], draw(t, box, tools) { scene(t, box, tools, false) } },
+    { title: 'Baked light + probes', sub: 'Light the static world ahead of time.', accent: '#2fe39a',
+      readout: ['FRAME BUDGET (72 Hz)', 'Under budget'], draw(t, box, tools) { scene(t, box, tools, true) } },
+  ],
+  rows: [['Bake', 'Bake static lighting into lightmaps.'], ['Probes', 'Light moving objects with light probes.'], ['Trim', 'Skip heavy full-screen effects on Quest.']],
+  question: ['72 Hz or 90 Hz:', 'which do you target? 👇'],
+})
+</script>

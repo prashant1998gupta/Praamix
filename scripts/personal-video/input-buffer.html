@@ -1,0 +1,91 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 14: input that feels bad. A jump pressed just before landing: ignored vs buffered. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const CYCLE = 3.2
+const AIR = 0.9                 // seconds in the air per jump
+const FIRST = 0.3               // first jump press
+const EARLY = 0.16              // second press comes this long before landing
+const WINDOW = 0.25             // buffer window
+const V = 560, G = 2 * V / AIR
+const land1 = FIRST + AIR, press2 = land1 - EARLY
+const hAt = (tj) => (tj < 0 || tj > AIR ? 0 : V * tj - 0.5 * G * tj * tj)
+
+function scene(t, box, tools, buffered) {
+  const { cx, C, F } = tools
+  const accent = buffered ? C.green : C.red
+  const g = box.top + 395, x = 660
+  const local = t % CYCLE
+  cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3
+  cx.beginPath(); cx.moveTo(470, g); cx.lineTo(990, g); cx.stroke()
+
+  let h = hAt(local - FIRST)
+  if (buffered) h = Math.max(h, hAt(local - land1))
+  figure(cx, x, g - h, accent, t, 1, false, 0.8)
+
+  // key presses
+  for (const [pt, label] of [[FIRST, 'JUMP'], [press2, 'JUMP']]) {
+    const d = local - pt
+    if (d >= 0 && d < 0.5) {
+      cx.globalAlpha = 1 - d / 0.5
+      tools.rr(470, box.top + 140, 120, 46, 12); cx.fillStyle = C.text; cx.fill()
+      cx.fillStyle = '#0b0e12'; cx.font = F(800, 20); cx.textAlign = 'center'; cx.fillText(label, 530, box.top + 170)
+      cx.globalAlpha = 1
+    }
+  }
+  // what happened to the early press
+  cx.textAlign = 'center'; cx.font = F(800, 26)
+  if (!buffered && local > press2 && local < press2 + 1.6) {
+    cx.fillStyle = C.red; cx.fillText('Pressed in the air: ignored', 780, box.top + 236)
+    if (local > land1) { cx.font = F(700, 18); cx.fillStyle = 'rgba(255,77,94,.8)'; cx.fillText('landed and just stood there', x, g + 34) }
+  }
+  if (buffered && local > press2 && local < press2 + 1.6) {
+    cx.fillStyle = C.green; cx.fillText(local < land1 ? 'Remembered…' : 'Jumped on landing ✓', 780, box.top + 236)
+    if (local < land1) {
+      const k = (land1 - local) / EARLY
+      tools.rr(700, box.top + 252, 160, 12, 6); cx.fillStyle = 'rgba(255,255,255,.1)'; cx.fill()
+      tools.rr(700, box.top + 252, 160 * Math.max(0, k * EARLY / WINDOW), 12, 6); cx.fillStyle = C.green; cx.fill()
+      cx.font = F(700, 14); cx.fillStyle = C.soft; cx.fillText('buffer window', 780, box.top + 284)
+    }
+  }
+
+  // timeline of the cycle
+  const ty = box.top + 445, x0 = 90, x1 = 930, sc = (x1 - x0) / CYCLE
+  cx.strokeStyle = 'rgba(255,255,255,.12)'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(x0, ty); cx.lineTo(x1, ty); cx.stroke()
+  const air = (a) => { cx.fillStyle = 'rgba(76,195,255,.35)'; cx.fillRect(x0 + a * sc, ty - 6, AIR * sc, 12) }
+  air(FIRST); if (buffered) air(land1)
+  for (const pt of [FIRST, press2]) { cx.fillStyle = C.text; cx.fillRect(x0 + pt * sc - 2, ty - 16, 4, 32) }
+  if (buffered) { cx.fillStyle = 'rgba(47,227,154,.4)'; cx.fillRect(x0 + press2 * sc, ty - 12, WINDOW * sc, 24) }
+  cx.fillStyle = 'rgba(255,255,255,.9)'; cx.fillRect(x0 + local * sc - 1, ty - 22, 2, 44)
+  cx.font = F(700, 14); cx.textAlign = 'left'; cx.fillStyle = C.blue; cx.fillText('in the air', x0, ty - 22)
+  cx.fillStyle = C.text; cx.fillText('| jump pressed', x0 + 100, ty - 22)
+  cx.textAlign = 'left'
+}
+
+series({
+  day: 14, pillar: 'Gameplay', duration: 30, takeawayAt: 21.6,
+  title: ['Why your controls', 'feel unresponsive'],
+  subtitle: 'The player presses jump a split second before landing.',
+  note: 'Timings illustrative',
+  lanes: [
+    {
+      title: 'Check input only on the ground', sub: 'A press in the air is simply thrown away.', accent: '#ff4d5e',
+      readout: ['THE PLAYER FEELS', '"It ate my input"'],
+      draw(t, box, tools) { scene(t, box, tools, false) },
+    },
+    {
+      title: 'Input buffer', sub: 'Remember the press, use it the moment you land.', accent: '#2fe39a',
+      readout: ['THE PLAYER FEELS', 'Tight and responsive'],
+      draw(t, box, tools) { scene(t, box, tools, true) },
+    },
+  ],
+  rows: [['Remember', 'Store the jump press with a timestamp.'], ['Window', 'Use it if you land within a short window.'], ['Consume', 'Clear it once used, so it fires only once.']],
+  question: ['How long a jump buffer', 'feels right to you? 👇'],
+})
+</script>

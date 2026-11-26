@@ -1,0 +1,77 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 17: why VR hands go through tables. Hand locked to the controller vs a physics hand. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+/* Where the player's real controller is: sweeping, and pushing down through the table now and then. */
+const ctrl = (box, t) => ({ x: 560 + 220 * Math.sin(t * 0.55), y: box.top + 300 + 105 * Math.sin(t * 1.25) })
+const SURFACE = 352, HAND_H = 34
+
+function table(box, tools) {
+  const { cx } = tools, y = box.top + SURFACE
+  cx.fillStyle = '#3a2c22'; cx.fillRect(250, y, 620, 26)
+  cx.fillStyle = '#2a2019'; cx.fillRect(280, y + 26, 22, 80); cx.fillRect(818, y + 26, 22, 80)
+  cx.fillStyle = 'rgba(255,255,255,.1)'; cx.fillRect(250, y, 620, 3)
+  return y
+}
+
+function hand(cx, x, y, color, alpha = 1, dashed = false) {
+  cx.save(); cx.globalAlpha = alpha
+  const draw = () => {
+    cx.beginPath(); cx.roundRect(x - 46, y - HAND_H, 92, HAND_H + 6, 16)
+    for (let i = 0; i < 4; i++) cx.roundRect(x - 44 + i * 23, y - HAND_H - 40, 18, 46, 9)
+    cx.roundRect(x + 42, y - HAND_H + 2, 30, 16, 8)
+  }
+  if (dashed) { cx.setLineDash([7, 7]); cx.strokeStyle = color; cx.lineWidth = 3; draw(); cx.stroke(); cx.setLineDash([]) }
+  else { cx.fillStyle = color; draw(); cx.fill() }
+  cx.restore()
+}
+
+series({
+  day: 17, pillar: 'VR', duration: 30, takeawayAt: 21.6,
+  title: ['Why VR hands go', 'through tables'],
+  subtitle: 'Your real hand has no table to stop it. Your virtual one can.',
+  note: 'Illustration of a common VR hand setup',
+  lanes: [
+    {
+      title: 'Hand locked to the controller', sub: 'Wherever the controller goes, the hand goes too.', accent: '#ff4d5e',
+      readout: ['HAND FOLLOWS', 'The controller, exactly'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools
+        const sy = table(box, tools), c = ctrl(box, t)
+        const through = c.y > sy + 4
+        hand(cx, c.x, c.y, C.red)
+        if (through) {
+          cx.fillStyle = 'rgba(58,44,34,.85)'; cx.fillRect(250, sy, 620, 26)
+          cx.fillStyle = C.red; cx.font = F(800, 24); cx.textAlign = 'center'; cx.fillText('Through the table!', c.x, box.top + 222)
+        }
+      },
+    },
+    {
+      title: 'Physics hand', sub: 'A spring pulls the hand toward the controller. Tables stop it.', accent: '#2fe39a',
+      readout: ['HAND FOLLOWS', 'Physics, pulled by a spring'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools
+        const sy = table(box, tools), c = ctrl(box, t)
+        const onTable = c.x > 250 && c.x < 870
+        const hy = onTable ? Math.min(c.y, sy) : c.y
+        if (c.y > hy + 4) {
+          hand(cx, c.x, c.y, 'rgba(255,255,255,.7)', 0.8, true)
+          cx.setLineDash([4, 6]); cx.strokeStyle = 'rgba(47,227,154,.7)'; cx.lineWidth = 3
+          cx.beginPath(); cx.moveTo(c.x, hy - 10); cx.lineTo(c.x, c.y - 10); cx.stroke(); cx.setLineDash([])
+          cx.fillStyle = C.soft; cx.font = F(700, 16); cx.textAlign = 'left'; cx.fillText('your real controller', c.x + 84, c.y - 8)
+          cx.fillStyle = C.green; cx.font = F(800, 22); cx.textAlign = 'center'; cx.fillText('Hand rests on the table', c.x, box.top + 222)
+        }
+        hand(cx, c.x, hy, C.green)
+      },
+    },
+  ],
+  rows: [['Separate', 'Keep the hand apart from the controller.'], ['Simulate', 'Drive the hand with physics forces.'], ['Show the gap', 'Ghost the controller when they split.']],
+  question: ['Physics hands: worth the', 'extra work? 👇'],
+})
+</script>

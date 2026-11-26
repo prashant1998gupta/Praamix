@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Still calling GetComponent in Update?" },
+  { "at": 3.4, "text": "Top: every frame, the script searches the object for its Rigidbody. Finds it. Then forgets." },
+  { "at": 10.6, "text": "Bottom: look it up once in Awake, keep it in a field, and just use it." },
+  { "at": 17.4, "text": "One lookup, instead of one every frame." },
+  { "at": 21.9, "text": "Cache. Reuse. TryGetComponent." },
+  { "at": 25.4, "text": "Is this still a problem in 2026? Comment below." }
+]

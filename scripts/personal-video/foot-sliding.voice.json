@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Why does your character ice-skate?" },
+  { "at": 3.4, "text": "Top: the character speeds up and slows down, but the walk plays at one speed. Feet slide." },
+  { "at": 10.6, "text": "Bottom: play the walk at move speed divided by stride length. Feet stay planted." },
+  { "at": 17.4, "text": "Clean footprints. No skating." },
+  { "at": 21.9, "text": "Measure. Match. Blend." },
+  { "at": 25.4, "text": "Root motion, or code-driven movement? Comment below." }
+]

@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 20: motion sickness in one picture. Smooth turning with a full view vs snap turn plus a comfort vignette. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+/* How far the player has turned, in degrees: they hold the stick in bursts. */
+const BURSTS = [[2.5, 5.0], [7.0, 9.6], [11.6, 14.0], [16.0, 19.0]]
+function smoothYaw(t) { let y = 0; for (const [a, b] of BURSTS) { if (t <= a) break; y += 60 * (Math.min(t, b) - a) } return y }
+function turning(t) { return BURSTS.some(([a, b]) => t >= a && t < b) }
+function snapYaw(t) { return Math.floor(smoothYaw(t) / 30) * 30 }
+
+/* A simple first-person view: sky, hills and a ground grid that scroll with your heading. */
+function view(cx, box, yaw, x, y, w, h, tools) {
+  cx.save(); cx.beginPath(); cx.roundRect(x, y, w, h, 22); cx.clip()
+  const sky = cx.createLinearGradient(0, y, 0, y + h); sky.addColorStop(0, '#2b4a78'); sky.addColorStop(0.55, '#7fb2d9'); sky.addColorStop(0.56, '#3d6b3a'); sky.addColorStop(1, '#25442a')
+  cx.fillStyle = sky; cx.fillRect(x, y, w, h)
+  const px = -yaw * 6, horizon = y + h * 0.56
+  cx.fillStyle = '#4d6f8f'
+  for (let i = -4; i < 12; i++) {
+    const hx = x + ((px + i * 180) % 1440 + 1440) % 1440 - 360
+    cx.beginPath(); cx.moveTo(hx, horizon); cx.lineTo(hx + 90, horizon - 70 - (i % 3) * 18); cx.lineTo(hx + 180, horizon); cx.fill()
+  }
+  cx.strokeStyle = 'rgba(255,255,255,.14)'; cx.lineWidth = 2
+  for (let i = -20; i < 40; i++) {
+    const gx = x + ((px * 1.6 + i * 60) % 1200 + 1200) % 1200 - 300
+    cx.beginPath(); cx.moveTo(gx, horizon); cx.lineTo(x + w / 2 + (gx - x - w / 2) * 3, y + h); cx.stroke()
+  }
+  cx.restore()
+}
+function head(cx, x, y, yaw, color, tools) {
+  const { F, C } = tools
+  cx.save(); cx.translate(x, y)
+  cx.beginPath(); cx.arc(0, 0, 70, 0, 7); cx.strokeStyle = 'rgba(255,255,255,.12)'; cx.lineWidth = 2; cx.stroke()
+  cx.rotate((yaw - 90) * Math.PI / 180)
+  cx.fillStyle = color; cx.beginPath(); cx.arc(0, 0, 26, 0, 7); cx.fill()
+  cx.beginPath(); cx.moveTo(26, -12); cx.lineTo(62, 0); cx.lineTo(26, 12); cx.fill()
+  cx.restore()
+  cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'center'; cx.fillText('top view: your heading', x, y + 100)
+}
+
+series({
+  day: 20, pillar: 'VR', duration: 30, takeawayAt: 21.6,
+  title: ['Motion sickness', 'in one picture'],
+  subtitle: 'Turning with the stick. Your eyes see motion, your body feels none.',
+  note: 'Illustration. Comfort varies from player to player.',
+  lanes: [
+    {
+      title: 'Smooth turning, full view', sub: 'The whole world sweeps past your eyes.', accent: '#ff4d5e',
+      readout: ['WHILE YOU TURN', 'Everything moves'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools, yaw = smoothYaw(t)
+        view(cx, box, yaw, 470, box.top + 130, 530, 310, tools)
+        if (turning(t)) { cx.fillStyle = C.red; cx.font = F(800, 20); cx.textAlign = 'center'; cx.fillText('for many players: queasy', 735, box.top + 425) }
+        head(cx, 240, box.top + 320, yaw, C.red, tools)
+      },
+    },
+    {
+      title: 'Snap turn + vignette', sub: 'Turn in quick steps, and dim the edges while moving.', accent: '#2fe39a',
+      readout: ['WHILE YOU TURN', 'Short steps, calm edges'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools, yaw = snapYaw(t)
+        const x = 470, y = box.top + 130, w = 530, h = 310
+        view(cx, box, yaw, x, y, w, h, tools)
+        // the snap itself: a very short blink
+        const since = (() => { let s = 99; for (let k = 0; k < 400; k++) { const tt = t - k * 0.02; if (tt < 0) break; if (snapYaw(tt) !== yaw) { s = k * 0.02; break } } return s })()
+        if (since < 0.12) { cx.fillStyle = `rgba(0,0,0,${0.9 * (1 - since / 0.12)})`; cx.beginPath(); cx.roundRect(x, y, w, h, 22); cx.fill() }
+        // vignette while the stick is held
+        if (turning(t)) {
+          cx.save(); cx.beginPath(); cx.roundRect(x, y, w, h, 22); cx.clip()
+          const g = cx.createRadialGradient(x + w / 2, y + h / 2, 120, x + w / 2, y + h / 2, 300)
+          g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.8)'); cx.fillStyle = g; cx.fillRect(x, y, w, h); cx.restore()
+        }
+        head(cx, 240, box.top + 320, yaw, C.green, tools)
+      },
+    },
+  ],
+  rows: [['Snap turn', 'Turn in steps, not a smooth spin.'], ['Vignette', 'Dim the edges while you move.'], ['Let them choose', 'Put comfort settings in the menu.']],
+  question: ['Vignette on or off', 'by default? 👇'],
+})
+</script>

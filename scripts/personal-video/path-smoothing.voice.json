@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Why does your AI walk like a robot?" },
+  { "at": 3.4, "text": "Top: the raw path goes corner to corner, and the agent snaps its turns." },
+  { "at": 10.6, "text": "Bottom: smooth the corners, and steer the body gradually towards the path." },
+  { "at": 17.4, "text": "Same path. It finally looks alive." },
+  { "at": 21.9, "text": "Smooth. Steer. Look ahead." },
+  { "at": 25.4, "text": "NavMesh or A star? Comment below." }
+]

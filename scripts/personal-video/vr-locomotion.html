@@ -1,0 +1,74 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 18: teleport vs smooth locomotion. Both shown fairly, with illustrative comfort and immersion meters. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const LOOP = 8, X0 = 150, X1 = 900
+const ground = (box, tools) => {
+  const { cx } = tools, g = box.top + 410
+  cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(90, g); cx.lineTo(990, g); cx.stroke()
+  // a flag at the destination
+  cx.strokeStyle = 'rgba(255,255,255,.5)'; cx.lineWidth = 4; cx.beginPath(); cx.moveTo(X1 + 40, g); cx.lineTo(X1 + 40, g - 90); cx.stroke()
+  cx.fillStyle = '#f26b38'; cx.beginPath(); cx.moveTo(X1 + 40, g - 90); cx.lineTo(X1 + 84, g - 76); cx.lineTo(X1 + 40, g - 62); cx.fill()
+  return g
+}
+function meters(box, tools, comfort, immersion, accent) {
+  const { cx, C, F, rr } = tools
+  const rows = [['COMFORT, FOR MANY PLAYERS', comfort], ['FEELS LIKE WALKING', immersion]]
+  rows.forEach(([label, v], i) => {
+    const y = box.top + 140 + i * 42
+    cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'left'; cx.fillText(label, 560, y + 4)
+    rr(560, y + 12, 400, 12, 6); cx.fillStyle = 'rgba(255,255,255,.08)'; cx.fill()
+    rr(560, y + 12, 400 * v, 12, 6); cx.fillStyle = accent; cx.fill()
+  })
+}
+
+series({
+  day: 18, pillar: 'VR', duration: 30, takeawayAt: 21.6,
+  title: ['Teleport vs smooth', 'locomotion'],
+  subtitle: 'The oldest argument in VR. Here is what each one costs.',
+  note: 'Meters are illustrative. Comfort varies from player to player.',
+  lanes: [
+    {
+      title: 'Smooth locomotion', sub: 'Push the stick and glide, like a regular game.', accent: '#4cc3ff',
+      readout: ['YOU MOVE', 'Continuously'],
+      draw(t, box, tools) {
+        const g = ground(box, tools)
+        const k = (t % LOOP) / LOOP, x = X0 + (X1 - X0) * Math.min(1, k * 1.15)
+        // motion lines behind the player
+        const { cx } = tools
+        if (k * 1.15 < 1) for (let i = 1; i < 5; i++) { cx.strokeStyle = `rgba(76,195,255,${0.25 - i * 0.05})`; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(x - 40 - i * 26, g - 100); cx.lineTo(x - 70 - i * 26, g - 100); cx.stroke() }
+        figure(cx, x, g, tools.C.blue, t, 1, k * 1.15 < 1, 1.2)
+        meters(box, tools, 0.45, 0.9, tools.C.blue)
+      },
+    },
+    {
+      title: 'Teleport', sub: 'Point where you want to be, and blink there.', accent: '#ffb02e',
+      readout: ['YOU MOVE', 'In jumps'],
+      draw(t, box, tools) {
+        const { cx, C } = tools
+        const g = ground(box, tools)
+        const lt = t % LOOP, hop = 1.6, n = Math.min(4, Math.floor(lt / hop))
+        const step = (X1 - X0) / 4, x = X0 + n * step, phase = lt - n * hop
+        if (n < 4 && phase > 0.6) {
+          // the aiming arc to the next spot
+          const tx = x + step
+          cx.strokeStyle = C.amber; cx.lineWidth = 4; cx.setLineDash([10, 8])
+          cx.beginPath(); cx.moveTo(x + 20, g - 120); cx.quadraticCurveTo((x + tx) / 2, g - 230, tx, g); cx.stroke(); cx.setLineDash([])
+          cx.beginPath(); cx.ellipse(tx, g, 34, 9, 0, 0, 7); cx.strokeStyle = C.amber; cx.stroke()
+        }
+        figure(cx, x, g, C.amber, t, 1, false, 1.2)
+        if (phase < 0.18 && n > 0) { cx.fillStyle = `rgba(0,0,0,${0.85 * (1 - phase / 0.18)})`; cx.fillRect(box.x, box.top + 200, box.w, 270) }
+        meters(box, tools, 0.9, 0.45, C.amber)
+      },
+    },
+  ],
+  rows: [['Offer both', 'Let players choose how they move.'], ['Add comfort options', 'Vignette, speed and snap turn settings.'], ['Remember it', 'Save the choice for next time.']],
+  question: ['Which should be the', 'default in your game? 👇'],
+})
+</script>

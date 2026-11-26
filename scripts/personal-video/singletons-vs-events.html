@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 21: singletons everywhere vs systems talking through event channels. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const NAMES = ['Player', 'UI', 'Audio', 'Score', 'Enemy', 'Save']
+/* A death happens every few seconds; each one sends messages through the system. */
+const DEATHS = [3.2, 7.4, 11.6, 15.8]
+
+function node(cx, x, y, label, color, glow, tools) {
+  const { F } = tools
+  cx.save()
+  if (glow > 0) { cx.shadowColor = color; cx.shadowBlur = 30 * glow }
+  const bw = label.length > 8 ? 160 : 124; cx.beginPath(); cx.roundRect(x - bw / 2, y - 24, bw, 48, 14); cx.fillStyle = '#1a2230'; cx.fill()
+  cx.lineWidth = 2 + 2 * glow; cx.strokeStyle = glow > 0 ? color : 'rgba(255,255,255,.18)'; cx.stroke()
+  cx.restore()
+  cx.fillStyle = '#f4f6f8'; cx.font = F(800, label.length > 8 ? 17 : 19); cx.textAlign = 'center'; cx.fillText(label, x, y + 7)
+}
+function pulse(cx, a, b, k, color) {
+  const x = a[0] + (b[0] - a[0]) * k, y = a[1] + (b[1] - a[1]) * k
+  cx.beginPath(); cx.arc(x, y, 8, 0, 7); cx.fillStyle = color; cx.shadowColor = color; cx.shadowBlur = 16; cx.fill(); cx.shadowBlur = 0
+}
+
+series({
+  day: 21, pillar: 'Architecture', duration: 30, takeawayAt: 21.6,
+  title: ['Singletons', 'everywhere'],
+  subtitle: 'The player dies. Who needs to know, and how do they find out?',
+  lanes: [
+    {
+      title: 'GameManager.Instance for everything', sub: 'Every system reaches into every other one.', accent: '#ff4d5e',
+      readout: ['EACH SYSTEM KNOWS', 'Everyone else'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools
+        const hub = [560, box.top + 330]
+        const pts = NAMES.map((n, i) => { const a = -Math.PI / 2 + i * (Math.PI * 2 / 6); return [560 + 330 * Math.cos(a), box.top + 330 + 100 * Math.sin(a)] })
+        // tangle: every node wired to the hub and to its neighbours
+        cx.strokeStyle = 'rgba(255,77,94,.28)'; cx.lineWidth = 2
+        for (let i = 0; i < 6; i++) { cx.beginPath(); cx.moveTo(...pts[i]); cx.lineTo(...hub); cx.stroke(); for (let j = i + 1; j < 6; j++) if ((i + j) % 2) { cx.beginPath(); cx.moveTo(...pts[i]); cx.lineTo(...pts[j]); cx.stroke() } }
+        let glow = 0
+        for (const d of DEATHS) {
+          const k = t - d
+          if (k >= 0 && k < 2.2) {
+            glow = 1 - k / 2.2
+            for (let j = 1; j < 6; j++) { const kk = (k * 1.4 - j * 0.12); if (kk > 0 && kk < 1) pulse(cx, pts[0], kk < 0.5 ? hub : pts[j], kk < 0.5 ? kk * 2 : (kk - 0.5) * 2, C.red) }
+            for (let j = 2; j < 6; j++) { const kk = k * 1.2 - 0.6 - j * 0.1; if (kk > 0 && kk < 1) pulse(cx, pts[j], pts[(j + 3) % 6], kk, C.red) }
+          }
+        }
+        node(cx, hub[0], hub[1], 'GameManager', C.red, glow, tools)
+        NAMES.forEach((n, i) => node(cx, pts[i][0], pts[i][1], n, C.red, i === 0 ? glow : 0, tools))
+      },
+    },
+    {
+      title: 'Event channel', sub: 'The player announces it once. Listeners react.', accent: '#2fe39a',
+      readout: ['EACH SYSTEM KNOWS', 'Only the channel'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools
+        const busY = box.top + 330, player = [170, busY]
+        cx.beginPath(); cx.roundRect(290, busY - 20, 650, 40, 20); cx.fillStyle = 'rgba(47,227,154,.12)'; cx.fill(); cx.strokeStyle = 'rgba(47,227,154,.5)'; cx.lineWidth = 2; cx.stroke()
+        cx.fillStyle = C.green; cx.font = F(800, 18); cx.textAlign = 'center'; cx.fillText('OnPlayerDied  channel', 615, busY + 6)
+        const ls = NAMES.slice(1).map((n, i) => [370 + i * 140, i % 2 ? busY + 95 : busY - 95])
+        cx.strokeStyle = 'rgba(47,227,154,.3)'; cx.lineWidth = 2
+        ls.forEach((p) => { cx.beginPath(); cx.moveTo(p[0], p[1]); cx.lineTo(p[0], busY); cx.stroke() })
+        cx.beginPath(); cx.moveTo(232, busY); cx.lineTo(290, busY); cx.stroke()
+        let glow = 0, lit = [0, 0, 0, 0, 0]
+        for (const d of DEATHS) {
+          const k = t - d
+          if (k >= 0 && k < 2.2) {
+            glow = 1 - k / 2.2
+            if (k < 0.4) pulse(cx, player, [300, busY], k / 0.4, C.green)
+            ls.forEach((p, i) => { const kk = (k - 0.4 - 0.05 * i) / 0.4; if (kk > 0 && kk < 1) pulse(cx, [p[0], busY], p, kk, C.green); if (kk >= 1) lit[i] = Math.max(lit[i], 1 - (k - 0.8) / 1.4) })
+          }
+        }
+        node(cx, player[0], player[1], 'Player', C.green, glow, tools)
+        ls.forEach((p, i) => node(cx, p[0], p[1], NAMES[i + 1], C.green, lit[i], tools))
+      },
+    },
+  ],
+  rows: [['Raise events', 'Systems announce what happened.'], ['Listen', 'Others react without knowing who sent it.'], ['Keep singletons rare', 'Truly global services only.']],
+  question: ['Are singletons evil,', 'or just overused? 👇'],
+})
+</script>

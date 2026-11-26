@@ -1,0 +1,90 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 12: bullets through walls. Discrete vs continuous collision detection. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const CYCLE = 3.2           // one shot every 3.2 s
+const STEPS = 7             // physics steps the bullet is shown for
+const STEP_T = 0.22         // seconds per physics step, slowed down
+const START = 150, STRIDE = 130
+const WALL = 600, WALL_W = 16
+
+function scene(t, box, tools, swept) {
+  const { cx, C, F } = tools
+  const y = box.top + 320
+  const accent = swept ? C.green : C.red
+  const local = t % CYCLE
+  const step = Math.floor(local / STEP_T)
+  // gun
+  cx.fillStyle = 'rgba(255,255,255,.18)'; tools.rr(70, y - 20, 70, 40, 8); cx.fill()
+  // wall
+  cx.fillStyle = '#c9d2dc'; cx.fillRect(WALL - WALL_W / 2, y - 120, WALL_W, 240)
+  cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'center'; cx.fillText('thin wall', WALL, y + 146)
+
+  let stopped = -1
+  if (swept) { for (let i = 1; i < STEPS; i++) { const a = START + (i - 1) * STRIDE, b = START + i * STRIDE; if (a < WALL && b >= WALL - WALL_W / 2) { stopped = i; break } } }
+  const last = Math.min(step, STEPS - 1)
+  // each physics step's position, and for the swept check, the path between
+  for (let i = 0; i <= last; i++) {
+    let x = START + i * STRIDE
+    if (stopped !== -1 && i >= stopped) x = WALL - WALL_W / 2 - 14
+    if (i > 0 && swept) {
+      const px = START + (i - 1) * STRIDE
+      cx.fillStyle = 'rgba(47,227,154,.18)'; cx.fillRect(Math.min(px, x), y - 10, Math.abs(x - px), 20)
+    }
+    const isNow = i === last
+    cx.globalAlpha = isNow ? 1 : 0.35
+    cx.beginPath(); cx.arc(x, y, isNow ? 13 : 10, 0, 7); cx.fillStyle = isNow ? C.text : accent; cx.fill()
+    cx.globalAlpha = 1
+    if (stopped !== -1 && i >= stopped) break
+  }
+  // step markers
+  cx.font = F(700, 14); cx.fillStyle = 'rgba(244,246,248,.45)'; cx.textAlign = 'center'
+  for (let i = 0; i <= Math.min(last, swept && stopped !== -1 ? stopped - 1 : last); i++) cx.fillText(`step ${i + 1}`, START + i * STRIDE, y - 26)
+
+  const hitAt = swept ? stopped : -1
+  if (swept && stopped !== -1 && last >= stopped) {
+    const k = Math.min(1, (local - stopped * STEP_T) / 0.25)
+    cx.globalAlpha = 1 - k * 0.6
+    cx.beginPath(); cx.arc(WALL - WALL_W / 2, y, 20 + k * 30, 0, 7); cx.strokeStyle = C.green; cx.lineWidth = 4; cx.stroke()
+    cx.globalAlpha = 1
+    cx.fillStyle = C.green; cx.font = F(800, 30); cx.fillText('HIT ✓', WALL + 150, box.top + 232)
+  }
+  if (!swept && last >= 4) {
+    cx.fillStyle = C.red; cx.font = F(800, 30); cx.fillText('WENT THROUGH', WALL + 170, box.top + 232)
+    // the gap the check never looked at
+    const a = START + 3 * STRIDE, b = START + 4 * STRIDE
+    cx.setLineDash([5, 7]); cx.strokeStyle = 'rgba(255,77,94,.7)'; cx.lineWidth = 2
+    cx.beginPath(); cx.moveTo(a + 14, y + 40); cx.lineTo(b - 14, y + 40); cx.stroke(); cx.setLineDash([])
+    cx.fillStyle = 'rgba(255,77,94,.85)'; cx.font = F(700, 15); cx.fillText('never checked', (a + b) / 2, y + 62)
+  }
+  cx.textAlign = 'left'
+  void hitAt
+}
+
+series({
+  day: 12, pillar: 'Physics', duration: 30, takeawayAt: 21.6,
+  title: ['Why bullets go', 'through walls'],
+  subtitle: 'A fast object. A thin wall. One physics step at a time.',
+  note: 'Steps slowed down, illustrative',
+  lanes: [
+    {
+      title: 'Discrete collision', sub: 'Only checks where the bullet is at each step.', accent: '#ff4d5e',
+      readout: ['COLLISION CHECK', 'Each step’s position only'],
+      draw(t, box, tools) { scene(t, box, tools, false) },
+    },
+    {
+      title: 'Continuous collision', sub: 'Checks the whole path between steps.', accent: '#2fe39a',
+      readout: ['COLLISION CHECK', 'The swept path'],
+      draw(t, box, tools) { scene(t, box, tools, true) },
+    },
+  ],
+  rows: [['Continuous', 'Set fast Rigidbodies to Continuous Dynamic.'], ['Raycast', 'Hitscan bullets cast a ray along the shot.'], ['Thicker walls', 'Make colliders thicker than one step of travel.']],
+  question: ['Raycast bullets, or', 'physical ones? 👇'],
+})
+</script>

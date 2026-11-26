@@ -1,0 +1,111 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 15: feet sliding. A walk cycle at a fixed rate vs a walk cycle driven by speed ÷ stride length. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const STRIDE = 120                 // ground covered by one full step cycle, in px
+const BASE = 0.9                   // fixed animation rate (cycles per second)
+const DT = 1 / 120
+const speed = (t) => 70 + 90 * (0.5 + 0.5 * Math.sin(t * 0.55 - 1.2))   // speeds up and slows down
+const X0 = 120, SPAN = 820
+
+/* Precompute body position and both animation phases on a fine grid. */
+const N = Math.ceil(31 / DT)
+const bodyX = new Float64Array(N), phFixed = new Float64Array(N), phMatched = new Float64Array(N)
+for (let i = 1; i < N; i++) {
+  const t = i * DT, v = speed(t)
+  bodyX[i] = bodyX[i - 1] + v * DT
+  phFixed[i] = phFixed[i - 1] + BASE * DT
+  phMatched[i] = phMatched[i - 1] + (v / STRIDE) * DT
+}
+const at = (arr, t) => arr[Math.min(N - 1, Math.max(0, Math.round(t / DT)))]
+
+/* Foot position relative to the hip for a phase p in [0,1): stance half then swing half. */
+function footLocal(p) {
+  if (p < 0.5) return { x: STRIDE * (0.25 - p), y: 0, stance: true }
+  const k = (p - 0.5) / 0.5
+  return { x: STRIDE * (-0.25 + 0.5 * k), y: -28 * Math.sin(k * Math.PI), stance: false }
+}
+
+function scene(t, box, tools, matched) {
+  const { cx, C, F } = tools
+  const accent = matched ? C.green : C.red
+  const g = box.top + 400
+  const wrap = (x) => X0 + (((x % SPAN) + SPAN) % SPAN)
+  const bx = at(bodyX, t)
+  const ph = at(matched ? phMatched : phFixed, t)
+  const hipX = wrap(bx), hipY = g - 95
+
+  // footprints: stance positions over the last few seconds
+  for (let s = Math.max(0, t - 3.2); s <= t; s += 1 / 30) {
+    const b = at(bodyX, s), p0 = at(matched ? phMatched : phFixed, s)
+    for (const off of [0, 0.5]) {
+      const f = footLocal((p0 + off) % 1)
+      if (!f.stance) continue
+      const fx = wrap(b + f.x)
+      const age = (t - s) / 3.2
+      cx.globalAlpha = 0.75 * (1 - age)
+      cx.fillStyle = accent; cx.fillRect(fx - 9, g + 8, 18, 8)
+    }
+  }
+  cx.globalAlpha = 1
+  cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3
+  cx.beginPath(); cx.moveTo(90, g); cx.lineTo(990, g); cx.stroke()
+
+  // legs
+  cx.lineCap = 'round'; cx.strokeStyle = accent; cx.lineWidth = 10
+  for (const off of [0, 0.5]) {
+    const f = footLocal((ph + off) % 1)
+    const fx = hipX + f.x, fy = g + f.y
+    const kx = (hipX + fx) / 2 + 14, ky = (hipY + fy) / 2 - 4
+    cx.globalAlpha = off ? 0.55 : 1
+    cx.beginPath(); cx.moveTo(hipX, hipY); cx.lineTo(kx, ky); cx.lineTo(fx, fy); cx.stroke()
+    cx.beginPath(); cx.moveTo(fx - 4, fy); cx.lineTo(fx + 18, fy); cx.stroke()
+  }
+  cx.globalAlpha = 1
+  // body and head
+  cx.beginPath(); cx.moveTo(hipX, hipY); cx.lineTo(hipX + 5, hipY - 55); cx.stroke()
+  cx.beginPath(); cx.arc(hipX + 6, hipY - 76, 18, 0, 7); cx.fillStyle = accent; cx.fill()
+
+  // speed meter
+  const v = speed(t)
+  cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'left'; cx.fillText('MOVE SPEED', 640, box.top + 142)
+  tools.rr(640, box.top + 150, 300, 10, 5); cx.fillStyle = 'rgba(255,255,255,.1)'; cx.fill()
+  tools.rr(640, box.top + 150, 300 * (v - 60) / 110, 10, 5); cx.fillStyle = C.blue; cx.fill()
+  cx.fillText('ANIMATION SPEED', 640, box.top + 178)
+  const a = matched ? v / STRIDE : BASE
+  tools.rr(640, box.top + 186, 300, 10, 5); cx.fillStyle = 'rgba(255,255,255,.1)'; cx.fill()
+  tools.rr(640, box.top + 186, 300 * (a * STRIDE - 60) / 110, 10, 5); cx.fillStyle = accent; cx.fill()
+  if (!matched) {
+    const slide = Math.abs(v - BASE * STRIDE)
+    if (slide > 25) { cx.fillStyle = C.red; cx.font = F(800, 22); cx.textAlign = 'center'; cx.fillText(v > BASE * STRIDE ? 'feet sliding forward' : 'feet sliding back', hipX, g + 46) }
+  } else { cx.fillStyle = C.green; cx.font = F(800, 22); cx.textAlign = 'center'; cx.fillText('feet planted', hipX, g + 46) }
+  cx.textAlign = 'left'
+}
+
+series({
+  day: 15, pillar: 'Animation', duration: 30, takeawayAt: 21.6,
+  title: ['Why your character', 'ice-skates'],
+  subtitle: 'The character speeds up and slows down. Watch the footprints.',
+  note: 'Illustrative animation',
+  lanes: [
+    {
+      title: 'Walk clip at a fixed rate', sub: 'Movement speed changes. The animation doesn’t.', accent: '#ff4d5e',
+      readout: ['FOOTPRINTS', 'Smeared, feet slide'],
+      draw(t, box, tools) { scene(t, box, tools, false) },
+    },
+    {
+      title: 'Speed ÷ stride length', sub: 'The walk plays faster or slower to match movement.', accent: '#2fe39a',
+      readout: ['FOOTPRINTS', 'Clean, feet stay put'],
+      draw(t, box, tools) { scene(t, box, tools, true) },
+    },
+  ],
+  rows: [['Measure', 'Know how far one stride of the clip travels.'], ['Match', 'Set animation speed to move speed ÷ stride.'], ['Blend', 'Blend walk and run clips as speed rises.']],
+  question: ['Root motion, or', 'code-driven movement? 👇'],
+})
+</script>

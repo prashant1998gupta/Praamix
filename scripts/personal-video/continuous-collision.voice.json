@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Why do fast bullets fly straight through walls?" },
+  { "at": 3.4, "text": "Top: discrete collision only checks where the bullet is each step. The wall sits in the gap." },
+  { "at": 10.6, "text": "Bottom: continuous collision checks the whole path between steps. The hit counts." },
+  { "at": 17.4, "text": "Thin wall. Fast bullet. Still a hit." },
+  { "at": 21.9, "text": "Continuous. Raycast. Thicker walls." },
+  { "at": 25.4, "text": "Raycast bullets, or physical ones? Comment below." }
+]

@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Your save system is probably a mess. Here's why." },
+  { "at": 3.4, "text": "Top: every script calls PlayerPrefs with its own keys. Forget one, rename one, and saves break." },
+  { "at": 10.6, "text": "Bottom: every script fills one SaveData class, and one system writes it to disk, with a version number." },
+  { "at": 17.4, "text": "Old saves just upgrade." },
+  { "at": 21.9, "text": "One model. One writer. Version it." },
+  { "at": 25.4, "text": "JSON or binary saves? Comment below." }
+]

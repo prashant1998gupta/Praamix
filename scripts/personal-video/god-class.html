@@ -1,0 +1,76 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 22: the 2,000-line Player script vs small components. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const PARTS = [['Movement', '#4cc3ff'], ['Health', '#ff4d5e'], ['Inventory', '#ffb02e'], ['Interaction', '#a78bfa'], ['PlayerAudio', '#2fe39a']]
+/* Edits happen over time: someone changes "Health", then "Inventory"... */
+const EDITS = [[3.0, 1], [7.0, 2], [11.0, 0], [15.0, 3]]
+const editing = (t) => { for (const [a, i] of EDITS) if (t >= a && t < a + 3.2) return [i, t - a]; return [-1, 0] }
+
+series({
+  day: 22, pillar: 'Architecture', duration: 30, takeawayAt: 21.6,
+  title: ['The 2,000-line', 'Player script'],
+  subtitle: 'Fix one thing in the player. What else do you touch?',
+  note: 'Line counts are illustrative',
+  lanes: [
+    {
+      title: 'One class does it all', sub: 'Movement, health, inventory and audio share one file.', accent: '#ff4d5e',
+      readout: ['Player.cs', '2,000+ lines'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools
+        const x = 470, y = box.top + 130, w = 530, h = 316
+        cx.beginPath(); cx.roundRect(x, y, w, h, 16); cx.fillStyle = '#0b1017'; cx.fill(); cx.strokeStyle = 'rgba(255,255,255,.12)'; cx.lineWidth = 2; cx.stroke()
+        cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'left'; cx.fillText('Player.cs', x + 16, y + 24)
+        const [e, k] = editing(t)
+        const scroll = (t * 40) % 400
+        cx.save(); cx.beginPath(); cx.rect(x, y + 34, w, h - 34); cx.clip()
+        for (let i = 0; i < 26; i++) {
+          const ly = y + 50 + i * 12 - (scroll % 12), part = Math.floor((i + Math.floor(scroll / 12)) / 3) % 5
+          const lw = 120 + ((i * 97 + Math.floor(scroll / 12) * 31) % 300)
+          cx.fillStyle = PARTS[part][1]; cx.globalAlpha = 0.35
+          if (e >= 0 && k > 0.6) cx.globalAlpha = 0.35 + 0.45 * Math.abs(Math.sin(k * 6 + i))   // one change, the whole file shakes
+          cx.fillRect(x + 28 + (i % 4) * 14, ly, lw, 6)
+        }
+        cx.restore(); cx.globalAlpha = 1
+        if (e >= 0) {
+          cx.fillStyle = C.red; cx.font = F(800, 20); cx.textAlign = 'left'
+          cx.fillText(`Editing ${PARTS[e][0]}…`, 80, box.top + 240)
+          if (k > 0.8) cx.fillText('…and 4 other systems', 80, box.top + 272)
+          if (k > 1.6) { cx.fillStyle = C.amber; cx.fillText('Merge conflict!', 80, box.top + 304) }
+        }
+      },
+    },
+    {
+      title: 'Small components', sub: 'Each script does one job. The player is built from them.', accent: '#2fe39a',
+      readout: ['PLAYER', '5 components, one job each'],
+      draw(t, box, tools) {
+        const { cx, C, F } = tools
+        const [e, k] = editing(t)
+        // the player object
+        figure(cx, 170, box.top + 430, C.green, t, 1, false, 1.05)
+        cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'center'; cx.fillText('Player', 170, box.top + 455)
+        PARTS.forEach(([name, col], i) => {
+          const cxX = 360 + (i % 3) * 215, cy = box.top + 250 + Math.floor(i / 3) * 110
+          const a = tools.fade(t, 1.2 + i * 0.25, 0.4)
+          cx.globalAlpha = a
+          cx.strokeStyle = 'rgba(47,227,154,.25)'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(230, box.top + 330); cx.lineTo(cxX - 6, cy + 30); cx.stroke()
+          cx.save(); if (e === i) { cx.shadowColor = col; cx.shadowBlur = 26 }
+          cx.beginPath(); cx.roundRect(cxX, cy, 195, 72, 14); cx.fillStyle = '#16202c'; cx.fill(); cx.lineWidth = e === i ? 4 : 2; cx.strokeStyle = e === i ? col : 'rgba(255,255,255,.14)'; cx.stroke(); cx.restore()
+          cx.fillStyle = col; cx.fillRect(cxX, cy + 14, 5, 44)
+          cx.fillStyle = C.text; cx.font = F(800, 20); cx.textAlign = 'left'; cx.fillText(name, cxX + 18, cy + 32)
+          cx.fillStyle = C.soft; cx.font = F(600, 15); cx.fillText(e === i ? 'editing: only this file' : '~150 lines', cxX + 18, cy + 56)
+          cx.globalAlpha = 1
+        })
+      },
+    },
+  ],
+  rows: [['One job each', 'Split by responsibility, not by size.'], ['Compose', 'Build the player from components.'], ['Loose links', 'Components talk through interfaces or events.']],
+  question: ['How small is', 'too small? 👇'],
+})
+</script>

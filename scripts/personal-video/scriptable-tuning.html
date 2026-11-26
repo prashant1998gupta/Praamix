@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 27: hard-coded numbers vs live tuning in the Inspector with a ScriptableObject. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const BEGIN = 1.8
+const STEPS = ['Edit code', 'Recompile', 'Enter Play', 'Test jump']
+const CYCLE = 6.4 // one edit-compile-test loop, illustrative
+const VALUES = [2.5, 3.2, 2.8, 3.0]
+
+function jumper(cx, x, ground, height, ph, col) {
+  const y = ground - Math.max(0, Math.sin(ph * Math.PI)) * height * 34
+  cx.fillStyle = col; cx.beginPath(); cx.roundRect(x - 22, y - 60, 44, 60, 10); cx.fill()
+  cx.fillStyle = '#0b0e12'; cx.beginPath(); cx.arc(x - 8, y - 42, 4, 0, 7); cx.arc(x + 8, y - 42, 4, 0, 7); cx.fill()
+  cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(x - 90, ground); cx.lineTo(x + 90, ground); cx.stroke()
+}
+
+series({
+  day: 27, pillar: 'Workflow', duration: 30, takeawayAt: 21.6,
+  title: ['Stop hard-coding', 'your numbers'],
+  subtitle: 'Same task: find the right jump height.',
+  note: 'Timings illustrative',
+  lanes: [
+    {
+      title: 'Values in code', sub: 'Every tweak is an edit, a recompile and a new play session.', accent: '#ff4d5e',
+      readout: ['TWEAKS TRIED', ''],
+      draw(t, b, { cx, rr, C, F }) {
+        const T = b.top, n = t < BEGIN ? 0 : Math.floor((t - BEGIN) / CYCLE), local = t < BEGIN ? 0 : (t - BEGIN) % CYCLE
+        const step = Math.min(3, Math.floor(local / (CYCLE / 4)))
+        cx.fillStyle = C.red; cx.font = F(800, 26); cx.textAlign = 'left'; cx.fillText(String(n), 98, T + 183)
+        // code box
+        rr(80, T + 215, 470, 92, 14); cx.fillStyle = '#121925'; cx.fill()
+        cx.font = '600 22px Consolas, monospace'; cx.fillStyle = '#9aa4b2'; cx.fillText('// Player.cs', 100, T + 248)
+        const v = VALUES[n % VALUES.length].toFixed(1)
+        cx.fillStyle = C.text; cx.fillText(`float jumpHeight = `, 100, T + 284); cx.fillStyle = C.amber; cx.fillText(`${v}f;`, 100 + cx.measureText('float jumpHeight = ').width, T + 284)
+        // pipeline
+        STEPS.forEach((s, i) => {
+          const x = 80 + i * 118, y = T + 330, on = t >= BEGIN && i === step
+          rr(x, y, 108, 46, 12); cx.fillStyle = on ? C.red : 'rgba(255,255,255,.06)'; cx.fill()
+          cx.fillStyle = on ? '#0b0e12' : C.soft; cx.font = F(800, 15); cx.textAlign = 'center'; cx.fillText(s, x + 54, y + 29)
+        })
+        if (step === 1 && t >= BEGIN) { cx.strokeStyle = C.red; cx.lineWidth = 4; cx.beginPath(); cx.arc(316, T + 410, 16, t * 6, t * 6 + 4.5); cx.stroke(); cx.fillStyle = C.soft; cx.font = F(700, 16); cx.textAlign = 'left'; cx.fillText('waiting for Unity…', 342, T + 416) }
+        const ph = step === 3 ? ((local - CYCLE * 0.75) / (CYCLE / 4)) : 0
+        jumper(cx, 820, T + 430, Number(v), ph, C.red)
+        cx.textAlign = 'left'
+      },
+    },
+    {
+      title: 'Values in a ScriptableObject', sub: 'Drag a slider in the Inspector while the game runs.', accent: '#2fe39a',
+      readout: ['TWEAKS TRIED', ''],
+      draw(t, b, { cx, rr, C, F }) {
+        const T = b.top, live = Math.max(0, t - BEGIN)
+        const n = Math.floor(live / 0.9)
+        cx.fillStyle = C.green; cx.font = F(800, 26); cx.textAlign = 'left'; cx.fillText(String(n), 98, T + 183)
+        rr(80, T + 215, 470, 220, 16); cx.fillStyle = '#121925'; cx.fill()
+        cx.fillStyle = C.soft; cx.font = F(700, 16); cx.fillText('INSPECTOR · JumpSettings.asset', 100, T + 246)
+        const v = 2.6 + 0.6 * Math.sin(live * 1.2) + 0.15 * Math.sin(live * 3.1)
+        const rows = [['Jump Height', v, 1, 4], ['Gravity', 22 + 3 * Math.sin(live * 0.7), 10, 40], ['Coyote Time', 0.1, 0, 0.3]]
+        rows.forEach(([name, val, lo, hi], i) => {
+          const y = T + 285 + i * 52
+          cx.fillStyle = C.text; cx.font = F(700, 18); cx.fillText(name, 100, y + 6)
+          cx.fillStyle = 'rgba(255,255,255,.1)'; cx.fillRect(260, y - 2, 200, 6)
+          const kx = 260 + ((val - lo) / (hi - lo)) * 200
+          cx.fillStyle = i === 0 ? C.green : C.soft; cx.fillRect(260, y - 2, kx - 260, 6); cx.beginPath(); cx.arc(kx, y + 1, 10, 0, 7); cx.fill()
+          cx.fillStyle = C.text; cx.font = F(700, 16); cx.fillText(val.toFixed(name === 'Coyote Time' ? 2 : 1), 478, y + 6)
+        })
+        cx.fillStyle = C.green; cx.font = F(800, 15); cx.fillText('● PLAYING', 440, T + 246)
+        jumper(cx, 820, T + 430, v, (live * 1.1) % 1, C.green)
+      },
+    },
+  ],
+  rows: [['Expose', 'Move tuning values out of code into data.'], ['Tune live', 'Change them in the Inspector while playing.'], ['Share', 'Designers tune without touching scripts.']],
+  question: ['Designers in the Inspector:', 'yes or no? 👇'],
+})
+</script>

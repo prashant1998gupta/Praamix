@@ -67,7 +67,7 @@ function series(cfg) {
     if (k > 0) {
       cx.globalAlpha = k * 0.985; cx.fillStyle = '#05070b'; cx.fillRect(0, 0, W, H); cx.globalAlpha = k
       const y = 380 + (1 - k) * 40
-      cx.fillStyle = C.orange; cx.font = F(800, 24); cx.fillText('THE FIX, IN THREE LINES', 70, y)
+      cx.fillStyle = C.orange; cx.font = F(800, 24); cx.fillText(cfg.takeawayLabel || 'THE FIX, IN THREE LINES', 70, y)
       const cols = [C.green, C.amber, C.blue]
       cfg.rows.forEach(([a, b], i) => {
         const ry = y + 60 + i * 170

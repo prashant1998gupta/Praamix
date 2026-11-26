@@ -1,0 +1,90 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 26: pathfinding that looks robotic. Raw corner path vs smoothed path + steering. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+/* Offsets inside a lane: obstacles and the corner path a NavMesh query returns. */
+const WALLS = [[240, 205, 90, 150], [450, 320, 90, 145], [660, 205, 90, 150]]
+const CORNERS = [[110, 420], [225, 380], [345, 370], [440, 300], [555, 300], [650, 380], [765, 380], [940, 260]]
+const LOOP = 7.5, BEGIN = 1.6
+
+function chaikin(pts, n) {
+  for (let k = 0; k < n; k++) {
+    const out = [pts[0]]
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [ax, ay] = pts[i], [bx, by] = pts[i + 1]
+      out.push([ax * 0.75 + bx * 0.25, ay * 0.75 + by * 0.25], [ax * 0.25 + bx * 0.75, ay * 0.25 + by * 0.75])
+    }
+    out.push(pts[pts.length - 1]); pts = out
+  }
+  return pts
+}
+const SMOOTH = chaikin(CORNERS, 4)
+function along(pts, k) {
+  const seg = []; let total = 0
+  for (let i = 0; i < pts.length - 1; i++) { const l = Math.hypot(pts[i + 1][0] - pts[i][0], pts[i + 1][1] - pts[i][1]); seg.push(l); total += l }
+  let d = Math.max(0, Math.min(1, k)) * total
+  for (let i = 0; i < seg.length; i++) {
+    if (d <= seg[i] || i === seg.length - 1) {
+      const f = seg[i] ? Math.min(1, d / seg[i]) : 0, [ax, ay] = pts[i], [bx, by] = pts[i + 1]
+      return [ax + (bx - ax) * f, ay + (by - ay) * f, Math.atan2(by - ay, bx - ax)]
+    }
+    d -= seg[i]
+  }
+}
+const progress = (t) => (t < BEGIN ? 0 : ((t - BEGIN) % LOOP) / (LOOP - 1))
+
+function field(cx, b) {
+  cx.fillStyle = '#1b2330'
+  for (const [x, y, w, h] of WALLS) { cx.beginPath(); cx.roundRect(x, b.top + y, w, h, 10); cx.fill() }
+}
+function agent(cx, x, y, ang, col) {
+  cx.save(); cx.translate(x, y); cx.rotate(ang)
+  cx.beginPath(); cx.moveTo(26, 0); cx.lineTo(-16, -17); cx.lineTo(-8, 0); cx.lineTo(-16, 17); cx.closePath()
+  cx.fillStyle = col; cx.shadowColor = col; cx.shadowBlur = 16; cx.fill(); cx.restore()
+}
+function line(cx, pts, top, col, dash) {
+  cx.strokeStyle = col; cx.lineWidth = 3; cx.setLineDash(dash || [])
+  cx.beginPath(); pts.forEach(([x, y], i) => (i ? cx.lineTo(x, top + y) : cx.moveTo(x, top + y))); cx.stroke(); cx.setLineDash([])
+}
+
+let smoothAng = null
+series({
+  day: 26, pillar: 'AI', duration: 30, takeawayAt: 21.6,
+  title: ['Pathfinding that', 'looks robotic'],
+  subtitle: 'Same NavMesh, same path. Watch how the agent moves.',
+  note: 'Top-down view, simplified',
+  lanes: [
+    {
+      title: 'Raw corner-to-corner path', sub: 'Straight lines between corners, instant turns.', accent: '#ff4d5e',
+      readout: ['HOW IT MOVES', 'Zig-zag, snapping turns'],
+      draw(t, b, { cx, C, F }) {
+        field(cx, b); line(cx, CORNERS, b.top, 'rgba(255,77,94,.45)', [8, 8])
+        for (const [x, y] of CORNERS) { cx.beginPath(); cx.arc(x, b.top + y, 6, 0, 7); cx.fillStyle = C.red; cx.fill() }
+        const [x, y, a] = along(CORNERS, progress(t))
+        agent(cx, x, b.top + y, a, C.red)
+      },
+    },
+    {
+      title: 'Smoothed path + steering', sub: 'Round the corners, and turn the body gradually.', accent: '#2fe39a',
+      readout: ['HOW IT MOVES', 'Flowing, natural turns'],
+      draw(t, b, { cx, C }) {
+        field(cx, b); line(cx, CORNERS, b.top, 'rgba(255,255,255,.12)', [4, 8]); line(cx, SMOOTH, b.top, 'rgba(47,227,154,.55)')
+        const k = progress(t), [x, y] = along(SMOOTH, k), [x2, y2] = along(SMOOTH, Math.min(1, k + 0.02))
+        const want = Math.atan2(y2 - y, x2 - x)
+        if (smoothAng === null || k < 0.01) smoothAng = want
+        let d = want - smoothAng; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI
+        smoothAng += d * 0.18
+        agent(cx, x, b.top + y, smoothAng, C.green)
+      },
+    },
+  ],
+  rows: [['Smooth', 'Round off the corners of the raw path.'], ['Steer', 'Turn towards the path gradually, not instantly.'], ['Look ahead', 'Aim slightly ahead on the path, not at the next corner.']],
+  question: ['NavMesh or A*?', 'What do you reach for? 👇'],
+})
+</script>

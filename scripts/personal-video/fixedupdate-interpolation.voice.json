@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Why does your movement jitter, even at a high frame rate?" },
+  { "at": 3.4, "text": "Top: physics and frames don't tick together. Some frames it moves, some frames it doesn't." },
+  { "at": 10.6, "text": "Bottom: move the Rigidbody in FixedUpdate, and turn on Interpolate. Every frame, the same spacing." },
+  { "at": 17.4, "text": "Same speed. No jitter." },
+  { "at": 21.9, "text": "FixedUpdate. Interpolate. Input in Update." },
+  { "at": 25.4, "text": "Rigidbody, or CharacterController? Comment below." }
+]

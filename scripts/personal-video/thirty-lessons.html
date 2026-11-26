@@ -1,0 +1,118 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 30: a montage of the 29 lessons, filling a grid, then the month-two question. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+/* Day, short title, pillar colour, the lesson. Lessons are the first fix from each day's video. */
+const P = { net: '#4cc3ff', perf: '#ffb02e', phys: '#a78bfa', play: '#2fe39a', vr: '#ff6fb5', arch: '#f26b38', ai: '#ff4d5e', work: '#7fe3ff', stv: '#ffe14d' }
+const L = [
+  [1, 'Feels laggy', P.net, 'Predict: move the player the moment they press.'],
+  [2, 'Teleporting players', P.net, 'Render other players a little in the past.'],
+  [3, 'I shot him first', P.net, 'Rewind: check the shot where the shooter saw him.'],
+  [4, 'Too much data', P.net, 'Send only what changed since the last ack.'],
+  [5, 'Who owns physics', P.net, 'Clients send inputs, not positions.'],
+  [6, 'Frame spikes', P.perf, 'Pool it: create once, reuse forever.'],
+  [7, 'Update() cost', P.perf, 'Profile first. Centralise when it matters.'],
+  [8, 'Draw calls', P.perf, 'Share materials, batch, instance.'],
+  [9, 'GetComponent', P.perf, 'Look it up once, in Awake().'],
+  [10, 'Quest stutter', P.perf, 'Bake static lighting into lightmaps.'],
+  [11, 'Jitter', P.phys, 'Move Rigidbodies in FixedUpdate, interpolate.'],
+  [12, 'Bullets through walls', P.phys, 'Continuous collision for fast objects.'],
+  [13, 'Floaty jumps', P.phys, 'Coyote time and a faster fall.'],
+  [14, 'Bad input', P.play, 'Buffer the press, use it on landing.'],
+  [15, 'Sliding feet', P.play, 'Match animation speed to move speed.'],
+  [16, 'Sick camera', P.play, 'Damp it and look ahead.'],
+  [17, 'Hands in tables', P.vr, 'Drive the hand with physics forces.'],
+  [18, 'Locomotion', P.vr, 'Offer both. Let players choose.'],
+  [19, 'Grabbing', P.vr, 'Grab at the point you touched.'],
+  [20, 'Motion sickness', P.vr, 'Snap turn and a comfort vignette.'],
+  [21, 'Singletons', P.arch, 'Raise events. Keep singletons rare.'],
+  [22, 'God class', P.arch, 'One job per component.'],
+  [23, 'If/else soup', P.arch, 'One state at a time, clear transitions.'],
+  [24, 'Save data', P.arch, 'One save model, one writer, versioned.'],
+  [25, 'Enemy blobs', P.ai, 'Give the player a ring of attack slots.'],
+  [26, 'Robotic paths', P.ai, 'Smooth the path, steer gradually.'],
+  [27, 'Magic numbers', P.work, 'Move tuning values into data.'],
+  [28, 'Slow testing', P.work, 'A debug scene that starts at the feature.'],
+  [29, 'The Ice Gun', P.stv, 'Freeze, slow, cuff: a non-lethal arrest.'],
+]
+const START = 2.6, EACH = 0.66, END = START + L.length * EACH // ~21.7 s
+const DUR = 30
+const cx = document.getElementById('c').getContext('2d')
+const rr = (x, y, w, h, r) => { cx.beginPath(); cx.roundRect(x, y, w, h, r) }
+
+function draw(t) {
+  cx.fillStyle = C.bg; cx.fillRect(0, 0, 1080, 1350)
+  const g = cx.createRadialGradient(900, 0, 0, 900, 0, 900); g.addColorStop(0, 'rgba(242,107,56,.16)'); g.addColorStop(1, 'rgba(242,107,56,0)')
+  cx.fillStyle = g; cx.fillRect(0, 0, 1080, 1350)
+
+  cx.textAlign = 'left'; cx.globalAlpha = fade(t, 0, 0.6)
+  cx.fillStyle = C.orange; cx.font = F(800, 22); cx.fillText('GAME DEV IN 30 DAYS · DAY 30', 56, 78)
+  cx.fillStyle = C.text; cx.font = F(800, 64); cx.fillText('30 days.', 56, 152); cx.fillText('30 lessons', 56, 222)
+  cx.fillStyle = C.orange; cx.fillText('.', 56 + cx.measureText('30 lessons').width, 222)
+  cx.globalAlpha = 1
+
+  // the current lesson, big
+  const i = Math.floor((t - START) / EACH)
+  const cardY = 270
+  if (t >= START && t < END) {
+    const [d, title, col, lesson] = L[i]
+    const k = fade(t, START + i * EACH, 0.18)
+    cx.globalAlpha = k
+    rr(56, cardY + (1 - k) * 16, 968, 230, 30); cx.fillStyle = '#121925'; cx.fill()
+    cx.fillStyle = col; cx.fillRect(56, cardY + (1 - k) * 16, 12, 230)
+    cx.fillStyle = col; cx.font = F(800, 26); cx.fillText(`DAY ${String(d).padStart(2, '0')} · ${title.toUpperCase()}`, 96, cardY + 62 + (1 - k) * 16)
+    cx.fillStyle = C.text; cx.font = F(800, 46)
+    const words = lesson.split(' '); let line = '', y = cardY + 130 + (1 - k) * 16
+    for (const w of words) { const test = line ? line + ' ' + w : w; if (cx.measureText(test).width > 890 && line) { cx.fillText(line, 96, y); line = w; y += 56 } else line = test }
+    cx.fillText(line, 96, y)
+    cx.globalAlpha = 1
+  }
+  if (t >= END) {
+    const k = fade(t, END, 0.5)
+    cx.globalAlpha = k
+    rr(56, cardY, 968, 230, 30); cx.fillStyle = '#121925'; cx.fill()
+    cx.fillStyle = C.text; cx.font = F(800, 44); cx.fillText('What should month two cover?', 96, cardY + 100)
+    cx.fillStyle = C.soft; cx.font = F(600, 30); cx.fillText('Pick a topic in the comments 👇', 96, cardY + 160)
+    cx.globalAlpha = 1
+  }
+
+  // the grid fills up as the lessons pass
+  const gx = 56, gy = 540, cols = 6, tw = 152, th = 118, gap = 11.2
+  for (let n = 0; n < 30; n++) {
+    const x = gx + (n % cols) * (tw + gap), y = gy + Math.floor(n / cols) * (th + gap)
+    const shown = n < L.length ? t >= START + n * EACH : t >= END + 0.6
+    const k = n < L.length ? fade(t, START + n * EACH, 0.25) : fade(t, END + 0.6, 0.5)
+    rr(x, y, tw, th, 18); cx.fillStyle = 'rgba(255,255,255,.035)'; cx.fill()
+    if (!shown) continue
+    cx.globalAlpha = k
+    const isNow = n === i && t < END
+    rr(x, y, tw, th, 18); cx.fillStyle = n < L.length ? (isNow ? L[n][2] : '#141b26') : C.orange; cx.fill()
+    cx.fillStyle = n < L.length ? (isNow ? '#0b0e12' : L[n][2]) : '#0b0e12'
+    cx.font = F(800, 30); cx.fillText(String(n + 1).padStart(2, '0'), x + 16, y + 44)
+    cx.fillStyle = n < L.length ? (isNow ? '#0b0e12' : C.soft) : '#0b0e12'; cx.font = F(700, 16)
+    const label = n < L.length ? L[n][1] : 'You, next'
+    const parts = label.split(' '); let line = '', ly = y + 76
+    for (const w of parts) { const test = line ? line + ' ' + w : w; if (cx.measureText(test).width > tw - 28 && line) { cx.fillText(line, x + 16, ly); line = w; ly += 20 } else line = test }
+    cx.fillText(line, x + 16, ly)
+    cx.globalAlpha = 1
+  }
+
+  cx.textAlign = 'left'; cx.fillStyle = C.text; cx.font = F(800, 22); cx.fillText('Prashant Gupta', 56, 1290)
+  cx.fillStyle = C.soft; cx.font = F(600, 18); cx.fillText('Founder, Praamix · Unity & multiplayer', 56, 1316)
+  cx.fillStyle = 'rgba(244,246,248,.45)'; cx.textAlign = 'right'; cx.fillText('All 30 on my profile', 1024, 1290); cx.textAlign = 'left'
+}
+
+window.draw = draw
+window.DURATION = DUR
+if (!new URLSearchParams(location.search).has('render')) {
+  const t0 = performance.now()
+  const loop = () => { draw(((performance.now() - t0) / 1000) % DUR); requestAnimationFrame(loop) }
+  document.fonts.ready.then(loop)
+}
+</script>

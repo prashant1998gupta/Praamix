@@ -1,0 +1,26 @@
+[
+  {
+    "at": 0.3,
+    "text": "Is your character jumping and attacking at the same time?"
+  },
+  {
+    "at": 3.4,
+    "text": "Top: a pile of booleans and if-else checks. One flag gets stuck, and the bugs get weird."
+  },
+  {
+    "at": 10.6,
+    "text": "Bottom: a state machine. Exactly one state at a time, with clear transitions."
+  },
+  {
+    "at": 17.4,
+    "text": "You can read it like a map."
+  },
+  {
+    "at": 21.7,
+    "text": "One state. Clear transitions. Enter and exit."
+  },
+  {
+    "at": 25.4,
+    "text": "FSM or behaviour tree for enemy AI? Comment below."
+  }
+]

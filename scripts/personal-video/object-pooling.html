@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 06: the frame spike nobody can find. Instantiate/Destroy vs an object pool. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const RATE = 0.22, LIFE = 1.1, GC_EVERY = 4.2
+const shots = (t) => { const out = []; for (let s = 1.4; s <= t; s += RATE) out.push(s); return out }
+
+/* Illustrative frame time (ms) at time s. */
+function frameMs(s, pooled) {
+  const base = 9 + 1.2 * Math.sin(s * 9) + 0.6 * Math.sin(s * 23)
+  if (pooled || s < 1.4) return base
+  const into = (s - 1.4) % GC_EVERY
+  return base + (into < 0.12 ? 22 : 0) + 1.5 * (into / GC_EVERY)
+}
+
+function scene(t, box, tools, pooled) {
+  const { cx, C, F, rr } = tools
+  const gy = box.top + 270
+  // gun
+  rr(90, gy - 16, 70, 32, 8); cx.fillStyle = '#9aa4b2'; cx.fill(); rr(150, gy - 8, 40, 16, 4); cx.fill()
+  // pool rack
+  if (pooled) {
+    cx.fillStyle = C.soft; cx.font = F(700, 13); cx.textAlign = 'left'; cx.fillText('POOL', 92, box.top + 330)
+    const busy = shots(t).filter((s) => t - s < LIFE).length
+    for (let i = 0; i < 8; i++) { cx.beginPath(); cx.arc(100 + i * 16, box.top + 346, 6, 0, 7); cx.fillStyle = i < 8 - busy ? C.green : 'rgba(255,255,255,.12)'; cx.fill() }
+  }
+  for (const s of shots(t)) {
+    const d = t - s
+    if (d > LIFE + 0.3) continue
+    const x = 200 + d * 640
+    if (d <= LIFE) {
+      cx.beginPath(); cx.arc(x, gy, 8, 0, 7); cx.fillStyle = pooled ? C.green : C.amber; cx.fill()
+      if (d < 0.15 && !pooled) { cx.fillStyle = C.red; cx.font = F(800, 13); cx.textAlign = 'center'; cx.fillText('new', 205, gy - 22) }
+    } else if (!pooled) {
+      const k = (d - LIFE) / 0.3
+      cx.globalAlpha = 1 - k; cx.strokeStyle = C.red; cx.lineWidth = 2
+      cx.beginPath(); cx.arc(200 + LIFE * 640, gy, 8 + k * 18, 0, 7); cx.stroke(); cx.globalAlpha = 1
+    }
+  }
+  if (!pooled) { cx.fillStyle = 'rgba(255,77,94,.8)'; cx.font = F(700, 14); cx.textAlign = 'center'; cx.fillText('Destroy → garbage', 200 + LIFE * 640, gy + 40) }
+  else { cx.fillStyle = 'rgba(47,227,154,.8)'; cx.font = F(700, 14); cx.textAlign = 'center'; cx.fillText('back to the pool', 200 + LIFE * 640, gy + 40) }
+
+  // frame-time graph, last 5 seconds
+  const gx0 = 470, gx1 = 990, gTop = box.top + 335, gBot = box.top + 450, budget = 16.7
+  const ms2y = (ms) => gBot - Math.min(ms, 34) / 34 * (gBot - gTop)
+  cx.fillStyle = C.soft; cx.font = F(700, 13); cx.textAlign = 'left'; cx.fillText('FRAME TIME', gx0, gTop - 8)
+  for (let i = 0; i < 52; i++) {
+    const s = t - (51 - i) * 0.1, ms = frameMs(s, pooled), x = gx0 + i * 10
+    cx.fillStyle = ms > budget ? C.red : pooled ? C.green : 'rgba(255,255,255,.35)'
+    cx.fillRect(x, ms2y(ms), 7, gBot - ms2y(ms))
+  }
+  cx.strokeStyle = 'rgba(255,255,255,.5)'; cx.setLineDash([4, 4]); cx.beginPath(); cx.moveTo(gx0, ms2y(budget)); cx.lineTo(gx1, ms2y(budget)); cx.stroke(); cx.setLineDash([])
+  cx.fillStyle = 'rgba(255,255,255,.6)'; cx.textAlign = 'right'; cx.fillText('60 fps budget', gx1, ms2y(budget) - 6)
+  if (!pooled && t > 1.4 && (t - 1.4) % GC_EVERY < 0.9) { cx.fillStyle = C.red; cx.font = F(800, 20); cx.textAlign = 'left'; cx.fillText('GC spike!', gx0 + 110, gTop - 6) }
+  cx.textAlign = 'left'
+}
+
+series({
+  day: 6, pillar: 'Performance', duration: 30, takeawayAt: 21.6,
+  title: ['The frame spike', 'nobody can find'],
+  subtitle: 'Same gun, same fire rate. Watch the frame time.',
+  note: 'Illustrative frame times',
+  lanes: [
+    { title: 'Instantiate + Destroy', sub: 'A new bullet every shot. Garbage piles up.', accent: '#ff4d5e',
+      readout: ['EVERY SHOT', 'new + Destroy'], draw(t, box, tools) { scene(t, box, tools, false) } },
+    { title: 'Object pool', sub: 'Make the bullets once. Reuse them forever.', accent: '#2fe39a',
+      readout: ['EVERY SHOT', 'Reuse from the pool'], draw(t, box, tools) { scene(t, box, tools, true) } },
+  ],
+  rows: [['Pre-warm', 'Create the bullets once, while loading.'], ['Reuse', 'Take from the pool, return when done.'], ['Profile', 'Watch GC Alloc in the Unity Profiler.']],
+  question: ['Do you pool everything,', 'or only hot paths? 👇'],
+})
+</script>

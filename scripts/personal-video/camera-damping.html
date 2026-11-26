@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 16: a camera that makes people sick. Hard-locked follow vs damped follow with look-ahead. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const DT = 1 / 120, N = Math.ceil(31 / DT)
+/* The player: runs, stops, turns back, with small twitchy corrections. */
+const playerX = (t) => 160 * t + 260 * Math.sin(t * 0.9) + 14 * Math.sin(t * 11) + 8 * Math.sin(t * 17.3)
+const playerV = (t) => (playerX(t + 0.01) - playerX(t - 0.01)) / 0.02
+
+/* Locked camera = player. Damped camera = critically damped spring toward a look-ahead target. */
+const camLock = new Float64Array(N), camSoft = new Float64Array(N), lead = new Float64Array(N)
+let x = playerX(0), v = 0, ahead = 0
+for (let i = 0; i < N; i++) {
+  const t = i * DT
+  camLock[i] = playerX(t)
+  const pv = playerV(t)
+  const wantAhead = Math.max(-140, Math.min(140, pv * 0.45))
+  ahead += (wantAhead - ahead) * Math.min(1, DT * 2.2)
+  const target = playerX(t) + ahead
+  const w = 3.2, a = w * w * (target - x) - 2 * w * v
+  v += a * DT; x += v * DT
+  camSoft[i] = x; lead[i] = ahead
+}
+const at = (arr, t) => arr[Math.min(N - 1, Math.max(0, Math.round(t / DT)))]
+
+function view(t, box, tools, soft) {
+  const { cx, C, F } = tools
+  const accent = soft ? C.green : C.red
+  const top = box.top + 205, bottom = box.top + 380, cxw = 540
+  const cam = at(soft ? camSoft : camLock, t)
+  // the "screen"
+  tools.rr(90, top, 900, bottom - top, 18); cx.fillStyle = '#0a1018'; cx.fill()
+  cx.save(); tools.rr(90, top, 900, bottom - top, 18); cx.clip()
+  // world: hills, posts and a ground line, drawn relative to the camera
+  for (let wx = Math.floor((cam - 600) / 90) * 90; wx < cam + 600; wx += 90) {
+    const sx = cxw + (wx - cam)
+    const hgt = 30 + ((Math.abs(wx) / 90) % 4) * 14
+    cx.fillStyle = 'rgba(76,195,255,.10)'; cx.fillRect(sx - 18, bottom - 30 - hgt * 1.8, 36, hgt * 1.8)
+    cx.fillStyle = 'rgba(255,255,255,.22)'; cx.fillRect(sx - 2, bottom - 54, 4, 24)
+  }
+  cx.fillStyle = 'rgba(255,255,255,.16)'; cx.fillRect(90, bottom - 30, 900, 3)
+  const px = cxw + (playerX(t) - cam)
+  figure(cx, px, bottom - 30, accent, t, 1, Math.abs(playerV(t)) > 30, 0.75)
+  // centre guide
+  cx.setLineDash([6, 8]); cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 2
+  cx.beginPath(); cx.moveTo(cxw, top + 8); cx.lineTo(cxw, bottom - 8); cx.stroke(); cx.setLineDash([])
+  if (soft) {
+    const l = at(lead, t)
+    if (Math.abs(l) > 40) { cx.fillStyle = C.green; cx.font = F(700, 15); cx.textAlign = 'center'; cx.fillText(l > 0 ? 'room ahead →' : '← room ahead', cxw + Math.sign(l) * 170, top + 26) }
+  }
+  cx.restore()
+
+  // camera speed graph: the last 4 seconds
+  const gy = box.top + 430, gh = 26
+  cx.strokeStyle = 'rgba(255,255,255,.1)'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(90, gy); cx.lineTo(990, gy); cx.stroke()
+  cx.strokeStyle = accent; cx.lineWidth = 2.5; cx.beginPath()
+  for (let i = 0; i <= 180; i++) {
+    const s = t - 4 + i * (4 / 180)
+    const sp = (at(soft ? camSoft : camLock, s + 0.02) - at(soft ? camSoft : camLock, s - 0.02)) / 0.04
+    const y = gy - Math.max(-gh, Math.min(gh, sp / 18))
+    const x2 = 90 + i * 5
+    if (i === 0) cx.moveTo(x2, y); else cx.lineTo(x2, y)
+  }
+  cx.stroke()
+  cx.fillStyle = C.soft; cx.font = F(700, 14); cx.textAlign = 'left'; cx.fillText('camera speed', 90, gy + gh + 18)
+  cx.textAlign = 'left'
+}
+
+series({
+  day: 16, pillar: 'Gameplay', duration: 30, takeawayAt: 21.6,
+  title: ['The camera that makes', 'players sick'],
+  subtitle: 'Same player, same twitchy movement. Two cameras.',
+  note: 'Illustrative',
+  lanes: [
+    {
+      title: 'Hard-locked follow', sub: 'Every twitch of the player shakes the whole screen.', accent: '#ff4d5e',
+      readout: ['CAMERA', 'Locked to the player'],
+      draw(t, box, tools) { view(t, box, tools, false) },
+    },
+    {
+      title: 'Damped follow + look-ahead', sub: 'Eases after the player and leaves room ahead.', accent: '#2fe39a',
+      readout: ['CAMERA', 'Smooth, looks ahead'],
+      draw(t, box, tools) { view(t, box, tools, true) },
+    },
+  ],
+  rows: [['Damp', 'Ease the camera toward its target, never snap.'], ['Look ahead', 'Lead in the direction the player is moving.'], ['Dead zone', 'Ignore tiny movements near the centre.']],
+  question: ['Cinemachine, or your own', 'camera script? 👇'],
+})
+</script>

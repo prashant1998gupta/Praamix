@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 05: who owns the physics? Client authority vs server authority. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const X0 = 150, WALL = 640, FLAG = 900
+const CHEATS = [5.0, 11.0, 17.0]
+/* Normal running: back and forth on the near side of the wall. */
+const run = (t) => 300 + 170 * Math.sin(t * 1.1)
+
+function scene(t, box, tools, server) {
+  const { cx, C, F, rr } = tools
+  const g = box.top + 400
+  cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3
+  cx.beginPath(); cx.moveTo(90, g); cx.lineTo(990, g); cx.stroke()
+  // wall
+  rr(WALL - 14, g - 190, 28, 190, 6); cx.fillStyle = '#3a4352'; cx.fill()
+  cx.fillStyle = C.soft; cx.font = F(700, 14); cx.textAlign = 'center'; cx.fillText('WALL', WALL, g + 24)
+  // flag
+  cx.strokeStyle = C.text; cx.lineWidth = 4; cx.beginPath(); cx.moveTo(FLAG, g); cx.lineTo(FLAG, g - 150); cx.stroke()
+  cx.beginPath(); cx.moveTo(FLAG, g - 150); cx.lineTo(FLAG + 54, g - 132); cx.lineTo(FLAG, g - 114); cx.fillStyle = C.amber; cx.fill()
+  cx.fillStyle = C.soft; cx.font = F(700, 14); cx.fillText('GOAL', FLAG, g + 24)
+
+  let x = run(t), label = null, labelCol = null, ghost = null
+  for (const c of CHEATS) {
+    const d = t - c
+    if (d < 0 || d > 3) continue
+    if (!server) {
+      if (d < 2.4) x = FLAG - 40
+      if (d < 1.8) { label = 'TELEPORT ACCEPTED'; labelCol = C.red }
+      if (d < 0.25) { cx.strokeStyle = 'rgba(255,77,94,.7)'; cx.lineWidth = 3; cx.setLineDash([6, 6]); cx.beginPath(); cx.moveTo(run(c), g - 80); cx.lineTo(FLAG - 40, g - 80); cx.stroke(); cx.setLineDash([]) }
+    } else {
+      if (d < 1.2) ghost = FLAG - 40
+      if (d < 1.8) { label = d < 0.5 ? 'CLIENT: "I\'m at the goal"' : 'REJECTED: too fast, through a wall'; labelCol = d < 0.5 ? C.soft : C.green }
+    }
+  }
+  if (ghost) { figure(cx, ghost, g, C.red, t, 0.3, false, 1.1); cx.strokeStyle = C.red; cx.lineWidth = 5; cx.beginPath(); cx.moveTo(ghost - 30, g - 170); cx.lineTo(ghost + 30, g - 110); cx.moveTo(ghost + 30, g - 170); cx.lineTo(ghost - 30, g - 110); cx.stroke() }
+  const moving = Math.abs(run(t + 0.03) - run(t)) > 0.5 && x === run(t)
+  figure(cx, x, g, server ? C.green : C.red, t, 1, moving, 1.1)
+  if (label) { cx.fillStyle = labelCol; cx.font = F(800, 26); cx.textAlign = 'center'; cx.fillText(label, 540, box.top + 240) }
+  cx.textAlign = 'left'
+}
+
+series({
+  day: 5, pillar: 'Multiplayer', duration: 30, takeawayAt: 21.6,
+  title: ['Who owns the', 'physics'],
+  subtitle: 'A cheater edits their position. What does the game do?',
+  note: 'Simplified to show who decides',
+  lanes: [
+    { title: 'Client authority', sub: 'The client says where it is. Everyone believes it.', accent: '#ff4d5e',
+      readout: ['WHO DECIDES', 'The client'], draw(t, box, tools) { scene(t, box, tools, false) } },
+    { title: 'Server authority', sub: 'The client sends inputs. The server moves the player.', accent: '#2fe39a',
+      readout: ['WHO DECIDES', 'The server'], draw(t, box, tools) { scene(t, box, tools, true) } },
+  ],
+  rows: [['Inputs', 'Clients send inputs, not positions.'], ['Simulate', 'The server runs the real movement.'], ['Validate', 'Reject anything physically impossible.']],
+  question: ['Is client authority', 'ever OK? 👇'],
+})
+</script>

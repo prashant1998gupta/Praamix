@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 08: draw calls, visualised. One per object vs batched / instanced. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const COLS = 12, ROWS = 3, N = COLS * ROWS, CYCLE = 4.4
+const TINTS = ['#c98b52', '#b87a45', '#d89a5e', '#a86d3c', '#c4844c', '#e0a86a']
+
+function crate(cx, x, y, s, col, lit) {
+  cx.fillStyle = col; cx.fillRect(x, y, s, s)
+  cx.strokeStyle = 'rgba(0,0,0,.35)'; cx.lineWidth = 3; cx.strokeRect(x + 2, y + 2, s - 4, s - 4)
+  cx.beginPath(); cx.moveTo(x + 4, y + 4); cx.lineTo(x + s - 4, y + s - 4); cx.moveTo(x + s - 4, y + 4); cx.lineTo(x + 4, y + s - 4); cx.stroke()
+  if (!lit) { cx.fillStyle = 'rgba(7,10,15,.8)'; cx.fillRect(x, y, s, s) }
+}
+
+function scene(t, box, tools, batched) {
+  const { cx, C, F, rr } = tools
+  // CPU and GPU
+  const cy = box.top + 330
+  for (const [x, label] of [[110, 'CPU'], [330, 'GPU']]) {
+    rr(x - 48, cy - 38, 96, 76, 14); cx.fillStyle = '#18202b'; cx.fill(); cx.strokeStyle = 'rgba(255,255,255,.2)'; cx.lineWidth = 2; cx.stroke()
+    cx.fillStyle = C.soft; cx.font = F(800, 16); cx.textAlign = 'center'; cx.fillText(label, x, cy + 6)
+  }
+  const k = t < 1.4 ? -1 : ((t - 1.4) % CYCLE) / CYCLE
+  const drawn = batched ? (k >= 0.03 ? N : 0) : Math.max(0, Math.floor(k * 1.15 * N))
+  const calls = batched ? (drawn ? 1 : 0) : Math.min(drawn, N)
+  // command arrows
+  const pulse = batched ? (k > 0.0 && k < 0.12) : (k >= 0 && drawn < N && (t * 8) % 1 < 0.5)
+  cx.strokeStyle = pulse ? (batched ? C.green : C.red) : 'rgba(255,255,255,.15)'; cx.lineWidth = batched ? 10 : 3
+  cx.beginPath(); cx.moveTo(158, cy); cx.lineTo(282, cy); cx.stroke()
+  cx.fillStyle = C.soft; cx.font = F(700, 13); cx.fillText(batched ? 'one batch' : 'one call each', 220, cy - 14)
+  // crates
+  const s = 44, gx = 430, gy = box.top + 225
+  for (let i = 0; i < N; i++) {
+    const x = gx + (i % COLS) * (s + 4), y = gy + Math.floor(i / COLS) * (s + 4)
+    crate(cx, x, y, s, batched ? TINTS[0] : TINTS[i % TINTS.length], i < drawn)
+  }
+  // counter
+  cx.textAlign = 'left'; cx.fillStyle = C.soft; cx.font = F(700, 15); cx.fillText('DRAW CALLS THIS FRAME', 430, box.top + 405)
+  cx.fillStyle = batched ? C.green : C.red; cx.font = F(800, 40); cx.fillText(String(calls), 430, box.top + 448)
+  cx.fillStyle = C.soft; cx.font = F(600, 16)
+  cx.fillText(batched ? 'same material, drawn together' : 'a different material on every crate', 500, box.top + 444)
+}
+
+series({
+  day: 8, pillar: 'Performance', duration: 30, takeawayAt: 21.6,
+  title: ['Draw calls,', 'visualised'],
+  subtitle: '36 crates. Watch how many times the CPU talks to the GPU.',
+  note: 'Simplified: real counts depend on the render pipeline',
+  lanes: [
+    { title: 'One call per object', sub: 'Every crate has its own material, so each is drawn alone.', accent: '#ff4d5e',
+      readout: ['CPU WORK', 'Set up 36 draws'], draw(t, box, tools) { scene(t, box, tools, false) } },
+    { title: 'Batched / instanced', sub: 'Shared material and mesh: drawn in one go.', accent: '#2fe39a',
+      readout: ['CPU WORK', 'Set up one draw'], draw(t, box, tools) { scene(t, box, tools, true) } },
+  ],
+  rows: [['Share', 'Fewer materials: use texture atlases.'], ['Batch', 'Static batching or the SRP Batcher.'], ['Instance', 'GPU instancing for repeated meshes.']],
+  question: ['SRP Batcher or static', 'batching? 👇'],
+})
+</script>

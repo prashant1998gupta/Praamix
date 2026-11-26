@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "I pressed jump! Why did I fall?" },
+  { "at": 3.4, "text": "Top: the player presses a split second after the ledge. Off the ground means no jump." },
+  { "at": 10.6, "text": "Bottom: coyote time gives a tiny grace period, and faster falling makes it snappy." },
+  { "at": 17.4, "text": "Same press. They made it." },
+  { "at": 21.9, "text": "Coyote time. Fall faster. Cut it short." },
+  { "at": 25.4, "text": "Is coyote time a cheat, or just good design? Comment below." }
+]

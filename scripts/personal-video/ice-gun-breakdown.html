@@ -1,0 +1,100 @@
+<!doctype html>
+<meta charset="utf-8">
+<!--
+  Day 29: behind the scenes, how the Ice Gun works in Sheriff Town VR.
+  Facts only from src/content/devlog.ts and src/content/game.ts.
+-->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const gun = new Image()
+gun.src = '../../media-source/game/cutouts/gun-ice.png'
+const BEGIN = 2.0, CYCLE = 9.6
+const ICE = '#7fe3ff'
+
+/* How frozen the person is, 0 to 1, within one cycle. */
+function freeze(local) { return Math.max(0, Math.min(1, (local - 0.6) / 3.2)) }
+
+function shell(cx, x, ground, k, cracked) {
+  if (k <= 0) return
+  const h = 190 * k
+  cx.save()
+  cx.beginPath(); cx.roundRect(x - 52, ground - h, 104, h, 18)
+  const g = cx.createLinearGradient(0, ground - h, 0, ground)
+  g.addColorStop(0, 'rgba(127,227,255,.35)'); g.addColorStop(1, 'rgba(127,227,255,.65)')
+  cx.fillStyle = g; cx.fill(); cx.strokeStyle = ICE; cx.lineWidth = 3; cx.stroke()
+  if (cracked) {
+    cx.strokeStyle = 'rgba(255,255,255,.75)'; cx.lineWidth = 2
+    cx.beginPath(); cx.moveTo(x - 30, ground - h + 20); cx.lineTo(x - 8, ground - h + 70); cx.lineTo(x - 26, ground - h + 110); cx.moveTo(x + 24, ground - 40); cx.lineTo(x + 10, ground - 90); cx.lineTo(x + 34, ground - 120); cx.stroke()
+  }
+  cx.restore()
+}
+function drawGun(cx, x, y, w) {
+  if (gun.complete && gun.naturalWidth) { const h = w * gun.naturalHeight / gun.naturalWidth; cx.drawImage(gun, x, y - h / 2, w, h) }
+}
+
+series({
+  takeawayLabel: 'HOW IT WORKS, IN THREE LINES',
+  day: 29, pillar: 'Sheriff Town VR', duration: 30, takeawayAt: 21.6,
+  title: ['How we built', 'the Ice Gun'],
+  subtitle: 'Behind the scenes of our VR game, Sheriff Town VR.',
+  note: 'Gun: in-engine render · Sheriff Town VR, in development',
+  lanes: [
+    {
+      title: 'The frost beam', sub: 'Hold it on someone and the ice creeps up from their feet.', accent: '#4cc3ff',
+      readout: ['WHAT THE BEAM DOES', 'Slows them, then freezes'],
+      draw(t, b, { cx, C, F }) {
+        const T = b.top, ground = T + 440
+        cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(90, ground); cx.lineTo(990, ground); cx.stroke()
+        const local = t < BEGIN ? 0 : (t - BEGIN) % CYCLE, k = freeze(local)
+        // the walker slows as the ice rises
+        const speed = 1 - k
+        const x = 650 + (1 - k) * 70 * Math.sin(t * 1.3)
+        drawGun(cx, 90, T + 345, 210)
+        cx.font = F(700, 14); cx.fillStyle = C.soft; cx.textAlign = 'left'; cx.fillText('In-engine render', 110, T + 448)
+        if (local > 0.4 && local < 6.5) {
+          const flick = 0.75 + 0.25 * Math.sin(t * 40)
+          cx.strokeStyle = `rgba(127,227,255,${0.6 * flick})`; cx.lineWidth = 10; cx.lineCap = 'round'
+          cx.shadowColor = ICE; cx.shadowBlur = 24; cx.beginPath(); cx.moveTo(300, T + 330); cx.lineTo(x - 30, ground - 90); cx.stroke(); cx.shadowBlur = 0
+        }
+        figure(cx, x, ground, k > 0.98 ? '#bfefff' : C.text, speed > 0.1 ? t : 0.06, 1, true, 1.25)
+        shell(cx, x, ground, k, k > 0.98)
+        cx.textAlign = 'center'; cx.font = F(800, 20)
+        const label = k <= 0 ? 'walking' : k < 0.98 ? 'slowing down…' : 'a statue in a cracked shell'
+        cx.fillStyle = k < 0.98 ? C.soft : ICE; cx.fillText(label, x, ground - 230)
+      },
+    },
+    {
+      title: 'The arrest', sub: 'A statue can be cuffed. No one gets hurt.', accent: '#2fe39a',
+      readout: ['WHAT YOU DO NEXT', 'Cuff the statue'],
+      draw(t, b, { cx, C, F }) {
+        const T = b.top, ground = T + 440, x = 560
+        cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(90, ground); cx.lineTo(990, ground); cx.stroke()
+        const local = t < BEGIN ? 0 : (t - BEGIN) % CYCLE, k = freeze(local)
+        figure(cx, x, ground, k > 0.98 ? '#bfefff' : C.text, 0.06, 1, true, 1.25)
+        shell(cx, x, ground, k, k > 0.98)
+        // cuffs fly in once frozen
+        const c = Math.max(0, Math.min(1, (local - 4.4) / 0.9))
+        if (c > 0) {
+          const cxp = 860 + (x - 860) * c, cyp = ground - 300 + (ground - 100 - (ground - 300)) * c
+          cx.strokeStyle = C.amber; cx.lineWidth = 6
+          cx.beginPath(); cx.arc(cxp - 14, cyp, 13, 0, 7); cx.stroke(); cx.beginPath(); cx.arc(cxp + 14, cyp, 13, 0, 7); cx.stroke()
+          cx.beginPath(); cx.moveTo(cxp - 2, cyp); cx.lineTo(cxp + 2, cyp); cx.stroke()
+        }
+        if (local > 5.5) {
+          cx.globalAlpha = Math.min(1, (local - 5.5) * 3)
+          cx.fillStyle = C.green; cx.font = F(800, 30); cx.textAlign = 'left'; cx.fillText('Cuffed ✓', 680, ground - 140)
+          cx.fillStyle = C.soft; cx.font = F(600, 20); cx.fillText('A very non-lethal arrest.', 680, ground - 106)
+          cx.globalAlpha = 1
+        }
+      },
+    },
+  ],
+  rows: [['Freeze', 'Hold the frost beam: the ice creeps up from the feet.'], ['Slow', 'They slow down, then stand frozen in a cracked shell.'], ['Cuff', 'A statue can be cuffed: a non-lethal arrest.']],
+  question: ['Which tool gun should we', 'break down next? 👇'],
+})
+</script>

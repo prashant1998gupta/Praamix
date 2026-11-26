@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 25: enemies that all bunch up. Straight chase vs slots around the player. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+window.__fadeA = 1
+const N = 6
+const STARTS = [[120, 230], [150, 440], [330, 215], [960, 225], [980, 450], [700, 455]]
+const CYCLE = 9, BEGIN = 2.4
+const player = (b, t) => [560 + 120 * Math.sin(t * 0.45), b.top + 335 + 30 * Math.sin(t * 0.8)]
+
+function arena(cx, b) {
+  cx.strokeStyle = 'rgba(255,255,255,.06)'; cx.lineWidth = 2
+  for (let x = 80; x < 1000; x += 60) { cx.beginPath(); cx.moveTo(x, b.top + 205); cx.lineTo(x, b.top + 465); cx.stroke() }
+}
+function enemy(cx, x, y, col, a = 1) {
+  cx.globalAlpha = a * window.__fadeA; cx.beginPath(); cx.arc(x, y, 24, 0, 7); cx.fillStyle = col; cx.fill()
+  cx.fillStyle = '#0b0e12'; cx.beginPath(); cx.arc(x - 8, y - 4, 4, 0, 7); cx.arc(x + 8, y - 4, 4, 0, 7); cx.fill(); cx.globalAlpha = 1
+}
+function hero(cx, C, F, x, y) {
+  cx.beginPath(); cx.arc(x, y, 28, 0, 7); cx.fillStyle = C.blue; cx.fill()
+  cx.fillStyle = C.text; cx.font = F(800, 15); cx.textAlign = 'center'; cx.fillText('YOU', x, y + 5)
+}
+function progress(t) {
+  window.__fadeA = 1
+  if (t < BEGIN) return [0, 0]
+  const c = Math.floor((t - BEGIN) / CYCLE), local = (t - BEGIN) % CYCLE
+  window.__fadeA = c === 0 ? 1 : Math.min(1, local / 0.5)
+  if (local > CYCLE - 0.6) window.__fadeA = Math.max(0, (CYCLE - local) / 0.6)
+  return [c, local]
+}
+
+series({
+  day: 25, pillar: 'AI', duration: 30, takeawayAt: 21.6,
+  title: ['Enemies that all', 'bunch up'],
+  subtitle: 'Same six enemies, same player. Watch where they end up.',
+  note: 'Top-down view, simplified',
+  lanes: [
+    {
+      title: 'Everyone chases the player', sub: 'Each enemy paths straight to you, so they pile up.', accent: '#ff4d5e',
+      readout: ['WHAT THE PLAYER SEES', 'One blob'],
+      draw(t, b, { cx, C, F, ease }) {
+        arena(cx, b)
+        const [px, py] = player(b, t), [, local] = progress(t), k = ease(Math.min(1, local / 4.5))
+        STARTS.forEach(([sx, sy], i) => {
+          const tx = px - 40 + (i % 3) * 8, ty = py - 6 + (i % 2) * 8
+          enemy(cx, sx + (tx - sx) * k, b.top - 290 + sy + 290 + ((ty) - (b.top - 290 + sy + 290)) * k, C.red, 0.85)
+        })
+        hero(cx, C, F, px, py)
+        if (k > 0.9) { cx.fillStyle = C.red; cx.font = F(800, 22); cx.textAlign = 'center'; cx.fillText('stacked on one side, blocking each other', 560, b.top + 455) }
+      },
+    },
+    {
+      title: 'Slots around the player', sub: 'Each enemy takes its own spot, and they take turns.', accent: '#2fe39a',
+      readout: ['WHAT THE PLAYER SEES', 'Surrounded, readable'],
+      draw(t, b, { cx, C, F, ease }) {
+        arena(cx, b)
+        const [px, py] = player(b, t), [, local] = progress(t), k = ease(Math.min(1, local / 4.5))
+        for (let i = 0; i < N; i++) {
+          const a = (i / N) * Math.PI * 2
+          cx.strokeStyle = 'rgba(47,227,154,.35)'; cx.setLineDash([4, 6]); cx.lineWidth = 2
+          cx.beginPath(); cx.arc(px + Math.cos(a) * 120, py + Math.sin(a) * 95, 26, 0, 7); cx.stroke(); cx.setLineDash([])
+        }
+        const attacker = Math.floor(local / 1.1) % N
+        STARTS.forEach(([sx, sy], i) => {
+          const a = (i / N) * Math.PI * 2
+          let tx = px + Math.cos(a) * 120, ty = py + Math.sin(a) * 95
+          if (k > 0.95 && i === attacker) { const s = Math.sin(((local % 1.1) / 1.1) * Math.PI); tx -= Math.cos(a) * 55 * s; ty -= Math.sin(a) * 45 * s }
+          const y0 = b.top - 290 + sy + 290
+          enemy(cx, sx + (tx - sx) * k, y0 + (ty - y0) * k, C.green)
+        })
+        hero(cx, C, F, px, py)
+        if (k > 0.9) { cx.fillStyle = C.green; cx.font = F(800, 22); cx.textAlign = 'center'; cx.fillText('one steps in at a time', 560, b.top + 455) }
+      },
+    },
+  ],
+  rows: [['Slots', 'Give the player a ring of attack positions.'], ['Assign', 'Each enemy claims the nearest free slot.'], ['Take turns', 'Let one or two attack while the rest wait.']],
+  question: ['Smart AI or fun AI?', 'Which matters more? 👇'],
+})
+</script>

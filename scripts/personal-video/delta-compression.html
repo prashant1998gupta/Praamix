@@ -1,0 +1,70 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 04: sending too much data. Every field every tick vs delta + quantised. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const TICK = 0.55, FLIGHT = 1.8
+const FIELDS = ['#4cc3ff', '#4cc3ff', '#4cc3ff', '#a78bfa', '#a78bfa', '#2fe39a', '#ffb02e', '#ff6fb5', '#9aa4b2', '#9aa4b2']
+const changed = (i) => [[0], [0, 1], [0], [], [0, 5], [0, 1], [0], [6], [0, 1], [0]][i % 10]
+
+function pipe(t, box, tools, delta) {
+  const { cx, C, F, rr } = tools
+  const y = box.top + 330, x0 = 130, x1 = 870
+  // client and server
+  for (const [x, label] of [[95, 'CLIENT'], [915, 'SERVER']]) {
+    rr(x - 45, y - 45, 90, 90, 16); cx.fillStyle = '#18202b'; cx.fill()
+    cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 2; cx.stroke()
+    cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'center'; cx.fillText(label, x, y + 70)
+  }
+  cx.strokeStyle = 'rgba(255,255,255,.1)'; cx.lineWidth = 46; cx.lineCap = 'round'
+  cx.beginPath(); cx.moveTo(x0 + 20, y); cx.lineTo(x1 - 20, y); cx.stroke(); cx.lineCap = 'butt'
+
+  let inFlight = 0
+  for (let i = 0; i < 60; i++) {
+    const s = 1.4 + i * TICK, k = (t - s) / FLIGHT
+    if (k < 0 || k > 1) continue
+    const fields = delta ? changed(i) : FIELDS.map((_, j) => j)
+    const cw = delta ? 22 : 16, w = Math.max(delta ? 26 : 0, fields.length * cw)
+    inFlight += delta ? fields.length * 2 + 2 : 60
+    const x = x0 + (x1 - x0 - w) * k
+    rr(x, y - 20, w, 40, 8); cx.fillStyle = delta ? 'rgba(47,227,154,.18)' : 'rgba(255,77,94,.18)'; cx.fill()
+    fields.forEach((f, j) => { rr(x + 3 + j * cw, y - 14, cw - 5, 28, 4); cx.fillStyle = FIELDS[f]; cx.fill() })
+    if (delta && fields.length === 0) { cx.fillStyle = C.soft; cx.font = F(800, 14); cx.textAlign = 'center'; cx.fillText('ack', x + w / 2, y + 5) }
+  }
+
+  // bandwidth meter
+  const mx = 470, my = box.top + 140, mw = 470
+  cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'left'; cx.fillText('BANDWIDTH USED', mx, my)
+  rr(mx, my + 12, mw, 26, 13); cx.fillStyle = 'rgba(255,255,255,.07)'; cx.fill()
+  const level = Math.min(1, delta ? 0.18 + 0.04 * Math.sin(t * 5) : 0.9 + 0.08 * Math.sin(t * 7))
+  rr(mx, my + 12, mw * level, 26, 13); cx.fillStyle = delta ? C.green : C.red; cx.fill()
+  cx.strokeStyle = 'rgba(255,255,255,.5)'; cx.setLineDash([4, 4]); cx.beginPath(); cx.moveTo(mx + mw * 0.85, my + 6); cx.lineTo(mx + mw * 0.85, my + 44); cx.stroke(); cx.setLineDash([])
+  cx.fillStyle = 'rgba(255,255,255,.55)'; cx.font = F(700, 13); cx.textAlign = 'center'; cx.fillText('mobile limit', mx + mw * 0.85, my + 58)
+
+  // legend
+  cx.textAlign = 'left'; cx.font = F(700, 15)
+  const legend = delta ? 'Only changed fields, packed into fewer bits' : 'position · rotation · velocity · health · ammo · anim · team · name'
+  cx.fillStyle = C.soft; cx.fillText(legend, 90, box.top + 430)
+  void inFlight
+}
+
+series({
+  day: 4, pillar: 'Multiplayer', duration: 30, takeawayAt: 21.6,
+  title: ['You are sending', 'too much data'],
+  subtitle: 'Same player, same 20 updates a second. Look at the packets.',
+  note: 'Illustrative packet sizes',
+  lanes: [
+    { title: 'Every field, every tick', sub: 'Full state in every packet, changed or not.', accent: '#ff4d5e',
+      readout: ['EACH PACKET', 'Everything, again'], draw(t, box, tools) { pipe(t, box, tools, false) } },
+    { title: 'Delta + quantised', sub: 'Send what changed since the last ack, in fewer bits.', accent: '#2fe39a',
+      readout: ['EACH PACKET', 'Just the changes'], draw(t, box, tools) { pipe(t, box, tools, true) } },
+  ],
+  rows: [['Delta', 'Send only what changed since the last ack.'], ['Quantise', 'Pack floats into fewer bits.'], ['Prioritise', 'Update far-away objects less often.']],
+  question: ['Photon, Netcode, Mirror', 'or Fish-Net? 👇'],
+})
+</script>

@@ -1,0 +1,83 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 11: jittery movement. Moving a Rigidbody from Update vs FixedUpdate with interpolation. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const PHYS = 0.33          // one physics step, slowed down
+const FRAME = 0.25         // one rendered frame, slowed down
+const SPEED = 150          // px per second of the physics body
+const X0 = 120, X1 = 960
+const wrapX = (x) => X0 + ((x - X0) % (X1 - X0) + (X1 - X0)) % (X1 - X0)
+const truePos = (t) => X0 + SPEED * t
+
+/* Without interpolation the screen shows the body where the last physics step left it. */
+const stepped = (f) => truePos(Math.floor(f / PHYS) * PHYS)
+/* With interpolation the screen blends the last two physics steps: one step behind, but even. */
+const blended = (f) => truePos(f - PHYS)
+
+function lanePicture(t, box, tools, smooth) {
+  const { cx, C, F } = tools
+  const y = box.top + 300
+  const accent = smooth ? C.green : C.red
+  const frameAt = (k) => Math.floor(t / FRAME) * FRAME - k * FRAME
+  // ghosts: where the body was drawn in the last frames, to show the spacing
+  for (let k = 7; k >= 1; k--) {
+    const f = frameAt(k); if (f < 0) continue
+    const x = wrapX(smooth ? blended(f) : stepped(f))
+    cx.globalAlpha = 0.08 + (7 - k) * 0.05
+    tools.rr(x - 28, y - 28, 56, 56, 10); cx.fillStyle = accent; cx.fill()
+  }
+  cx.globalAlpha = 1
+  const f0 = frameAt(0)
+  const x = wrapX(smooth ? blended(f0) : stepped(f0))
+  tools.rr(x - 32, y - 32, 64, 64, 12); cx.fillStyle = accent; cx.shadowColor = accent; cx.shadowBlur = 24; cx.fill(); cx.shadowBlur = 0
+  // spacing labels between the last two drawn positions
+  const prev = wrapX(smooth ? blended(f0 - FRAME) : stepped(f0 - FRAME))
+  const gap = x - prev
+  cx.fillStyle = accent; cx.font = F(800, 18); cx.textAlign = 'center'
+  cx.fillText(gap < 3 && gap > -3 ? 'didn’t move this frame' : 'moved', x, y - 50)
+
+  // timeline: physics steps and rendered frames
+  const ty = box.top + 420, nowX = 930, scale = 300
+  cx.strokeStyle = 'rgba(255,255,255,.12)'; cx.lineWidth = 2
+  cx.beginPath(); cx.moveTo(90, ty); cx.lineTo(nowX, ty); cx.stroke()
+  for (let s = Math.floor((t - 2.8) / PHYS) * PHYS; s <= t; s += PHYS) {
+    const sx = nowX - (t - s) * scale; if (sx < 90) continue
+    cx.fillStyle = C.amber; cx.fillRect(sx - 3, ty - 18, 6, 18)
+  }
+  for (let s = Math.floor((t - 2.8) / FRAME) * FRAME; s <= t; s += FRAME) {
+    const sx = nowX - (t - s) * scale; if (sx < 90) continue
+    cx.fillStyle = C.blue; cx.fillRect(sx - 2, ty + 2, 4, 16)
+  }
+  cx.font = F(700, 15); cx.textAlign = 'left'
+  cx.fillStyle = C.amber; cx.fillText('physics steps', 90, ty - 26)
+  cx.fillStyle = C.blue; cx.fillText('rendered frames', 220, ty - 26)
+  cx.textAlign = 'left'
+}
+
+series({
+  day: 11, pillar: 'Physics', duration: 30, takeawayAt: 21.6,
+  title: ['Why your movement', 'jitters'],
+  subtitle: 'Physics and rendering don’t tick together. Watch the spacing.',
+  note: 'Steps slowed down, illustrative timing',
+  lanes: [
+    {
+      title: 'Rigidbody moved in Update', sub: 'The screen shows wherever the last physics step left it.', accent: '#ff4d5e',
+      readout: ['ON SCREEN', 'Uneven steps, jitter'],
+      draw(t, box, tools) { lanePicture(t, box, tools, false) },
+    },
+    {
+      title: 'FixedUpdate + Interpolate', sub: 'Physics in FixedUpdate, rendering blends between steps.', accent: '#2fe39a',
+      readout: ['ON SCREEN', 'Even, smooth motion'],
+      draw(t, box, tools) { lanePicture(t, box, tools, true) },
+    },
+  ],
+  rows: [['FixedUpdate', 'Move Rigidbodies with forces or velocity there.'], ['Interpolate', 'Set the Rigidbody’s Interpolate option on.'], ['Input in Update', 'Read input every frame, apply it in FixedUpdate.']],
+  question: ['Rigidbody or', 'CharacterController? 👇'],
+})
+</script>
