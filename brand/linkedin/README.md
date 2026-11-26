@@ -211,3 +211,11 @@ After posting, edit it to @-mention both of you (type `@` and pick your profiles
 - **Always label key art as key art**, and only describe features that are built.
 - Reply to every comment in the first hour.
 - Once the page is live, send me its address and I'll add LinkedIn to the website footer next to YouTube and Discord.
+
+---
+
+## 6. Sheriff Town VR: 15-day series (scheduled)
+
+Fifteen daily posts on the Praamix page, 26 Nov to 10 Dec 2026, 7:00 PM India time, all scheduled on LinkedIn. Posters and every caption are in `sheriff-town-vr-series/` (`captions.md`). To change a poster, edit `scripts/stvr-series.mjs` and run `node scripts/render-stvr-series.mjs 7` (the day number). Already-scheduled posts don't update by themselves: edit them on LinkedIn under Page posts → scheduled.
+
+Your personal profile cover is `personal-cover-prashant-1584x396.png`.

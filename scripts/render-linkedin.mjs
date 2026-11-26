@@ -187,6 +187,46 @@ h1 { position: absolute; left: 96px; top: 150px; font-size: 96px; font-weight: 8
 </div>
 <div class="url">praamix.com/studio</div>`,
   },
+  {
+    /*
+     * Prashant's personal profile cover. LinkedIn's personal covers are
+     * 1584 x 396, with the profile photo over the lower left, so the words
+     * start right of it and the art sits on the right edge.
+     */
+    name: 'personal-cover-prashant-1584x396',
+    width: 1584,
+    height: 396,
+    scale: 2,
+    html: `
+<style>
+.panels { position: absolute; right: -70px; top: -6px; height: calc(100% + 12px); display: flex; gap: 10px; transform: skewX(-14deg); }
+.panels div { width: 150px; height: 100%; background-size: auto 150%; background-repeat: no-repeat; }
+.fade { position: absolute; inset: 0; background: linear-gradient(90deg, #0f1216 0%, #0f1216 62%, rgba(15,18,22,0) 72%); }
+.copy { position: absolute; left: 470px; top: 70px; }
+.label { font-size: 19px; }
+h1 { margin-top: 14px; font-size: 56px; font-weight: 800; letter-spacing: -.03em; line-height: 1.02; }
+.skills { margin-top: 22px; font-size: 22px; font-weight: 600; color: rgba(255,255,255,.8); }
+.skills b { color: #f26b38; margin: 0 8px; }
+.wordmark { position: absolute; left: 470px; bottom: 40px; width: 150px; height: auto; }
+.site { position: absolute; left: 640px; bottom: 40px; font-size: 18px; font-weight: 700; color: rgba(255,255,255,.75); line-height: 26px; }
+.stripe { position: absolute; left: 0; bottom: 0; width: 100%; height: 8px; background: linear-gradient(90deg, #f26b38 0 22%, transparent 22%); }
+</style>
+<div class="grain"></div>
+<div class="panels">
+  <div style="background-image:url('${poster('gravity-gun')}'); background-position: 90% 100%"></div>
+  <div style="background-image:url('${poster('chaos')}'); background-position: 15% 100%"></div>
+  <div style="background-image:url('${poster('bubbles')}'); background-position: 78% 100%"></div>
+</div>
+<div class="fade"></div>
+<div class="copy">
+  <div class="label">Founder · Praamix</div>
+  <h1>Building Sheriff Town VR<span class="o">.</span><br>And games with you<span class="o">.</span></h1>
+  <div class="skills">Unity<b>/</b>Multiplayer<b>/</b>VR &amp; AR<b>/</b>Gameplay systems</div>
+</div>
+${wordmark}
+<div class="site">praamix.com</div>
+<div class="stripe"></div>`,
+  },
 ]
 
 await mkdir(out, { recursive: true })
