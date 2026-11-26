@@ -23,6 +23,8 @@ const Terms = lazy(() => pages.legal().then((file) => ({ default: file.Terms }))
 const Privacy = lazy(() => pages.legal().then((file) => ({ default: file.Privacy })))
 const GamePrivacy = lazy(() => pages.legal().then((file) => ({ default: file.GamePrivacy })))
 const PressKit = lazy(() => pages.press().then((file) => ({ default: file.PressKit })))
+const Devlog = lazy(() => pages.devlog().then((file) => ({ default: file.Devlog })))
+const DevlogPost = lazy(() => pages.devlog().then((file) => ({ default: file.DevlogPost })))
 const Support = lazy(() => pages.support().then((file) => ({ default: file.Support })))
 
 /** The main pages are dark. The class sits on <html> so the whole window follows. */
@@ -133,6 +135,8 @@ export default function App() {
             <Route path="/games/:slug" element={<Game />} />
             <Route path={GAME_PRIVACY_PATH} element={<GamePrivacy />} />
             <Route path={PRESS_KIT_PATH} element={<PressKit />} />
+            <Route path="/devlog" element={<Devlog />} />
+            <Route path="/devlog/:slug" element={<DevlogPost />} />
             <Route path="/services" element={<Services />} />
             <Route path="/studio" element={<Studio />} />
             <Route path="/contact" element={<Contact />} />

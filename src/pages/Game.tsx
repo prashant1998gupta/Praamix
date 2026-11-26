@@ -92,6 +92,10 @@ function GamePage({ game }: { game: GameContent }) {
             <span>Press kit: fact sheet, logo and key art for press and creators</span>
             <Arrow />
           </Link>
+          <Link className="link-arrow" to="/devlog">
+            <span>Devlog: how Sheriff Town VR is being made</span>
+            <Arrow />
+          </Link>
         </div>
       </section>
       <FaqSection id="faq-title" heading={game.faqHeading} items={game.faq} band />

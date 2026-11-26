@@ -14,6 +14,7 @@ import { images } from '../src/content/images.ts'
 import { notFound, routes } from '../src/content/routes.ts'
 import { channels, portfolios, site } from '../src/content/site.ts'
 import { gamePath, sheriffTownVr } from '../src/content/game.ts'
+import { devlogPath, posts } from '../src/content/devlog.ts'
 
 const dist = fileURLToPath(new URL('../dist/', import.meta.url))
 const shell = await readFile(join(dist, 'index.html'), 'utf8')
@@ -87,6 +88,7 @@ function structured(meta) {
     '/contact': 'Contact',
     '/support': 'Player support',
     [`${gamePath(sheriffTownVr)}/press-kit`]: 'Press kit',
+    '/devlog': 'Devlog',
   }
   if (crumbs[meta.path]) {
     graph.push({
@@ -96,6 +98,34 @@ function structured(meta) {
         { '@type': 'ListItem', position: 2, name: crumbs[meta.path], item: `${root}${meta.path}` },
       ],
     })
+  }
+  /* A devlog post: an article by the studio, with its real publication date. */
+  const post = posts.find((item) => devlogPath(item) === meta.path)
+  if (post) {
+    const art = post.image.file
+    graph.push(
+      {
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.description,
+        datePublished: post.date,
+        dateModified: post.date,
+        image: `${root}${art.base}-${art.fallback}.${art.fallbackType ?? 'jpg'}`,
+        url: `${root}${meta.path}`,
+        mainEntityOfPage: `${root}${meta.path}`,
+        author: { '@id': `${root}/#studio`, '@type': 'Organization', name: site.name, url: `${root}/` },
+        publisher: { '@id': `${root}/#studio`, '@type': 'Organization', name: site.name, logo: { '@type': 'ImageObject', url: `${root}/icon-512.png` } },
+        about: { '@type': 'VideoGame', name: sheriffTownVr.title, url: `${root}${gamePath(sheriffTownVr)}` },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: site.name, item: `${root}/` },
+          { '@type': 'ListItem', position: 2, name: 'Devlog', item: `${root}/devlog` },
+          { '@type': 'ListItem', position: 3, name: post.title, item: `${root}${meta.path}` },
+        ],
+      },
+    )
   }
   if (graph.length === 0) return []
   /* Written as < so no text in the data can close the script tag early. */

@@ -3,6 +3,7 @@
  * tabs, search results and link previews. The build writes a real HTML file
  * for each one, so opening or refreshing any address works.
  */
+import { devlog, devlogPath, posts } from './devlog.ts'
 import { gamePath, sheriffTownVr } from './game.ts'
 import { SIZES, images } from './images.ts'
 import { inquiryMode, legalIsDraft, site } from './site.ts'
@@ -115,6 +116,25 @@ routes.push({
   description: `Press kit for ${sheriffTownVr.title}, a VR physics sandbox game for Meta Quest and PC VR: fact sheet, description, logo and key art to download, and a press contact.`,
   night: true,
 })
+
+/* The devlog: a list, then one page per post. */
+routes.push({
+  path: devlogPath(),
+  source: 'src/pages/Devlog.tsx',
+  title: `${sheriffTownVr.title} devlog · How our VR sandbox game is made · ${site.name}`,
+  description: devlog.lede,
+  night: true,
+})
+
+for (const post of posts) {
+  routes.push({
+    path: devlogPath(post),
+    source: 'src/pages/Devlog.tsx',
+    title: `${post.title} · ${site.name}`,
+    description: post.description,
+    night: true,
+  })
+}
 
 export const notFound: RouteMeta = {
   path: '/404',

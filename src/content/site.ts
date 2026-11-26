@@ -35,6 +35,7 @@ export const legalNav = [
   { label: 'Sheriff Town VR Privacy', to: '/games/sheriff-town-vr/privacy-policy' },
   { label: 'Player support', to: '/support' },
   { label: 'Press kit', to: '/games/sheriff-town-vr/press-kit' },
+  { label: 'Devlog', to: '/devlog' },
 ]
 
 /*
