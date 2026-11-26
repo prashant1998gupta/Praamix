@@ -10,7 +10,7 @@ export const studio = {
     items: [
       {
         title: 'Original games',
-        text: 'Games we design and build ourselves. The first is Sheriff Town VR, a VR sandbox where you play the sheriff of a town. It is in development.',
+        text: 'Games we design and build ourselves. The first is Sheriff Town VR, a VR sandbox where you play the sheriff of a town. It comes out on Meta Quest on 1 December 2026.',
         action: 'See Sheriff Town VR',
         to: '/games/sheriff-town-vr',
       },
@@ -26,7 +26,7 @@ export const studio = {
   /* The strip of in-game captures under the opening. */
   bench: {
     eyebrow: 'On the workbench',
-    heading: 'Sheriff Town VR, in development.',
+    heading: 'Sheriff Town VR, out 1 December.',
     action: 'See the game',
   },
 

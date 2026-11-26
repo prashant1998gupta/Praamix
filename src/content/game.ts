@@ -7,6 +7,8 @@
  *
  * Leave a list empty and the page leaves that part out: no store links means
  * no store buttons. Never add a price, date, headset or store that is not real.
+ * The release date (1 December 2026, Meta Quest) and the price ($12.99, approved
+ * by Meta) were confirmed by the owner on 2026-11-27.
  * The platforms, Meta Quest and PC VR, were confirmed by the owner on 2026-11-26.
  */
 import { images } from './images.ts'
@@ -58,9 +60,10 @@ const glance: Fact[] = [
   { term: 'Where you go', detail: 'Five sandbox maps and two challenge maps, chosen from the precinct’s Dispatch board' },
   { term: 'Voices', detail: 'Every story line is voiced, each character in their own voice' },
   { term: 'Multiplayer', detail: 'Planned. The game is single-player today.' },
-  { term: 'Status', detail: 'In development' },
+  { term: 'Status', detail: 'Coming 1 December 2026' },
   { term: 'Platforms', detail: 'Meta Quest and PC VR' },
-  { term: 'Release date', detail: 'Not announced' },
+  { term: 'Release date', detail: '1 December 2026 on Meta Quest' },
+  { term: 'Price', detail: '$12.99 on the Meta Horizon Store (US price; the store sets prices elsewhere)' },
 ]
 
 const pillars: Pillar[] = [
@@ -326,7 +329,7 @@ const extras = [
 const faq: Faq[] = [
   {
     question: 'When does it come out?',
-    answer: 'No release date has been announced.',
+    answer: 'On 1 December 2026, on the Meta Horizon Store for Meta Quest. A PC VR release date has not been announced yet.',
   },
   {
     question: 'Which headsets will it support?',
@@ -356,7 +359,7 @@ const faq: Faq[] = [
   {
     question: 'Where can I buy it?',
     answer:
-      'It isn’t on sale yet, and no store listing has been announced. When there is one, this page will link to it.',
+      'On the Meta Horizon Store for Meta Quest, from 1 December 2026, at $12.99 (US price). The store link will be on this page on release day.',
   },
   {
     question: 'Where do I get help with the game?',
@@ -385,7 +388,7 @@ export const sheriffTownVr = {
   slug: 'sheriff-town-vr',
   title: 'Sheriff Town VR',
   label: 'A Praamix original',
-  status: 'In development',
+  status: 'Coming 1 December 2026',
   motto: 'Bring them in alive.',
   summary:
     'A VR sandbox where you are the sheriff of a town that talks back. Hear out its people, untangle its mysteries, bend its physics, and bring everyone in alive.',
@@ -482,13 +485,13 @@ export const sheriffTownVr = {
   extras,
 
   development: {
-    heading: 'Where development stands.',
-    note: 'Development targets are the platforms the game is being built for. They are not a list of supported headsets, and they don’t promise a release on a particular store. Everything on this page shows the game in development, and details can change.',
+    heading: 'Out 1 December on Meta Quest.',
+    note: 'Sheriff Town VR comes out on Meta Quest on 1 December 2026. A PC VR version is also in development; its release has not been announced. Pictures on this page come from the game in development, and details can change.',
   },
 
   availability: {
     heading: 'Where to get it.',
-    none: 'Sheriff Town VR isn’t on sale yet, and no store listing has been announced. When one exists, the link will be here.',
+    none: 'Sheriff Town VR comes out on 1 December 2026 on the Meta Horizon Store, at $12.99 (US price). The store link will be here on release day.',
   },
   /** Real store pages only. See StoreEntry in types.ts. */
   stores: [] as StoreEntry[],

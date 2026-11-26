@@ -10,7 +10,7 @@ import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
 
 const game = sheriffTownVr
 
-/* Every fact here is already stated elsewhere on the site. Nothing about prices or dates until they are real. */
+/* Every fact here is already stated elsewhere on the site. The date and price were confirmed by the owner on 2026-11-27. */
 const facts: { term: string; detail: string; url?: string }[] = [
   { term: 'Developer', detail: business.legalName },
   { term: 'Based in', detail: business.address },
@@ -18,8 +18,8 @@ const facts: { term: string; detail: string; url?: string }[] = [
   { term: 'Genre', detail: 'VR physics sandbox, with stories and challenges' },
   { term: 'Players', detail: 'Single-player. Multiplayer is planned.' },
   { term: 'Status', detail: game.status },
-  { term: 'Release date', detail: 'Not announced' },
-  { term: 'Price', detail: 'Not announced' },
+  { term: 'Release date', detail: '1 December 2026 on Meta Quest. PC VR: not announced' },
+  { term: 'Price', detail: '$12.99 on the Meta Horizon Store (US price)' },
   { term: 'Website', detail: `praamix.com${gamePath(game)}`, url: `${site.url}${gamePath(game)}` },
   ...(game.trailer ? [{ term: 'Trailer', detail: 'YouTube', url: game.trailer.url }] : []),
   { term: 'Community', detail: 'Discord', url: channels.discord },

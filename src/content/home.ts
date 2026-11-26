@@ -14,7 +14,7 @@ const faq: Faq[] = [
   {
     question: 'What is Sheriff Town VR?',
     answer:
-      'Our first original game: a VR sandbox where you are the sheriff of a town that talks back, built around arrests rather than kills. It is in development for Meta Quest and PC VR, with multiplayer planned. No release date or store listing has been announced.',
+      'Our first original game: a VR sandbox where you are the sheriff of a town that talks back, built around arrests rather than kills. It comes out on Meta Quest on 1 December 2026, at $12.99. A PC VR version is also in development, and multiplayer is planned.',
   },
   {
     question: 'What does Praamix make?',
@@ -40,7 +40,7 @@ const faq: Faq[] = [
 
 export const home = {
   hero: {
-    eyebrow: 'A Praamix original · In development',
+    eyebrow: 'A Praamix original',
     playerAction: 'Discover the game',
     mapsAction: 'Pick a map',
   },

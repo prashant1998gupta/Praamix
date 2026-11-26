@@ -5,14 +5,20 @@
  * on 18 November 2026:
  *   - it has no network code, no analytics, no crash reporting and no ads
  *     (Unity Analytics, Crash Reporting and Performance Reporting are off)
- *   - it does not use the Meta Platform SDK, so it reads no Meta user ID,
- *     name, friends or entitlement
+ *   - it reads no Meta user ID, name, friends or profile
+ *
+ * Since build 0.1.0 (code 18, uploaded 2026-11-25) the Meta Quest build also
+ * runs the store entitlement check (StoreEntitlementCheck.cs, ADR-359): once
+ * at launch it asks the headset's Meta platform service whether the signed-in
+ * account owns the game, gets back yes or no, and closes the game on a no.
+ * It calls only Entitlements.IsUserEntitledToApplication; it reads no user
+ * details and sends nothing to us. The PC VR build has no check.
  *   - it does not use the microphone or the camera
  *   - it saves settings, spawn favourites, challenge best times and the Copy
  *     Paste gun's saved builds in files on the headset only
  *
  * If the game starts doing anything else (multiplayer, accounts, online
- * leaderboards, analytics, voice chat, the Meta Platform SDK), this file must
+ * leaderboards, analytics, voice chat, more of the Meta Platform SDK), this file must
  * change before that version is released.
  */
 import type { LegalSection } from './legal.ts'
@@ -24,12 +30,12 @@ export const gamePrivacy = {
   studio: 'Praamix Studio',
   contact: 'hello@praamix.com',
   /** The day this text was last changed, as YYYY-MM-DD. */
-  updated: '2026-11-18',
+  updated: '2026-11-27',
 }
 
 const { game, studio, contact } = gamePrivacy
 
-export const gamePrivacyIntro = `This policy explains what ${game} does with information about the people who play it. In short: the game collects no personal information, and nothing you do in it leaves your headset.`
+export const gamePrivacyIntro = `This policy explains what ${game} does with information about the people who play it. In short: the game collects no personal information, and nothing you do in it leaves your headset. The one thing it checks online, with Meta, is whether your account owns the game.`
 
 export function gamePrivacySections(): LegalSection[] {
   return [
@@ -79,6 +85,7 @@ export function gamePrivacySections(): LegalSection[] {
       id: 'meta',
       heading: 'Meta and the Meta Horizon Store',
       blocks: [
+        { p: `When ${game} starts on a Meta Quest headset, it asks Meta’s own service on the headset whether the Meta account signed in owns the game. This is the standard purchase check Meta asks every store app to make. The game receives only a yes or a no; it does not receive your name, user ID or any other account details, and the answer is not sent to us or stored. If the answer is no, the game shows a short message and closes. The PC VR version does not make this check.` },
         { p: `You get ${game} through Meta’s store and play it on a Meta Quest headset. Meta collects information about your account, purchases and use of its platform under its own privacy policy, which you can read at meta.com/legal/quest/privacy-policy. We do not control that, and we do not receive personal information about you from Meta beyond what the store provides to every developer, such as overall sales and download figures that do not identify you.` },
       ],
     },
@@ -108,7 +115,7 @@ export function gamePrivacySections(): LegalSection[] {
       id: 'security',
       heading: 'Security',
       blocks: [
-        { p: 'The game sends nothing over the internet, which leaves nothing to intercept or leak. The files it saves are protected by your headset’s own security.' },
+        { p: 'The game sends nothing to us. The only online request it makes is the purchase check described above, which goes from your headset to Meta’s own service and carries no information you type or create. The files the game saves are protected by your headset’s own security.' },
       ],
     },
     {

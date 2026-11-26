@@ -4,6 +4,7 @@ import { FaqSection } from '../components/Faq.tsx'
 import { Community, TrailerButton, TrailerSection } from '../components/GameFollow.tsx'
 import { DispatchBoard, Overheard, Pillars } from '../components/GameShowcase.tsx'
 import { ComingNext, Kinetic } from '../components/GameStory.tsx'
+import { LaunchBadge } from '../components/GameParts.tsx'
 import { Marquee } from '../components/Marquee.tsx'
 import { PipelineIntro, StudioIntro, StudioLine } from '../components/HomeSections.tsx'
 import { Stats, Ticker } from '../components/Motion.tsx'
@@ -25,6 +26,7 @@ export function Home() {
   return (
     <main id="main" tabIndex={-1}>
       <Marquee id="hero-title" eyebrow={hero.eyebrow} title={sheriffTownVr.title}>
+        <LaunchBadge />
         <p className="showcase__motto">{sheriffTownVr.motto}</p>
         <p className="showcase__lede">{sheriffTownVr.summary}</p>
         <div className="actions">

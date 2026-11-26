@@ -37,11 +37,42 @@ type StatusProps = {
   }
 }
 
+/** The day the game comes out on Meta Quest, and its price, both confirmed by the owner. */
+const LAUNCH = { date: '2026-12-01', label: '1 December 2026', price: '$12.99', store: 'Meta Quest' }
+
+/** Whole days from today to the launch, in the visitor's own time zone. Negative once it is out. */
+function daysToLaunch() {
+  const [year, month, day] = LAUNCH.date.split('-').map(Number)
+  const launch = new Date(year, month - 1, day)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return Math.round((launch.getTime() - today.getTime()) / 86400000)
+}
+
+/**
+ * The launch, said loudly: a countdown in days until release day, then "Out
+ * now". Counted in the visitor's own time zone, so it never shows a negative.
+ */
+export function LaunchBadge() {
+  const days = daysToLaunch()
+  const when = days > 1 ? `In ${days} days` : days === 1 ? 'Tomorrow' : days === 0 ? 'Out today' : 'Out now'
+
+  return (
+    <p className="launch-badge">
+      <span className="launch-badge__when">{when}</span>
+      <span className="launch-badge__what">
+        {days >= 0 ? `${LAUNCH.label} · ` : ''}
+        {LAUNCH.store} · {LAUNCH.price}
+      </span>
+    </p>
+  )
+}
+
 /** Where development stands, and where the game can be bought once it can be. */
 export function GameStatus({ game }: StatusProps) {
   const { development, availability, stores, updates } = game
   const status = game.glance.filter((fact) =>
-    ['Status', 'Development targets', 'Release date'].includes(fact.term),
+    ['Release date', 'Price', 'Platforms', 'Status'].includes(fact.term),
   )
 
   return (

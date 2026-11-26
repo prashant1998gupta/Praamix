@@ -40,7 +40,7 @@ export const routes: RouteMeta[] = [
     source: 'src/pages/Game.tsx',
     title: `${sheriffTownVr.title} · VR sandbox game for Meta Quest and PC VR · ${site.name}`,
     description:
-      'Sheriff Town VR is a VR physics sandbox game for Meta Quest and PC VR. Be the sheriff of a town that talks back: 7 maps, 14 tool guns, 300+ voiced lines, and arrests, not kills.',
+      'Out 1 December 2026 on Meta Quest, $12.99. Sheriff Town VR is a VR physics sandbox: be the sheriff of a town that talks back, with 7 maps, 14 tool guns, 300+ voiced lines, and arrests, not kills.',
     night: true,
     preload: { file: images.stvArrival.file, sizes: SIZES.stage },
   },
@@ -102,7 +102,7 @@ routes.push({
   path: GAME_PRIVACY_PATH,
   source: 'src/pages/Legal.tsx',
   title: `${sheriffTownVr.title} Privacy Policy · ${site.name}`,
-  description: `What ${sheriffTownVr.title} does with information about its players: it collects no personal information, and nothing leaves your headset.`,
+  description: `What ${sheriffTownVr.title} does with information about its players: it collects no personal information; its only online request is Meta's own purchase check.`,
   night: true,
 })
 

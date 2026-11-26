@@ -916,7 +916,7 @@ await run('Structured data for search engines', async () => {
   report.check('The game page describes Sheriff Town VR as a video game', game?.name === 'Sheriff Town VR')
   const video = game?.trailer
   report.check('Its trailer has everything Google requires: name, thumbnail and upload date', Boolean(video?.name && video.thumbnailUrl && /^\d{4}-\d{2}-\d{2}T/.test(video.uploadDate ?? '')), video?.uploadDate)
-  report.check('It claims no price or release date', Boolean(game && !game.offers && !game.datePublished))
+  report.check('It gives the confirmed release date and price: 1 December 2026, $12.99', game?.datePublished === '2026-12-01' && game?.offers?.price === '12.99')
   report.check('It names the confirmed platforms, Meta Quest and PC VR', JSON.stringify(game?.gamePlatform) === JSON.stringify(['Meta Quest', 'PC VR']))
   const article = (await read('/devlog/bring-them-in-alive')).find((item) => item['@type'] === 'BlogPosting')
   report.check('A devlog post is described as an article by Praamix, with its date', Boolean(article?.headline && article.datePublished === '2026-11-26' && article.author?.name === 'Praamix'), article?.datePublished)

@@ -101,7 +101,7 @@ export const support = {
     {
       question: 'What does the game do with my information?',
       answer:
-        'Nothing leaves your headset: the game has no accounts, no analytics and no online features. The full details are in the Sheriff Town VR privacy policy.',
+        'The game collects no personal information: it has no accounts, no analytics and no online features. On Meta Quest it makes one check at launch, with Meta, that your account owns the game. The full details are in the Sheriff Town VR privacy policy.',
     },
   ] satisfies Faq[],
 }

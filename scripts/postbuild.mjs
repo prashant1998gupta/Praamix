@@ -74,6 +74,9 @@ function structured(meta) {
       genre: ['Sandbox', 'Virtual reality', 'Simulation'],
       gamePlatform: ['Meta Quest', 'PC VR'],
       playMode: 'SinglePlayer',
+      /* Confirmed by the owner on 2026-11-27: out on Meta Quest on 1 December 2026, $12.99 approved by Meta. */
+      datePublished: '2026-12-01',
+      offers: { '@type': 'Offer', price: '12.99', priceCurrency: 'USD', availabilityStarts: '2026-12-01', seller: { '@id': `${root}/#studio` } },
       applicationCategory: 'Game',
       author: studio,
       publisher: { '@id': `${root}/#studio` },

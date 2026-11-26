@@ -8,7 +8,7 @@ import { Gallery } from '../components/Gallery.tsx'
 import { CaseFiles, DispatchBoard, Extras, GameStage } from '../components/GameShowcase.tsx'
 import { ComingNext, Story } from '../components/GameStory.tsx'
 import { Community, TrailerButton, TrailerSection } from '../components/GameFollow.tsx'
-import { GameStatus, StoreLinks } from '../components/GameParts.tsx'
+import { GameStatus, LaunchBadge, StoreLinks } from '../components/GameParts.tsx'
 import { Stats, Ticker } from '../components/Motion.tsx'
 import { Showroom } from '../components/Showroom.tsx'
 import { gamePath, games } from '../content/game.ts'
@@ -33,9 +33,7 @@ function GamePage({ game }: { game: GameContent }) {
   return (
     <main id="main" tabIndex={-1}>
       <GameStage id="game-title" eyebrow={game.label} title={game.title}>
-        <p>
-          <span className="pill pill--ink">{game.status}</span>
-        </p>
+        <LaunchBadge />
         <p className="showcase__motto">{game.motto}</p>
         <p className="showcase__lede">{game.summary}</p>
         <StoreLinks stores={game.stores} />
