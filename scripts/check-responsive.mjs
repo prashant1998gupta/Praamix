@@ -924,6 +924,20 @@ await run('Structured data for search engines', async () => {
   report.check('Inner pages carry a breadcrumb trail', crumbs?.itemListElement?.length === 2)
 })
 
+await run('Readable without JavaScript, for AI crawlers', async () => {
+  const text = async (path) => (await (await fetch(base + path)).text()).replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, ' ')
+  const gamePage = await text('/games/sheriff-town-vr')
+  report.check('The game page has its words in the HTML: facts, features and FAQ', /14 tool guns/.test(gamePage) && /Bring them in alive/.test(gamePage) && /When does it come out/.test(gamePage))
+  const post = await text('/devlog/bring-them-in-alive')
+  report.check('A devlog post has its whole article in the HTML', /The cuffs are a real object/.test(post))
+  const llms = await fetch(base + '/llms.txt')
+  report.check('llms.txt is published and names the studio and the game', llms.ok && /Sheriff Town VR/.test(await llms.text()))
+  const { context, page } = await open({ width: 1440, height: 900 })
+  await page.goto(base + '/', { waitUntil: 'networkidle' })
+  report.check('With scripts on, the crawler text is replaced by the real page', (await page.locator('.crawlable').count()) === 0)
+  await context.close()
+})
+
 await run('Direct loading and the not-found page', async () => {
   const { context, page } = await open({ width: 1024, height: 768 })
   for (const path of paths) {

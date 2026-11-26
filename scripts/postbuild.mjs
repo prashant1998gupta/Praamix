@@ -15,6 +15,7 @@ import { notFound, routes } from '../src/content/routes.ts'
 import { channels, portfolios, site, studioChannels } from '../src/content/site.ts'
 import { gamePath, sheriffTownVr } from '../src/content/game.ts'
 import { devlogPath, posts } from '../src/content/devlog.ts'
+import { crawlableHtml, llmsTxt } from './crawlable.mjs'
 
 const dist = fileURLToPath(new URL('../dist/', import.meta.url))
 const shell = await readFile(join(dist, 'index.html'), 'utf8')
@@ -194,6 +195,8 @@ function page(meta) {
       (_match, before, after) => `${before}${esc(meta.description)}${after}`,
     )
     .replace('</head>', () => `  ${tags.join('\n    ')}\n  </head>`)
+    /* The page's own words, for readers that run no JavaScript. The site's code replaces them at once. See crawlable.mjs. */
+    .replace('<div id="root"></div>', () => `<div id="root">${meta === notFound ? '' : crawlableHtml(meta)}</div>`)
 }
 
 const written = []
@@ -234,6 +237,7 @@ if (site.url) {
     '',
   ].join('\n')
   await writeFile(join(dist, 'sitemap.xml'), sitemap)
+  await writeFile(join(dist, 'llms.txt'), llmsTxt(origin))
   await writeFile(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`)
 }
 
