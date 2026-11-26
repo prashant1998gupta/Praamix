@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Ever seen other players teleport across the screen?" },
+  { "at": 3.4, "text": "Top: we draw every snapshot the moment it arrives. Packets come late, some get lost, and the player jumps." },
+  { "at": 10.6, "text": "Bottom: we keep a small buffer, and draw a hundred milliseconds in the past, blending between snapshots." },
+  { "at": 17.4, "text": "Slightly behind. Perfectly smooth." },
+  { "at": 21.9, "text": "Buffer. Render behind. Interpolate." },
+  { "at": 25.4, "text": "How much delay would you trade for smoothness? Comment below." }
+]

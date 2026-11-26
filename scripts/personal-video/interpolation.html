@@ -1,0 +1,93 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 02: why other players teleport. Raw snapshots vs an interpolation buffer. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const STEP = 0.4          // a snapshot every 100 ms, slowed 4x
+const BUFFER = 0.75       // render this far behind "now"
+const path = (s) => 540 + 300 * Math.sin(s * 0.8) + 60 * Math.sin(s * 2.1)
+
+/* Snapshots with a little network jitter, and every seventh one lost. */
+const snaps = []
+for (let i = 0; i < 90; i++) {
+  const s = i * STEP
+  const jitter = (Math.sin(i * 12.9898) * 43758.5453) % 1
+  snaps.push({ s, x: path(s), arrive: s + 0.22 + Math.abs(jitter) * 0.22, lost: i % 7 === 5 })
+}
+const received = (t) => snaps.filter((p) => !p.lost && p.arrive <= t)
+
+function rawX(t) { const r = received(t); return r.length ? r.reduce((a, b) => (b.s > a.s ? b : a)).x : path(0) }
+function smoothX(t) {
+  const r = received(t), at = t - BUFFER
+  let a = r[0], b = null
+  for (const p of r) { if (p.s <= at) a = p; else { b = p; break } }
+  if (!a) return path(0)
+  if (!b) return a.x
+  return a.x + (b.x - a.x) * ((at - a.s) / (b.s - a.s))
+}
+
+function strip(t, box, tools, mark) {
+  const { cx, C, F } = tools
+  const y = box.top + 440, nowX = 930
+  cx.strokeStyle = 'rgba(255,255,255,.12)'; cx.lineWidth = 2
+  cx.beginPath(); cx.moveTo(90, y); cx.lineTo(nowX, y); cx.stroke()
+  for (const p of snaps) {
+    const x = nowX - (t - p.s) * 260
+    if (x < 90 || x > nowX) continue
+    if (p.lost) { if (p.arrive <= t) { cx.strokeStyle = C.red; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(x - 7, y - 7); cx.lineTo(x + 7, y + 7); cx.moveTo(x + 7, y - 7); cx.lineTo(x - 7, y + 7); cx.stroke() } continue }
+    cx.beginPath(); cx.arc(x, y, 6, 0, 7); cx.fillStyle = p.arrive <= t ? C.blue : 'rgba(255,255,255,.2)'; cx.fill()
+  }
+  cx.fillStyle = C.soft; cx.font = F(700, 15); cx.textAlign = 'right'; cx.fillText('now', nowX + 2, y - 14)
+  cx.textAlign = 'left'; cx.fillText('snapshots from the server', 90, y - 14)
+  if (mark) {
+    const x = nowX - BUFFER * 260
+    cx.strokeStyle = C.green; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(x, y - 22); cx.lineTo(x, y + 12); cx.stroke()
+    cx.fillStyle = C.green; cx.font = F(800, 15); cx.textAlign = 'center'; cx.fillText('you see this moment', x, y + 30)
+  }
+}
+
+function ground(box, tools) {
+  const { cx } = tools; const g = box.top + 380
+  cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3
+  cx.beginPath(); cx.moveTo(90, g); cx.lineTo(990, g); cx.stroke(); return g
+}
+
+let lastRaw = null, flashAt = -9
+series({
+  day: 2, pillar: 'Multiplayer', duration: 30, takeawayAt: 21.6,
+  title: ['Why other players', 'teleport'],
+  subtitle: 'Same snapshots from the server. Two ways to draw them.',
+  note: '10 updates a second, slowed 4× so you can see it',
+  lanes: [
+    {
+      title: 'Draw the newest snapshot', sub: 'Every packet moves the player straight to its position.', accent: '#ff4d5e',
+      readout: ['WHAT YOU SEE', 'Jumps and stutters'],
+      draw(t, box, tools) {
+        const g = ground(box, tools), x = rawX(t)
+        if (lastRaw !== null && Math.abs(x - lastRaw) > 2) flashAt = t
+        lastRaw = x
+        if (t - flashAt < 0.18) { tools.cx.fillStyle = 'rgba(255,77,94,.25)'; tools.cx.fillRect(x - 50, g - 175, 100, 175) }
+        figure(tools.cx, x, g, tools.C.red, t, 1, false, 1.15)
+        strip(t, box, tools, false)
+      },
+    },
+    {
+      title: 'Interpolation buffer', sub: 'Draw a little in the past, and blend between snapshots.', accent: '#2fe39a',
+      readout: ['WHAT YOU SEE', '100 ms behind, perfectly smooth'],
+      draw(t, box, tools) {
+        const g = ground(box, tools)
+        const x = smoothX(t), moving = Math.abs(smoothX(t + 0.03) - x) > 0.5
+        figure(tools.cx, x, g, tools.C.green, t, 1, moving, 1.15)
+        strip(t, box, tools, true)
+      },
+    },
+  ],
+  rows: [['Buffer', 'Keep the last few snapshots from the server.'], ['Render behind', 'Draw other players about 100 ms in the past.'], ['Interpolate', 'Blend smoothly between two snapshots.']],
+  question: ['How much delay would you', 'trade for smoothness? 👇'],
+})
+</script>

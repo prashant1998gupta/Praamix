@@ -1,0 +1,8 @@
+[
+  { "at": 0.3, "text": "Your online game isn't slow. It's waiting." },
+  { "at": 3.5, "text": "Top: the client sends your input, and waits for the server. Every move shows up a hundred and fifty milliseconds late." },
+  { "at": 10.6, "text": "Bottom: client-side prediction. You move instantly, and the server, in gold, catches up behind you." },
+  { "at": 17.3, "text": "When the server agrees, nothing changes. When it doesn't, you correct. Smoothly." },
+  { "at": 22.4, "text": "Predict. Confirm. Reconcile." },
+  { "at": 25.6, "text": "So, would you trust the client with movement? Tell me below." }
+]

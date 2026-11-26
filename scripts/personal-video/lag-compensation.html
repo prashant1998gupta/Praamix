@@ -1,0 +1,96 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Day 03: "I shot him first!" No lag compensation vs server rewind. -->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; } canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script src="frame.js"></script>
+<script>
+const LAG = 0.6                       // what the shooter sees is 150 ms old, slowed 4x
+const SHOTS = [4.0, 7.7, 11.4, 15.1, 18.8]
+const TX = 780
+const ty = (box, t) => box.top + 330 + 95 * Math.sin(t * 1.7)
+
+function scene(t, box, tools, rewind) {
+  const { cx, C, F } = tools
+  // arena
+  cx.strokeStyle = 'rgba(255,255,255,.07)'; cx.lineWidth = 2
+  for (let gx = 80; gx < 1000; gx += 60) { cx.beginPath(); cx.moveTo(gx, box.top + 215); cx.lineTo(gx, box.top + 455); cx.stroke() }
+  const sx = 170, sy = box.top + 330
+  // shooter
+  cx.beginPath(); cx.arc(sx, sy, 30, 0, 7); cx.fillStyle = C.blue; cx.fill()
+  cx.fillStyle = C.soft; cx.font = F(700, 16); cx.textAlign = 'center'; cx.fillText('YOU', sx, sy + 56)
+
+  const seenY = ty(box, t - LAG), trueY = ty(box, t)
+  // server truth
+  cx.globalAlpha = 0.5; cx.beginPath(); cx.arc(TX, trueY, 26, 0, 7); cx.fillStyle = C.amber; cx.fill(); cx.globalAlpha = 1
+  cx.fillStyle = 'rgba(255,176,46,.85)'; cx.font = F(700, 15); cx.textAlign = 'left'; cx.fillText('where the server has him', TX + 40, trueY + 5)
+  // what the shooter sees
+  cx.beginPath(); cx.arc(TX, seenY, 26, 0, 7); cx.fillStyle = C.text; cx.fill()
+  cx.fillStyle = C.text; cx.font = F(700, 15); cx.fillText('where you see him', TX + 40, seenY + 5)
+  // crosshair follows what you see
+  cx.strokeStyle = 'rgba(255,255,255,.5)'; cx.lineWidth = 2
+  cx.beginPath(); cx.arc(TX, seenY, 40, 0, 7); cx.stroke()
+
+  for (const s of SHOTS) {
+    const d = t - s
+    if (d < 0 || d > 1.6) continue
+    const shotY = ty(box, s - LAG)
+    if (d < 0.25) { cx.strokeStyle = 'rgba(255,255,255,.9)'; cx.lineWidth = 4; cx.beginPath(); cx.moveTo(sx + 30, sy); cx.lineTo(TX, shotY); cx.stroke() }
+    // freeze what happened at the moment of the shot, so the gap stays visible
+    if (d < 1.4) {
+      const a = 1 - Math.max(0, (d - 1.0) / 0.4)
+      cx.globalAlpha = a
+      cx.strokeStyle = C.text; cx.lineWidth = 4
+      cx.beginPath(); cx.moveTo(TX - 120 - 12, shotY - 12); cx.lineTo(TX - 120 + 12, shotY + 12); cx.moveTo(TX - 120 + 12, shotY - 12); cx.lineTo(TX - 120 - 12, shotY + 12); cx.stroke()
+      cx.fillStyle = C.text; cx.font = F(700, 14); cx.textAlign = 'right'; cx.fillText('your shot', TX - 140, shotY + 5)
+      if (!rewind) {
+        const nowY = ty(box, s)
+        cx.beginPath(); cx.arc(TX - 120, nowY, 22, 0, 7); cx.strokeStyle = C.amber; cx.lineWidth = 3; cx.stroke()
+        cx.fillStyle = C.amber; cx.fillText('server: he was here', TX - 150, nowY + 5)
+        cx.setLineDash([4, 6]); cx.strokeStyle = C.red; cx.beginPath(); cx.moveTo(TX - 120, shotY); cx.lineTo(TX - 120, nowY); cx.stroke(); cx.setLineDash([])
+      }
+      cx.globalAlpha = 1
+    }
+    if (d > 0.3) {
+      const hit = rewind
+      if (rewind) {
+        // the rewound hitbox and the path back to it
+        cx.globalAlpha = Math.min(1, (d - 0.3) * 4)
+        cx.setLineDash([6, 8]); cx.strokeStyle = C.green; cx.lineWidth = 3
+        cx.beginPath(); cx.moveTo(TX - 60, ty(box, s)); cx.lineTo(TX - 60, shotY); cx.stroke(); cx.setLineDash([])
+        cx.beginPath(); cx.arc(TX, shotY, 34, 0, 7); cx.strokeStyle = C.green; cx.lineWidth = 4; cx.stroke()
+        cx.fillStyle = C.green; cx.font = F(800, 15); cx.textAlign = 'right'; cx.fillText('rewind 150 ms', TX - 72, (ty(box, s) + shotY) / 2 + 5)
+      }
+      cx.globalAlpha = 1 - Math.max(0, (d - 1.2) / 0.4)
+      cx.font = F(800, 34); cx.textAlign = 'center'; cx.fillStyle = hit ? C.green : C.red
+      cx.fillText(hit ? 'HIT ✓' : 'MISS', 480, box.top + 250)
+      cx.globalAlpha = 1
+    }
+  }
+  cx.textAlign = 'left'
+}
+
+series({
+  day: 3, pillar: 'Multiplayer', duration: 30, takeawayAt: 21.6,
+  title: ['"I shot him first!"', 'Lag compensation'],
+  subtitle: 'You aim at what you see. The server decides what counts.',
+  note: '150 ms of lag, slowed 4× so you can see it',
+  lanes: [
+    {
+      title: 'Check the shot against now', sub: 'Your crosshair was on him. The server says he moved.', accent: '#ff4d5e',
+      readout: ['SERVER CHECKS', 'Where he is now'],
+      draw(t, box, tools) { scene(t, box, tools, false) },
+    },
+    {
+      title: 'Server rewind', sub: 'The server checks where he was when you fired.', accent: '#2fe39a',
+      readout: ['SERVER CHECKS', 'Where you saw him'],
+      draw(t, box, tools) { scene(t, box, tools, true) },
+    },
+  ],
+  rows: [['Record', 'The server keeps a short history of positions.'], ['Rewind', 'Check each shot where the shooter saw the target.'], ['Limit it', 'Cap how far back you rewind.']],
+  question: ['Favour the shooter, or the', 'player who got shot? 👇'],
+})
+</script>

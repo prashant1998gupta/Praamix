@@ -1,0 +1,195 @@
+<!doctype html>
+<meta charset="utf-8">
+<!--
+  Day 1 of Prashant's daily explainer series: client-side prediction.
+  One canvas, drawn by draw(t) for any time t in seconds, so the renderer can
+  step through frames exactly. Open it in a browser to watch it play live.
+-->
+<style>
+  @font-face { font-family: Manrope; src: url('../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; }
+  html, body { margin: 0; background: #070a0f; }
+  canvas { display: block; }
+</style>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script>
+const W = 1080, H = 1350
+const cx = document.getElementById('c').getContext('2d')
+const DURATION = 26
+const LAT = 0.6 // round trip shown on screen: 150 ms, slowed 4x
+const SPEED = 300 // px per second while a key is held
+const F = (w, s) => `${w} ${s}px Manrope`
+
+const C = {
+  bg: '#070a0f', panel: '#0f141c', line: 'rgba(255,255,255,.08)', text: '#f4f6f8', soft: 'rgba(244,246,248,.62)',
+  red: '#ff4d5e', green: '#2fe39a', blue: '#4cc3ff', orange: '#f26b38', amber: '#ffb02e',
+}
+
+/* The player's inputs: [start, end, direction]. Same for both lanes. */
+const inputs = [
+  [3.0, 4.6, 1], [5.4, 6.2, -1], [6.8, 8.6, 1], [9.4, 10.0, -1], [10.3, 10.9, 1],
+  [11.6, 13.4, -1], [14.0, 14.5, 1], [14.8, 15.3, -1], [15.6, 16.1, 1], [16.7, 18.6, 1],
+]
+const X0 = 230, X1 = 850
+function pos(t) {
+  let x = 540
+  for (const [a, b, d] of inputs) {
+    if (t <= a) break
+    x += d * SPEED * (Math.min(t, b) - a)
+  }
+  return Math.max(X0, Math.min(X1, x))
+}
+function held(t) { for (const [a, b, d] of inputs) if (t >= a && t < b) return d; return 0 }
+function moving(t) { return Math.abs(pos(t + 0.02) - pos(t - 0.02)) > 1 }
+const events = inputs.flatMap(([a, b]) => [a, b])
+
+const ease = (k) => k < 0 ? 0 : k > 1 ? 1 : 1 - Math.pow(1 - k, 3)
+const fade = (t, a, d = 0.5) => ease((t - a) / d)
+
+function rr(x, y, w, h, r) { cx.beginPath(); cx.roundRect(x, y, w, h, r) }
+
+function figure(x, y, color, t, alpha = 1, walking = false) {
+  cx.save(); cx.translate(x, y); cx.scale(1.4, 1.4); cx.translate(-x, -y); cx.globalAlpha = alpha; cx.strokeStyle = color; cx.fillStyle = color; cx.lineCap = 'round'; cx.lineWidth = 9
+  const ph = walking ? Math.sin(t * 14) : 0
+  cx.beginPath(); cx.arc(x, y - 112, 19, 0, Math.PI * 2); cx.fill()
+  cx.beginPath(); cx.moveTo(x, y - 90); cx.lineTo(x, y - 44); cx.stroke()
+  for (const s of [1, -1]) {
+    cx.beginPath(); cx.moveTo(x, y - 82); cx.lineTo(x + 20 * ph * s, y - 54); cx.stroke()
+    cx.beginPath(); cx.moveTo(x, y - 44); cx.lineTo(x + 22 * ph * s, y); cx.stroke()
+  }
+  cx.restore()
+}
+
+function server(x, y, pulse) {
+  cx.save()
+  rr(x - 52, y - 40, 104, 80, 14); cx.fillStyle = '#18202b'; cx.fill()
+  cx.lineWidth = 3; cx.strokeStyle = `rgba(255,176,46,${0.35 + 0.65 * pulse})`; cx.stroke()
+  for (let i = 0; i < 3; i++) { rr(x - 36, y - 26 + i * 20, 72, 12, 4); cx.fillStyle = 'rgba(255,255,255,.08)'; cx.fill()
+    cx.beginPath(); cx.arc(x + 26, y - 20 + i * 20, 3.5, 0, 7); cx.fillStyle = i === 0 && pulse > .2 ? C.amber : 'rgba(255,255,255,.25)'; cx.fill() }
+  cx.fillStyle = C.soft; cx.font = F(700, 17); cx.textAlign = 'center'; cx.fillText('SERVER', x, y + 66)
+  cx.restore()
+}
+
+function lane(t, top, kind) {
+  const h = 470, groundY = top + 400
+  const predict = kind === 'predict'
+  const accent = predict ? C.green : C.red
+  rr(40, top, 1000, h, 34); cx.fillStyle = C.panel; cx.fill()
+  cx.lineWidth = 2; cx.strokeStyle = C.line; cx.stroke()
+
+  // heading
+  cx.textAlign = 'left'; cx.fillStyle = accent; cx.font = F(800, 40)
+  cx.fillText(predict ? 'Client-side prediction' : 'Wait for the server', 80, top + 66)
+  cx.fillStyle = C.soft; cx.font = F(600, 24)
+  cx.fillText(predict ? 'Move now. Let the server confirm later.' : 'Send the input. Move when the reply comes back.', 80, top + 104)
+
+  // response readout
+  const showLag = !predict
+  rr(80, top + 132, 300, 58, 14); cx.fillStyle = 'rgba(255,255,255,.04)'; cx.fill()
+  cx.fillStyle = C.soft; cx.font = F(700, 17); cx.fillText('YOUR INPUT → ON SCREEN', 98, top + 157)
+  cx.fillStyle = accent; cx.font = F(800, 26); cx.fillText(showLag ? '150 ms later' : 'Instantly', 98, top + 183)
+
+  // key cap
+  const d = held(t)
+  for (const [s, label, dx] of [[-1, '←', 470], [1, '→', 548]]) {
+    const on = d === s
+    rr(dx, top + 132, 62, 58, 12); cx.fillStyle = on ? C.text : 'rgba(255,255,255,.06)'; cx.fill()
+    cx.fillStyle = on ? '#0b0e12' : C.soft; cx.font = F(800, 30); cx.textAlign = 'center'; cx.fillText(label, dx + 31, top + 172)
+  }
+  cx.textAlign = 'left'; cx.fillStyle = C.soft; cx.font = F(600, 17); cx.fillText('player', 470, top + 212)
+
+  // server and packets
+  const sx = 930, sy = top + 168
+  let pulse = 0
+  for (const e of events) {
+    for (const [a, b, col] of [[e, e + LAT / 2, C.blue], [e + LAT / 2, e + LAT, C.amber]]) {
+      if (t >= a && t <= b) {
+        const k = (t - a) / (b - a)
+        const fromX = a === e ? pos(e) : sx, fromY = a === e ? groundY - 170 : sy
+        const toX = a === e ? sx : (predict ? pos(t) : pos(t - LAT)), toY = a === e ? sy : groundY - 170
+        const x = fromX + (toX - fromX) * k, y = fromY + (toY - fromY) * k - Math.sin(k * Math.PI) * 40
+        cx.beginPath(); cx.arc(x, y, 9, 0, 7); cx.fillStyle = col; cx.shadowColor = col; cx.shadowBlur = 18; cx.fill(); cx.shadowBlur = 0
+      }
+    }
+    if (t >= e + LAT / 2 && t < e + LAT / 2 + .25) pulse = 1 - (t - e - LAT / 2) / .25
+  }
+  server(sx, sy, pulse)
+
+  // ground
+  cx.strokeStyle = 'rgba(255,255,255,.18)'; cx.lineWidth = 3
+  cx.beginPath(); cx.moveTo(90, groundY); cx.lineTo(990, groundY); cx.stroke()
+
+  if (predict) {
+    // server's view, one round trip behind: a ghost
+    const gx = pos(t - LAT)
+    figure(gx, groundY, C.amber, t, 0.32, moving(t - LAT))
+    if (Math.abs(gx - pos(t)) > 30) { cx.fillStyle = 'rgba(255,176,46,.75)'; cx.font = F(700, 16); cx.textAlign = 'center'; cx.fillText('server catching up', gx, groundY + 34) }
+    figure(pos(t), groundY, C.green, t, 1, moving(t))
+    // reconcile tick
+    for (const e of events) if (t >= e + LAT && t < e + LAT + .5) {
+      const k = (t - e - LAT) / .5
+      cx.globalAlpha = 1 - k; cx.fillStyle = C.green; cx.font = F(800, 22); cx.textAlign = 'center'
+      cx.fillText('✓ confirmed', pos(t), groundY - 190 - k * 20); cx.globalAlpha = 1
+    }
+  } else {
+    const x = pos(t - LAT)
+    figure(x, groundY, C.red, t, 1, moving(t - LAT))
+    // the moment you pressed but nothing happened
+    if (d !== 0 && !moving(t - LAT)) { cx.fillStyle = C.red; cx.font = F(800, 22); cx.textAlign = 'left'; cx.fillText('…waiting', x + 44, groundY - 150) }
+  }
+  cx.textAlign = 'left'
+}
+
+function draw(t) {
+  cx.fillStyle = C.bg; cx.fillRect(0, 0, W, H)
+  const g = cx.createRadialGradient(900, 0, 0, 900, 0, 900); g.addColorStop(0, 'rgba(242,107,56,.14)'); g.addColorStop(1, 'rgba(242,107,56,0)')
+  cx.fillStyle = g; cx.fillRect(0, 0, W, H)
+
+  // title
+  cx.globalAlpha = fade(t, 0, .6)
+  cx.fillStyle = C.orange; cx.font = F(800, 22); cx.textAlign = 'left'; cx.fillText('MULTIPLAYER · DAY 01', 56, 78)
+  cx.fillStyle = C.text; cx.font = F(800, 56); cx.fillText('Why your online game', 56, 146); cx.fillText('feels laggy', 56, 208)
+  cx.fillStyle = C.orange; cx.fillText('.', 56 + cx.measureText('feels laggy').width, 208)
+  cx.fillStyle = C.soft; cx.font = F(600, 26); cx.fillText('Same 150 ms ping. Same player. Watch when each one moves.', 56, 254)
+  cx.globalAlpha = 1
+
+  cx.globalAlpha = fade(t, .6, .6); lane(t, 290, 'wait'); cx.globalAlpha = 1
+  cx.globalAlpha = fade(t, 1.0, .6); lane(t, 780, 'predict'); cx.globalAlpha = 1
+
+  // slow-motion note and footer
+  cx.fillStyle = 'rgba(244,246,248,.45)'; cx.font = F(600, 18); cx.textAlign = 'right'
+  cx.fillText('Network slowed 4× so you can see it', 1024, 1290)
+  cx.textAlign = 'left'; cx.fillStyle = C.text; cx.font = F(800, 22); cx.fillText('Prashant Gupta', 56, 1290)
+  cx.fillStyle = C.soft; cx.font = F(600, 18); cx.fillText('Founder, Praamix · Unity & multiplayer', 56, 1316)
+
+  // takeaway
+  const k = fade(t, 19.2, .6)
+  if (k > 0) {
+    cx.globalAlpha = k * .985; cx.fillStyle = '#05070b'; cx.fillRect(0, 0, W, H); cx.globalAlpha = k
+    const y = 380 + (1 - k) * 40
+    cx.fillStyle = C.orange; cx.font = F(800, 24); cx.fillText('THE FIX, IN THREE LINES', 70, y)
+    const rows = [['1', 'Predict', 'Move the player the moment they press.', C.green], ['2', 'Confirm', 'The server checks every input and replies.', C.amber], ['3', 'Reconcile', 'If the server disagrees, correct smoothly.', C.blue]]
+    rows.forEach(([n, a, b, col], i) => {
+      const ry = y + 60 + i * 170, kk = fade(t, 19.6 + i * .5, .5)
+      cx.globalAlpha = k * kk
+      rr(70, ry, 940, 140, 26); cx.fillStyle = '#121925'; cx.fill()
+      cx.fillStyle = col; cx.font = F(800, 64); cx.fillText(n, 110, ry + 94)
+      cx.fillStyle = C.text; cx.font = F(800, 44); cx.fillText(a, 190, ry + 66)
+      cx.fillStyle = C.soft; cx.font = F(600, 27); cx.fillText(b, 190, ry + 108)
+    })
+    const q = fade(t, 21.6, .6); cx.globalAlpha = k * q
+    cx.fillStyle = C.text; cx.font = F(800, 40); cx.fillText('Your call: would you trust the', 70, y + 660); cx.fillText('client with movement? 👇', 70, y + 712)
+    cx.globalAlpha = 1
+  }
+}
+
+/* The animation was timed for 26 s; it plays over 30 s so the voice-over has room to breathe. */
+const STRETCH = 30 / DURATION
+const drawScene = draw
+window.draw = (t) => drawScene(t / STRETCH)
+window.DURATION = 30
+if (!new URLSearchParams(location.search).has('render')) {
+  const t0 = performance.now()
+  const loop = () => { window.draw(((performance.now() - t0) / 1000) % 30); requestAnimationFrame(loop) }
+  document.fonts.ready.then(loop)
+}
+</script>
