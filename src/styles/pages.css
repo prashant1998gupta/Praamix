@@ -111,3 +111,73 @@
     top: 1.5rem;
   }
 }
+
+/* ---------- Press kit ---------- */
+
+.press__features {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.press__features p {
+  margin-top: 0.3rem;
+  color: var(--fg-soft);
+}
+
+.press__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.press__file {
+  display: grid;
+  gap: 0.35rem;
+  height: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.press__preview {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 0.05);
+}
+
+.press__preview--light {
+  background: #f3f5f7;
+}
+
+.press__preview picture,
+.press__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.press__label {
+  font-weight: 800;
+}
+
+.press__detail {
+  color: var(--ink-quiet);
+  font-size: var(--text-s);
+}
+
+@media (hover: hover) {
+  .press__file:hover {
+    border-color: var(--orange);
+  }
+}

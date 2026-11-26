@@ -41,7 +41,7 @@ function codeFor(source) {
  * Structured data: labels search engines read, in the schema.org vocabulary.
  * They say the site's name is Praamix, that Praamix is a game studio with
  * this logo and these channels, and what Sheriff Town VR is. Only facts the
- * site already states; nothing about prices, dates or platforms.
+ * site already states; nothing about prices or dates.
  */
 function structured(meta) {
   if (!site.url || meta === notFound || meta.noindex) return []
@@ -70,10 +70,31 @@ function structured(meta) {
       url: `${root}${meta.path}`,
       description: sheriffTownVr.summary,
       image: `${root}${art.base}-${art.fallback}.jpg`,
-      genre: ['Sandbox', 'Virtual reality'],
+      genre: ['Sandbox', 'Virtual reality', 'Simulation'],
+      gamePlatform: ['Meta Quest', 'PC VR'],
+      playMode: 'SinglePlayer',
+      applicationCategory: 'Game',
       author: studio,
       publisher: { '@id': `${root}/#studio` },
       ...(sheriffTownVr.trailer ? { trailer: { '@type': 'VideoObject', name: sheriffTownVr.trailer.title, description: sheriffTownVr.trailer.lede, uploadDate: sheriffTownVr.trailer.uploadDate, embedUrl: `https://www.youtube.com/embed/${sheriffTownVr.trailer.youtubeId}`, url: sheriffTownVr.trailer.url, thumbnailUrl: `${root}${art.base}-${art.fallback}.jpg` } } : {}),
+    })
+  }
+  /* A breadcrumb trail for every page but the homepage: Praamix › this page. */
+  const crumbs = {
+    [gamePath(sheriffTownVr)]: sheriffTownVr.title,
+    '/services': 'Services',
+    '/studio': 'Studio',
+    '/contact': 'Contact',
+    '/support': 'Player support',
+    [`${gamePath(sheriffTownVr)}/press-kit`]: 'Press kit',
+  }
+  if (crumbs[meta.path]) {
+    graph.push({
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: site.name, item: `${root}/` },
+        { '@type': 'ListItem', position: 2, name: crumbs[meta.path], item: `${root}${meta.path}` },
+      ],
     })
   }
   if (graph.length === 0) return []

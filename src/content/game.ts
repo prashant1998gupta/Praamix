@@ -7,6 +7,7 @@
  *
  * Leave a list empty and the page leaves that part out: no store links means
  * no store buttons. Never add a price, date, headset or store that is not real.
+ * The platforms, Meta Quest and PC VR, were confirmed by the owner on 2026-11-26.
  */
 import { images } from './images.ts'
 import { media } from './media.generated.ts'
@@ -58,7 +59,7 @@ const glance: Fact[] = [
   { term: 'Voices', detail: 'Every story line is voiced, each character in their own voice' },
   { term: 'Multiplayer', detail: 'Planned. The game is single-player today.' },
   { term: 'Status', detail: 'In development' },
-  { term: 'Development targets', detail: 'Standalone VR and PC VR' },
+  { term: 'Platforms', detail: 'Meta Quest and PC VR' },
   { term: 'Release date', detail: 'Not announced' },
 ]
 
@@ -330,7 +331,7 @@ const faq: Faq[] = [
   {
     question: 'Which headsets will it support?',
     answer:
-      'The game is being developed for standalone and PC VR. A list of supported headsets has not been announced.',
+      'Sheriff Town VR is being made for Meta Quest and PC VR.',
   },
   {
     question: 'Do I have to fight?',

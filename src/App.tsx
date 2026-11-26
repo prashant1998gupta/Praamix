@@ -5,7 +5,7 @@ import { Footer } from './components/Footer.tsx'
 import { Header } from './components/Header.tsx'
 import { NetworkNotice, PageBoundary, PageLoading, PageReady } from './components/Loading.tsx'
 import { MotionEffects } from './components/Motion.tsx'
-import { isNight, GAME_PRIVACY_PATH } from './content/routes.ts'
+import { isNight, GAME_PRIVACY_PATH, PRESS_KIT_PATH } from './content/routes.ts'
 import { pages, usePrefetch } from './hooks/loading.ts'
 import { NotFound } from './pages/NotFound.tsx'
 
@@ -22,6 +22,7 @@ const Contact = lazy(() => pages.contact().then((file) => ({ default: file.Conta
 const Terms = lazy(() => pages.legal().then((file) => ({ default: file.Terms })))
 const Privacy = lazy(() => pages.legal().then((file) => ({ default: file.Privacy })))
 const GamePrivacy = lazy(() => pages.legal().then((file) => ({ default: file.GamePrivacy })))
+const PressKit = lazy(() => pages.press().then((file) => ({ default: file.PressKit })))
 const Support = lazy(() => pages.support().then((file) => ({ default: file.Support })))
 
 /** The main pages are dark. The class sits on <html> so the whole window follows. */
@@ -131,6 +132,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/games/:slug" element={<Game />} />
             <Route path={GAME_PRIVACY_PATH} element={<GamePrivacy />} />
+            <Route path={PRESS_KIT_PATH} element={<PressKit />} />
             <Route path="/services" element={<Services />} />
             <Route path="/studio" element={<Studio />} />
             <Route path="/contact" element={<Contact />} />

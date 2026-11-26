@@ -916,7 +916,10 @@ await run('Structured data for search engines', async () => {
   report.check('The game page describes Sheriff Town VR as a video game', game?.name === 'Sheriff Town VR')
   const video = game?.trailer
   report.check('Its trailer has everything Google requires: name, thumbnail and upload date', Boolean(video?.name && video.thumbnailUrl && /^\d{4}-\d{2}-\d{2}T/.test(video.uploadDate ?? '')), video?.uploadDate)
-  report.check('It claims no price, date or platform', Boolean(game && !game.offers && !game.datePublished && !game.gamePlatform))
+  report.check('It claims no price or release date', Boolean(game && !game.offers && !game.datePublished))
+  report.check('It names the confirmed platforms, Meta Quest and PC VR', JSON.stringify(game?.gamePlatform) === JSON.stringify(['Meta Quest', 'PC VR']))
+  const crumbs = (await read('/services')).find((item) => item['@type'] === 'BreadcrumbList')
+  report.check('Inner pages carry a breadcrumb trail', crumbs?.itemListElement?.length === 2)
 })
 
 await run('Direct loading and the not-found page', async () => {

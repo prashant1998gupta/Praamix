@@ -28,7 +28,8 @@ export const routes: RouteMeta[] = [
   {
     path: '/',
     source: 'src/pages/Home.tsx',
-    title: `${site.name} · ${site.descriptor}`,
+    /* Titles and descriptions are what search results show. They name what people search for. */
+    title: `${site.name} · VR and mobile game studio, makers of ${sheriffTownVr.title}`,
     description: site.description,
     night: true,
     preload: { file: images.stvArrival.file, sizes: SIZES.marquee },
@@ -36,32 +37,33 @@ export const routes: RouteMeta[] = [
   {
     path: gamePath(sheriffTownVr),
     source: 'src/pages/Game.tsx',
-    title: titled(sheriffTownVr.title),
-    description: sheriffTownVr.summary,
+    title: `${sheriffTownVr.title} · VR sandbox game for Meta Quest and PC VR · ${site.name}`,
+    description:
+      'Sheriff Town VR is a VR physics sandbox game for Meta Quest and PC VR. Be the sheriff of a town that talks back: 7 maps, 14 tool guns, 300+ voiced lines, and arrests, not kills.',
     night: true,
     preload: { file: images.stvArrival.file, sizes: SIZES.stage },
   },
   {
     path: '/services',
     source: 'src/pages/Services.tsx',
-    title: titled('Game development services'),
+    title: titled('VR, mobile and PC game development services with Unity and Unreal'),
     description:
-      'Full-pipeline game development with Unity and Unreal Engine: design, art, engineering, optimisation and release support, across mobile, PC, web, console and XR.',
+      'Hire Praamix for VR, mobile and PC game development with Unity and Unreal Engine: design, art, engineering, optimisation and release support, from concept to launch.',
     night: true,
   },
   {
     path: '/studio',
     source: 'src/pages/Studio.tsx',
-    title: titled('Studio'),
-    description: 'What Praamix makes, how it works with clients, and the people behind it.',
+    title: titled('Studio: independent VR and mobile game developers'),
+    description: 'Praamix is an independent game studio in India. What we make, how we work with clients, and the people behind Sheriff Town VR.',
     night: true,
     preload: { file: images.stvArrival.file, sizes: SIZES.half },
   },
   {
     path: '/contact',
     source: 'src/pages/Contact.tsx',
-    title: titled('Start a project'),
-    description: 'Send Praamix a short brief about the game you want to build.',
+    title: titled('Start a game development project'),
+    description: 'Send Praamix a short brief about the VR, mobile or PC game you want to build. We reply with questions, then a scope and a proposal.',
     noindex: inquiryMode() === 'draft',
     night: true,
   },
@@ -100,6 +102,17 @@ routes.push({
   source: 'src/pages/Legal.tsx',
   title: `${sheriffTownVr.title} Privacy Policy · ${site.name}`,
   description: `What ${sheriffTownVr.title} does with information about its players: it collects no personal information, and nothing leaves your headset.`,
+  night: true,
+})
+
+/** The game's press kit: facts, description and downloadable art for journalists and video makers. */
+export const PRESS_KIT_PATH = `${gamePath(sheriffTownVr)}/press-kit`
+
+routes.push({
+  path: PRESS_KIT_PATH,
+  source: 'src/pages/PressKit.tsx',
+  title: `${sheriffTownVr.title} press kit · Logo, key art and fact sheet · ${site.name}`,
+  description: `Press kit for ${sheriffTownVr.title}, a VR physics sandbox game for Meta Quest and PC VR: fact sheet, description, logo and key art to download, and a press contact.`,
   night: true,
 })
 

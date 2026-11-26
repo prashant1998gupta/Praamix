@@ -80,6 +80,6 @@ export const ways = {
 export const ownWork = {
   label: 'Praamix original project',
   heading: 'We are building our own game too.',
-  body: 'Sheriff Town VR is a Praamix original, in development for standalone and PC VR. It is our own game, not commissioned client work.',
+  body: 'Sheriff Town VR is a Praamix original, in development for Meta Quest and PC VR. It is our own game, not commissioned client work.',
   action: 'See Sheriff Town VR',
 }

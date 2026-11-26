@@ -10,7 +10,7 @@ export const site = {
   name: 'Praamix',
   descriptor: 'Original games and game development',
   description:
-    'Praamix is an independent game studio making Sheriff Town VR, a VR sandbox where you bring them in alive. We also develop games for clients with Unity and Unreal Engine.',
+    'Praamix is an independent game studio making Sheriff Town VR, a VR physics sandbox game for Meta Quest and PC VR. We also develop VR, mobile and PC games for clients with Unity and Unreal Engine.',
   /** The site's public address. Used for link previews, the sitemap and search engines. */
   url: 'https://praamix.com',
 }
@@ -34,6 +34,7 @@ export const legalNav = [
   { label: 'Privacy Policy', to: '/privacy-policy' },
   { label: 'Sheriff Town VR Privacy', to: '/games/sheriff-town-vr/privacy-policy' },
   { label: 'Player support', to: '/support' },
+  { label: 'Press kit', to: '/games/sheriff-town-vr/press-kit' },
 ]
 
 /*

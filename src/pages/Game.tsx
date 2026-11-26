@@ -1,5 +1,6 @@
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { Action } from '../components/Action.tsx'
+import { Arrow } from '../components/Arrow.tsx'
 import { BadgeScene } from '../components/BadgeScene.tsx'
 import { Band } from '../components/Band.tsx'
 import { FaqSection } from '../components/Faq.tsx'
@@ -11,7 +12,7 @@ import { GameStatus, StoreLinks } from '../components/GameParts.tsx'
 import { Stats, Ticker } from '../components/Motion.tsx'
 import { Showroom } from '../components/Showroom.tsx'
 import { gamePath, games } from '../content/game.ts'
-import { metaFor } from '../content/routes.ts'
+import { metaFor, PRESS_KIT_PATH } from '../content/routes.ts'
 import { useDocumentMeta } from '../hooks/useDocumentMeta.ts'
 import { NotFound } from './NotFound.tsx'
 
@@ -85,6 +86,14 @@ function GamePage({ game }: { game: GameContent }) {
       <GameStatus game={game} />
       <Extras />
       <Community />
+      <section className="section section--ruled" aria-label="For press and creators">
+        <div className="wrap">
+          <Link className="link-arrow" to={PRESS_KIT_PATH}>
+            <span>Press kit: fact sheet, logo and key art for press and creators</span>
+            <Arrow />
+          </Link>
+        </div>
+      </section>
       <FaqSection id="faq-title" heading={game.faqHeading} items={game.faq} band />
       <Band
         label="More from Praamix"

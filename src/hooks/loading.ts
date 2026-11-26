@@ -15,6 +15,7 @@ export const pages = {
   contact: () => import('../pages/Contact.tsx'),
   legal: () => import('../pages/Legal.tsx'),
   support: () => import('../pages/Support.tsx'),
+  press: () => import('../pages/PressKit.tsx'),
 }
 
 /** Which page file an address needs. */
@@ -22,6 +23,7 @@ function pageFor(pathname: string): (() => Promise<unknown>) | undefined {
   if (pathname === '/') return pages.home
   if (pathname.endsWith('/privacy-policy')) return pages.legal
   if (pathname.startsWith('/support')) return pages.support
+  if (pathname.endsWith('/press-kit')) return pages.press
   if (pathname.startsWith('/games')) return pages.game
   if (pathname.startsWith('/services')) return pages.services
   if (pathname.startsWith('/studio')) return pages.studio
