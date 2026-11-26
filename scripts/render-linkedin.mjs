@@ -162,7 +162,8 @@ h1 { position: absolute; left: 96px; top: 150px; font-size: 96px; font-weight: 8
 .card svg { width: 84px; height: 120px; }
 .card h2 { margin-top: 28px; font-size: 44px; font-weight: 800; letter-spacing: -.02em; }
 .card .role { margin-top: 8px; font-size: 26px; font-weight: 700; }
-.card p { margin-top: 18px; font-size: 24px; line-height: 1.45; color: rgba(255,255,255,.78); }
+.card .sub { margin-top: 4px; font-size: 22px; font-weight: 600; color: rgba(255,255,255,.9); }
+.card p { margin-top: 16px; font-size: 24px; line-height: 1.45; color: rgba(255,255,255,.78); }
 .url { position: absolute; left: 96px; bottom: 80px; font-size: 26px; font-weight: 700; }
 </style>
 <div class="grain"></div>
@@ -172,13 +173,15 @@ h1 { position: absolute; left: 96px; top: 150px; font-size: 96px; font-weight: 8
   <div class="card">
     <svg viewBox="0 0 132 152"><circle cx="66" cy="33.4" r="33.4" fill="#fff"/><path d="M3 152L45.3 59.8L86.4 59.8L128.7 152Z" fill="#fff"/></svg>
     <h2>Prashant Gupta</h2>
-    <div class="role o">Unity Game Developer</div>
+    <div class="role o">Founder</div>
+    <div class="sub">Unity Game Developer</div>
     <p>Gameplay systems, multiplayer and performance across mobile, PC, web and VR.</p>
   </div>
   <div class="card">
     <svg viewBox="0 0 132 152"><circle cx="66" cy="33.4" r="33.4" fill="#f26b38"/><path d="M3 152L45.3 59.8L86.4 59.8L128.7 152Z" fill="#f26b38"/></svg>
     <h2>Aman Yadav</h2>
-    <div class="role o">Unity 3D &amp; VR Developer</div>
+    <div class="role o">Founder</div>
+    <div class="sub">Unity 3D &amp; VR Developer</div>
     <p>Unity, VR interaction and AR experiences across mobile devices and headsets.</p>
   </div>
 </div>

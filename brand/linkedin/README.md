@@ -124,7 +124,7 @@ Indie Games
 A company page grows through the people who work there. Do this the same day:
 
 1. **Experience → Add position**
-   - Title: Prashant — `Unity Game Developer`; Aman — `Unity 3D & VR Developer` (as on praamix.com/studio; change if you hold a co-founder title)
+   - Title: `Founder` for both of you (confirmed 2026-11-26)
    - Company: type **Praamix** and pick the page from the dropdown, so the logo shows up and you appear under the page's People tab
    - Description (Prashant):
      ```
@@ -192,9 +192,9 @@ Tell us about your project: praamix.com/contact
 ```
 Meet the people behind Praamix. 👋
 
-Prashant Gupta, Unity Game Developer: gameplay systems, multiplayer and performance across mobile, PC, web and VR.
+Prashant Gupta, Founder and Unity Game Developer: gameplay systems, multiplayer and performance across mobile, PC, web and VR.
 
-Aman Yadav, Unity 3D & VR Developer: VR interaction and AR experiences across mobile devices and headsets.
+Aman Yadav, Founder and Unity 3D & VR Developer: VR interaction and AR experiences across mobile devices and headsets.
 
 See their work at praamix.com/studio
 

@@ -5,7 +5,8 @@
  * the owner and reviewed on 15 November 2026.
  *
  *   - `role` describes the person's work. It is not a job title at Praamix.
- *   - Leave `title` empty until a corporate title is confirmed.
+ *   - Leave `title` empty until a corporate title is confirmed. Both
+ *     people were confirmed as founders by the owner on 26 November 2026.
  *   - Leave `portrait` as null until a genuine, approved photo is supplied.
  *     Never use a generated or stock face.
  *   - Work shown in a personal portfolio is not automatically Praamix work.
@@ -39,7 +40,7 @@ export const people: Person[] = [
     id: 'prashant-gupta',
     name: 'Prashant Gupta',
     role: 'Unity Game Developer',
-    title: '',
+    title: 'Founder',
     intro: 'Gameplay systems, multiplayer, and performance across mobile, PC, web, and VR.',
     bio: 'Prashant builds games with Unity and C#, focusing on gameplay systems, multiplayer, performance, and modular architecture. His portfolio spans mobile, PC, WebGL, and VR projects.',
     areas: ['Unity and C#', 'Gameplay systems', 'Multiplayer', 'Performance optimization'],
@@ -50,7 +51,7 @@ export const people: Person[] = [
     id: 'aman-yadav',
     name: 'Aman Yadav',
     role: 'Unity 3D & VR Developer',
-    title: '',
+    title: 'Founder',
     intro: 'Unity, VR interaction, and AR experiences across mobile devices and headsets.',
     bio: 'Aman develops games and immersive experiences with Unity and C#, with a focus on gameplay, VR interaction, and AR. His portfolio covers mobile and headset experiences, including work with AR Foundation.',
     areas: ['Unity and C#', 'VR interaction', 'AR Foundation', 'Mobile gameplay'],
