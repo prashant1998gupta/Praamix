@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { images } from '../src/content/images.ts'
 import { notFound, routes } from '../src/content/routes.ts'
-import { channels, portfolios, site } from '../src/content/site.ts'
+import { channels, portfolios, site, studioChannels } from '../src/content/site.ts'
 import { gamePath, sheriffTownVr } from '../src/content/game.ts'
 import { devlogPath, posts } from '../src/content/devlog.ts'
 
@@ -54,7 +54,7 @@ function structured(meta) {
     url: `${root}/`,
     logo: `${root}/icon-512.png`,
     description: site.description,
-    sameAs: Object.values(channels).filter(Boolean),
+    sameAs: [...Object.values(studioChannels), ...Object.values(channels)].filter(Boolean),
   }
   const graph = []
   if (meta.path === '/') {

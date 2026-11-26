@@ -70,8 +70,14 @@ export const channels = {
   discord: 'https://discord.gg/YaxSWmB8G6',
 }
 
+/* The studio's own profiles, as opposed to the game's channels above. */
+export const studioChannels = {
+  linkedin: 'https://www.linkedin.com/company/praamix/',
+}
+
 /** The links in the footer. */
 export const social: ExternalLink[] = [
+  { label: 'LinkedIn', url: studioChannels.linkedin },
   { label: 'YouTube', url: channels.youtube },
   { label: 'Discord', url: channels.discord },
 ]
