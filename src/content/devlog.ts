@@ -31,6 +31,67 @@ export const devlog = {
 
 export const posts: DevlogPost[] = [
   {
+    slug: 'fourteen-tool-guns',
+    title: 'Fourteen tool guns: how the physics sandbox in Sheriff Town VR works',
+    description:
+      'A tour of the 14 tool guns in Sheriff Town VR, our VR physics sandbox for Meta Quest and PC VR: Gravity, Portal, Ice, Bubble, Food, Copy-Paste and more, and the rules we gave them.',
+    date: '2026-11-26',
+    image: images.stvToolGuns,
+    intro:
+      'Sheriff Town VR is a police game, but it is also a physics sandbox. Between cases, and sometimes in the middle of them, you carry a toolbox of fourteen tool guns that bend the rules of the town. This post walks through what they do, and the few rules we gave them so that fourteen guns still feel like one toolbox.',
+    sections: [
+      {
+        heading: 'One toolbox, one way to hold it',
+        paragraphs: [
+          'Every tool gun works the same way in your hand. A straight beam shows exactly what the gun is pointed at and stops on the first thing it hits, so you never wonder what you are about to change. A small screen on the gun says what mode it is in, the trigger does the main job, and a second button does the second one. Learn one tool gun and you can pick up the next.',
+          'We were also strict about what a gun takes from you. A tool gun only uses the buttons it needs, so you can still walk, turn and jump with one in your hand.',
+        ],
+      },
+      {
+        heading: 'Make things, then move them',
+        paragraphs: [
+          'The Spawn Gun is where most sessions start: it puts props, people, weapons and vehicles wherever you point it. The Physics Gun picks things up at a distance and holds them where you want them. The Size Gun makes things bigger or smaller, and the Joint Gun fastens things together.',
+          'The Gravity Gun pulls whatever the beam is on towards you and holds it floating in front of the muzzle, whatever it weighs. Let go of the trigger and it punts what you are holding along your aim. Click the stick and it sends out a shockwave that throws everything nearby outward and up.',
+        ],
+      },
+      {
+        heading: 'Read anything, copy anything',
+        paragraphs: [
+          'The Scanner Gun changes nothing. Point it at a thing and a card floats above it with what is true about it: what it is, how heavy and fast it is, whether it is frozen or fastened to something, and for a person, their mood. You can pin a card so it stays and keeps reading, and you can even scan yourself.',
+          'The Copy-Paste Gun takes the thing you point at and everything attached to it, and stamps copies of it wherever you like, as many as you want. If you paste one too many, hold the second button and it takes the last one back. The Save Gun keeps a build for good, as a file with a picture, so the contraption you made today is still there tomorrow.',
+        ],
+      },
+      {
+        heading: 'Doors, bubbles and statues',
+        paragraphs: [
+          'The Portal Gun places two doors, one amber and one cyan, on any flat surface. Walk through one and you come out of the other, and so does anything you throw. It will not place a door across an edge, because a door half on a wall sends things into the wall.',
+          'The Bubble Gun blows soap bubbles. Whatever a bubble touches, a person, an animal or a crate, it swells round and floats up, bobbing, until it pops. It never closes around you: a bubble around your own head is not a good feeling in VR, so you can pop them but never ride one.',
+          'The Ice Gun is a frost beam. Hold it on someone and the ice creeps up from their feet and slows them, until they are a statue in a cracked shell for a while. And a statue can be cuffed, which makes the Ice Gun a very effective, very non-lethal arrest.',
+        ],
+      },
+      {
+        heading: 'Lunch, a sting, or bait',
+        paragraphs: [
+          'The Food Gun fires the town’s food. Lob it gently past someone’s mouth and they catch it and eat it, or spit it out if they hate it. Fire it hard and it stings. Leave it on the floor and the town’s dogs and people will come for it, which is useful when you want someone to be somewhere else. It is a food fight, not a weapon: it can knock someone down, but it never wounds them.',
+        ],
+      },
+      {
+        heading: 'Wire it up, then change it',
+        paragraphs: [
+          'The Connection Gun links a remote, a trigger or a switch to whatever it should drive: a remote to a car, a pressure plate to a cannon, a lever to a thruster. The physics tools, thrusters, propellers, balloons, motors and pistons, all run from those links, so a few pulls of the trigger turn a pile of parts into a machine.',
+          'The Modification Gun opens a panel on your other hand and lets you change the thing you point at: a weapon’s fire mode, a person’s orders, a colour or a size.',
+        ],
+      },
+      {
+        heading: 'What we left out on purpose',
+        paragraphs: [
+          'Some ideas did not make the cut, for good reasons. Portals do not show the view through them, because rendering extra views for every eye is too much to ask of a standalone headset. Only things you spawned can be copied, not the walls of the level. And there is no limit on how many parts a build can have: you decide how much is too much.',
+          'Sheriff Town VR is still in development, so the guns will keep changing as we test them. The idea will not: fourteen strange tools, one way to hold them, and a town to try them on.',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'bring-them-in-alive',
     title: 'Bring them in alive: designing arrests, not kills, in a VR sandbox',
     description:
