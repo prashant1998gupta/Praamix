@@ -10,7 +10,11 @@ Short animated explainers for Prashant Gupta's personal LinkedIn (not the Praami
 
 **Rule:** only techniques Prashant actually uses or can defend in the comments. No made-up numbers: where timings are shown, the video says they are slowed down or illustrative.
 
-**Sample (built):** `client-prediction.mp4` — Day 01.
+**Built and scheduled (all 30):** videos are rendered by `scripts/personal-video/render.mjs <slug>` and voiced (ElevenLabs, voice Liam) by `voiceover.mjs`; the posted file is `<slug>-liam.mp4` with `<slug>-cover.png` as the thumbnail. Captions are in `posts/day-NN.md` (`python caption.py N` prints one).
+
+- Prashant's profile: every day 9:30 AM India time, 27 Nov – 26 Dec 2026.
+- Praamix page: every day 1:00 PM, same videos, page-voice captions from `python page_caption.py N` (credits Prashant, "Tell us").
+- Day 29 (25 Dec) is after the 1 Dec launch, so its video footer and caption say Sheriff Town VR is out now on Meta Quest.
 
 ## The 30 days
 

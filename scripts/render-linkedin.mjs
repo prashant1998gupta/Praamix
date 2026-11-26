@@ -109,11 +109,36 @@ p { margin-top: 22px; font-size: 30px; line-height: 1.4; color: rgba(255,255,255
 <div class="art"></div>
 <div class="note">Key art</div>
 <div class="copy">
-  <div class="label">Our first game · In development</div>
+  <div class="label">Our first game · Out 1 December 2026 on Meta Quest</div>
   <h1>Sheriff Town VR</h1>
   <p>A VR sandbox where you are the sheriff of a town that talks back.</p>
 </div>
-<div class="foot"><span class="chip">Meta Quest</span><span class="chip">PC VR</span><span class="chip">Physics sandbox</span></div>`,
+<div class="foot"><span class="chip">Meta Quest</span><span class="chip">PC VR in development</span><span class="chip">Physics sandbox</span></div>`,
+  },
+  {
+    name: 'post-5-launch-day',
+    width: 1200,
+    height: 1200,
+    scale: 1,
+    html: `
+<style>
+.art { position: absolute; left: 0; top: 0; width: 1200px; height: 760px; background: url('${poster('chaos')}') center 40% / cover; }
+.art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, #0f1216 100%); }
+.copy { position: absolute; left: 80px; right: 80px; top: 760px; }
+.label { font-size: 22px; }
+h1 { margin-top: 18px; font-size: 76px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+p { margin-top: 22px; font-size: 30px; line-height: 1.4; color: rgba(255,255,255,.82); font-weight: 500; }
+.note { position: absolute; right: 24px; top: 716px; font-size: 16px; color: rgba(255,255,255,.7); }
+.foot { position: absolute; left: 80px; right: 80px; top: 1030px; display: flex; gap: 14px; font-size: 22px; }
+</style>
+<div class="art"></div>
+<div class="note">Key art</div>
+<div class="copy">
+  <div class="label">Launch day · 1 December 2026</div>
+  <h1>Sheriff Town VR</h1>
+  <p>Out today on Meta Quest. $12.99 on the Meta Horizon Store.</p>
+</div>
+<div class="foot"><span class="chip">Meta Quest</span><span class="chip">$12.99 (US)</span><span class="chip">praamix.com/games/sheriff-town-vr</span></div>`,
   },
   {
     name: 'post-3-services',

@@ -57,7 +57,7 @@ Independent game studio making Sheriff Town VR. Unity & Unreal game development 
 Praamix is an independent game studio. We make games: ours, and yours.
 
 OUR GAME
-Our first game is Sheriff Town VR, a VR physics sandbox where you are the sheriff of a town that talks back. Hear out its people, untangle its mysteries, bend its physics, and bring everyone in alive. It is in development for Meta Quest and PC VR.
+Our first game is Sheriff Town VR, a VR physics sandbox where you are the sheriff of a town that talks back. Hear out its people, untangle its mysteries, bend its physics, and bring everyone in alive. It comes out on Meta Quest on 1 December 2026, $12.99 on the Meta Horizon Store, and a PC VR version is in development.
 
 GAMES WE BUILD WITH YOU
 We develop games for clients in Unity and Unreal Engine, across mobile, PC, web, console, VR, AR and mixed reality: 2D and 3D, single-player and multiplayer.
@@ -165,12 +165,10 @@ Meet our first game: Sheriff Town VR. 🤠
 
 A VR sandbox where you are the sheriff of a town that talks back. Hear out its people, untangle its mysteries, bend its physics, and bring everyone in alive.
 
-It's in development for Meta Quest and PC VR. No release date yet; we'll share progress here as it comes.
+It comes out tomorrow, 1 December, on Meta Quest: $12.99 (US) on the Meta Horizon Store. A PC VR version is in development.
 
 Watch it take shape: youtube.com/@SheriffTownVR
 Join the community: discord.gg/YaxSWmB8G6
-
-(Image: key art.)
 
 #VR #MetaQuest #indiegame #gamedev #SheriffTownVR
 ```
@@ -219,3 +217,38 @@ After posting, edit it to @-mention both of you (type `@` and pick your profiles
 Fifteen daily posts on the Praamix page, 26 Nov to 10 Dec 2026, 7:00 PM India time, all scheduled on LinkedIn. Posters and every caption are in `sheriff-town-vr-series/` (`captions.md`). To change a poster, edit `scripts/stvr-series.mjs` and run `node scripts/render-stvr-series.mjs 7` (the day number). Already-scheduled posts don't update by themselves: edit them on LinkedIn under Page posts → scheduled.
 
 Your personal profile cover is `personal-cover-prashant-1584x396.png`.
+
+The series posters for 1–10 December say "Out now on Meta Quest" in the footer; earlier ones say "In development · Meta Quest & PC VR" (the footer follows each day's date in `scripts/render-stvr-series.mjs`).
+
+## 7. Launch posts and the rest of the schedule
+
+Sheriff Town VR comes out on Meta Quest on 1 December 2026 at $12.99 (facts in `src/content/game.ts`). What is scheduled on the Praamix page, India time:
+
+| When | Post |
+|---|---|
+| 30 Nov, 10:00 AM | Post 2, Sheriff Town VR (text above, says "comes out tomorrow") |
+| 1 Dec, 10:00 AM | Launch day (`post-5-launch-day.png`, text below) |
+| 3 Dec, 10:00 AM | Post 3, Services |
+| 7 Dec, 10:00 AM | Post 4, The people |
+| 27 Nov – 26 Dec, 1:00 PM | Game Dev in 30 Days: Prashant's 30 explainer videos, page captions from `personal-series/page_caption.py` |
+| 26 Nov – 10 Dec, 7:00 PM | Sheriff Town VR 15-day series |
+
+The page's About text and its Services description also say "comes out on Meta Quest on 1 December 2026". After launch, add the Meta Horizon Store link to the page (Edit page → Buttons, or a pinned post) once the store page is live.
+
+### Post 5 — Launch day (image: `post-5-launch-day.png`)
+```
+Launch day. 🤠
+
+Sheriff Town VR comes out today on Meta Quest: $12.99 (US) on the Meta Horizon Store.
+
+You are the sheriff of a town that talks back. Hear out its people, untangle its mysteries, bend its physics with fourteen tool guns, and bring everyone in alive. Arrests, not kills.
+
+This is our first game as a studio. Thank you to everyone who followed along while we built it. If you play it, tell us what you think: every review on the store helps a small studio more than you'd guess.
+
+Find it here: praamix.com/games/sheriff-town-vr
+Join the community: discord.gg/YaxSWmB8G6
+
+A PC VR version is in development.
+
+#SheriffTownVR #MetaQuest #VRGaming #IndieGame #GameDev #LaunchDay
+```

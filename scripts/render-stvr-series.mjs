@@ -62,10 +62,12 @@ const top = (d) => `
   <div class="daypill">DAY <b>${pad(d.day)}</b><i>/ 15</i></div>
 </div>`
 
-const foot = (label) => `
+// Sheriff Town VR comes out on Meta Quest on 1 December 2026 (src/content/game.ts).
+const status = (d) => (d.date >= '2026-12-01' ? 'Out now on Meta Quest' : 'In development · Meta Quest &amp; PC VR')
+const foot = (d) => `
 <div class="foot">
-  <div class="left">${wordmark}<span>In development · Meta Quest &amp; PC VR</span></div>
-  <span class="tag">${label}</span>
+  <div class="left">${wordmark}<span>${status(d)}</span></div>
+  <span class="tag">${d.label || d.shotLabel}</span>
 </div>`
 
 const chips = (list) => (list ? `<div class="chips">${list.map((c) => `<span>${esc(c)}</span>`).join('')}</div>` : '')
@@ -221,7 +223,7 @@ await mkdir(out, { recursive: true })
 const { browser } = await launchBrowser(['--allow-file-access-from-files'])
 for (const d of list) {
   const page = await browser.newPage({ viewport: { width: 1080, height: 1350 }, deviceScaleFactor: 1 })
-  const html = `<!doctype html><meta charset="utf-8"><style>${css}</style>${layouts[d.kind](d)}<div class="noise"></div>${top(d)}${foot(d.label || d.shotLabel)}`
+  const html = `<!doctype html><meta charset="utf-8"><style>${css}</style>${layouts[d.kind](d)}<div class="noise"></div>${top(d)}${foot(d)}`
   const tmp = path.join(out, `.day-${pad(d.day)}.html`)
   await writeFile(tmp, html)
   await page.goto(pathToFileURL(tmp).href)

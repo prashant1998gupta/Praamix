@@ -10,7 +10,7 @@ Behind the scenes of our VR game:
 
 Freeze. Slow. Cuff.
 
-Sheriff Town VR is in development for Meta Quest and PC VR.
+Sheriff Town VR is out now on Meta Quest, with a PC VR version in development.
 
 Which tool gun should we break down next? 👇
 
